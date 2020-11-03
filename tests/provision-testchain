@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+#  Copyright (C) 2019-2020 Maker Ecosystem Growth Holdings, INC.
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+set -e
+
+# TODO: Figure out why $CWD was modified without explicit reassignment
+# Is it because of the context that this script runs in?
+export LIB=$CWD/../../
+
+export ETH_FROM=$(seth rpc eth_coinbase)
+
+########################################
+# Install mcd-cli (https://stackoverflow.com/a/677212)
+if ! command -v mcd &> /dev/null; then
+    echo "Installing mcd-cli, as it couldn't be found"
+    curl https://raw.githubusercontent.com/makerdao/mcd-cli/master/install.sh | sh
+fi
+export MCD_CONFIG=$TESTCHAIN/out/addresses-mcd.json
+
+
+########################################
+# Create 75 Dai to populate Maker-otc
+# Amount of collateral to join and lock (Wad)
+ink=${1:-10}
+# Amount of Dai to draw and exit (Wad)
+art=${2:-75}
+
+mcd -C testnet wrap $ink > /dev/null
+id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp \([0-9]\+\)$/\1/ p") > /dev/null
+mcd -C testnet cdp $id lock $ink > /dev/null
+mcd -C testnet cdp $id draw $art > /dev/null
+echo "Created CDP $id with ink=$ink and art=$art"
+
+
+########################################
+# json -> env vars https://stackoverflow.com/a/58859494
+# Export addresses from SCD
+for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
+    eval export $keyval
+done
+
+# Export addresses from MCD
+for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses-mcd.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
+    eval export $keyval
+done
+
+# ########################################
+# Build OasisLiquidityProvider and populate maker-otc
+# pushd ../../oasis-liquidity-provider/
+cd $LIB/oasis-liquidity-provider
+dapp --use solc:0.5.12 build
+OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
+cd -
+
+mcd -C testnet wrap 3 > /dev/null
+echo "MCD"
+seth send $ETH 'approve(address,uint)' $OASIS_LIQUIDITY_PROVIDER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+echo "ETHapprove"
+seth send $MCD_DAI 'approve(address,uint)' $OASIS_LIQUIDITY_PROVIDER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+echo "Daiapprove"
+
+seth send $OASIS_LIQUIDITY_PROVIDER \
+    'linearOffers(address,address,address,uint,uint,uint,uint)' \
+    $MAKER_OTC \
+    $ETH \
+    $MCD_DAI \
+    $(seth --to-uint256 $(seth --to-wei 10 eth)) \
+    $(seth --to-uint256 $(seth --to-wei 0.1 eth)) \
+    $(seth --to-uint256 $(seth --to-wei 0.5 eth)) \
+    $(seth --to-uint256 3)
+
+
+
+
+
+
+
+
+########################################
+# build OasisLiquidityProvider from oasis-liquidity-provider
+# cd $/LIB/oasis-liquidity-provider
+# dapp --use solc:0.5.0 build
+# OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
+# cd -
+
+# ########################################
+# # build CalleeMakerOtc from exchange-callee
+# cd $/LIB/exchange-callee
+# dapp --use solc:0.5.12 build
+# OASIS_CALLEE=$(dapp create CalleeMakerOtc)
+# cd -
+
+
+
+
+
+

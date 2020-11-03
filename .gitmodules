@@ -1,0 +1,9 @@
+[submodule "lib/testchain"]
+	path = lib/testchain
+	url = https://github.com/makerdao/testchain.git
+[submodule "lib/oasis-liquidity-provider"]
+	path = lib/oasis-liquidity-provider
+	url = https://github.com/daifoundation/oasis-liquidity-provider.git
+[submodule "lib/exchange-callees"]
+	path = lib/exchange-callees
+	url = https://github.com/makerdao/exchange-callees.git
