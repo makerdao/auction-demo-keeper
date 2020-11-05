@@ -90,6 +90,26 @@ export CALLDATA=$(seth calldata \
 seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVIDER $CALLDATA
 
 
+########################################
+# Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
+echo balance
+seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM)
+
+echo approve
+seth send $MCD_GOV 'approve(address)' $MCD_ADM
+
+echo lock
+seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
+
+echo vote
+seth send $MCD_ADM 'vote(address[])' [$ETH_FROM]
+
+echo lift
+seth send $MCD_ADM 'lift(address)' $ETH_FROM
+
+hat=$(seth call $MCD_ADM 'hat()')
+seth --to-dec $(seth call $MCD_GOV 'approvals(address)' $hat)
+echo $hat
 
 # ########################################
 # # build CalleeMakerOtc from exchange-callee
