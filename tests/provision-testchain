@@ -31,25 +31,10 @@ if ! command -v mcd &> /dev/null; then
 fi
 export MCD_CONFIG=$TESTCHAIN/out/addresses-mcd.json
 
-
-########################################
-# Create 75 Dai to populate Maker-otc
-# Amount of collateral to join and lock (Wad)
-ink=${1:-10}
-# Amount of Dai to draw and exit (Wad)
-art=${2:-75}
-
-mcd -C testnet wrap $ink > /dev/null
-id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp \([0-9]\+\)$/\1/ p") > /dev/null
-mcd -C testnet cdp $id lock $ink > /dev/null
-mcd -C testnet cdp $id draw $art > /dev/null
-echo "Created CDP $id with ink=$ink and art=$art"
-
-
 ########################################
 # json -> env vars https://stackoverflow.com/a/58859494
 # Export addresses from SCD
-for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
+for keyval in $(grep -E y'": [^\{]' $TESTCHAIN/out/addresses.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
     eval export $keyval
 done
 
@@ -58,32 +43,55 @@ for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses-mcd.json | sed -e 's
     eval export $keyval
 done
 
+
+########################################
+# Create 75 Dai to populate Maker-otc
+# Amount of collateral to join and lock (Wad)
+# ETH is priced at 150 DAI
+ink=${1:-10}
+# Amount of Dai to draw and exit (Wad)
+art=${2:-500}
+
+mcd -C testnet wrap $ink
+# id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp \([0-9]\+\)$/\1/ p") > /dev/null
+# id=$(mcd -C testnet --ilk=ETH-A cdp open)
+mcd -C testnet --ilk=ETH-A cdp open
+mcd -C testnet --ilk=ETH-A cdp ls
+id=1
+
+# Used to bypass approval message
+echo $PROXY_DEPLOYER
+seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+mcd -C testnet --ilk=ETH-A cdp $id lock $ink > /dev/null
+mcd -C testnet --ilk=ETH-A cdp $id draw $art > /dev/null
+echo "Created CDP $id with ink=$ink and art=$art"
+
+
 # ########################################
 # Build OasisLiquidityProvider and populate maker-otc
 # pushd ../../oasis-liquidity-provider/
 cd $LIB/oasis-liquidity-provider
 dapp --use solc:0.5.12 build
-OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
+export OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
 cd -
 
-mcd -C testnet wrap 3 > /dev/null
+mcd -C testnet wrap 10
+
+# This is the same address as PROXY_DEPLOYER
+export DS_PROXY=$(seth call $PROXY_REGISTRY 'proxies(address)(address)' $ETH_FROM)
 echo "MCD"
-seth send $ETH 'approve(address,uint)' $OASIS_LIQUIDITY_PROVIDER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+seth send $ETH 'approve(address,uint)' $DS_PROXY $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 echo "ETHapprove"
-seth send $MCD_DAI 'approve(address,uint)' $OASIS_LIQUIDITY_PROVIDER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+seth send $MCD_DAI 'approve(address,uint)' $DS_PROXY $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 echo "Daiapprove"
 
-seth send $OASIS_LIQUIDITY_PROVIDER \
-    'linearOffers(address,address,address,uint,uint,uint,uint)' \
-    $MAKER_OTC \
-    $ETH \
-    $MCD_DAI \
-    $(seth --to-uint256 $(seth --to-wei 10 eth)) \
-    $(seth --to-uint256 $(seth --to-wei 0.1 eth)) \
-    $(seth --to-uint256 $(seth --to-wei 0.5 eth)) \
-    $(seth --to-uint256 3)
+echo $MAKER_OTC
+echo $ETH
+echo $MCD_DAI
 
+export CALLDATA=$(seth calldata 'linearOffers(address,address,address,uint,uint,uint,uint)' $MAKER_OTC $ETH $MCD_DAI $(seth --to-uint256 $(seth --to-wei 1 eth)) $(seth --to-uint256 $(seth --to-wei 0.1 eth)) $(seth --to-uint256 $(seth --to-wei 0.5 eth)) $(seth --to-uint256 1))
 
+seth send $DS_PROXY 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVIDER $CALLDATA
 
 
 

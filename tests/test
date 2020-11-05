@@ -36,6 +36,7 @@ export ETH_RPC_URL=http://127.1:2000
    $CWD/provision-testchain
    $CWD/run-tests
 
+# ./../lib/testchain/scripts/launch -s default --fast
 
 
 END_TIME=`date +%s`
