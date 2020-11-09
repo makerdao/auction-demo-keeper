@@ -65,7 +65,7 @@ echo "Created CDP $id with ink=$ink and art=$art"
 # ########################################
 # Build OasisLiquidityProvider and populate maker-otc
 # pushd ../../oasis-liquidity-provider/
-cd $LIB/oasis-liquidity-provider
+cd "$LIB/oasis-liquidity-provider"
 dapp --use solc:0.5.12 build
 export OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
 cd -
@@ -92,6 +92,17 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 
 ########################################
 # Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
+cd "$LIB/dss"
+dap --use solc:0.5.12 build
+export MCD_DOG=$(dapp create Dog $MCD_VAT)
+seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
+cd -
+
+cd $LIB/..
+DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
+export DSS_SPELL_LIQ2=$(dapp create DssSpell $MCD_DOG)
+
+
 echo balance
 seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM)
 

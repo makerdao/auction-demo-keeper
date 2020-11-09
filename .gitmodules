@@ -7,3 +7,7 @@
 [submodule "lib/exchange-callees"]
 	path = lib/exchange-callees
 	url = https://github.com/makerdao/exchange-callees.git
+[submodule "lib/dss"]
+	branch = liq-2.0
+	path = lib/dss
+	url = https://github.com/makerdao/dss.git
