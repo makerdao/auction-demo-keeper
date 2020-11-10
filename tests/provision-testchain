@@ -95,12 +95,18 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 cd "$LIB/dss"
 dap --use solc:0.5.12 build
 export MCD_DOG=$(dapp create Dog $MCD_VAT)
-seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
+seth send $MCD_DOG 'rely(address)' $MCD_PAUSE_PROXY
+seth send $MCD_DOG 'deny(address)' $ETH_FROM
+
+export MCD_CLIP_ETH_A=$(dapp create Clipper $MCD_VAT $MCD_SPOT $MCD_DOG "$(seth --to-bytes32 "$(seth --from-ascii "ETH-A")")")
+seth send $MCD_CLIP_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
+seth send $MCD_CLIP_ETH_A 'deny(address)' $ETH_FROM
+# seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
 cd -
 
 cd $LIB/..
 DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
-export DSS_SPELL_LIQ2=$(dapp create DssSpell $MCD_DOG)
+export DSS_SPELL_LIQ2=$(dapp create DssSpell $MCD_DOG $MCD_CLIP_ETH_A)
 
 
 echo balance

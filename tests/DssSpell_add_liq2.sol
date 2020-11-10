@@ -25,6 +25,8 @@ import "../lib/dss-interfaces/src/dss/OsmAbstract.sol";
 import "../lib/dss-interfaces/src/dss/VatAbstract.sol";
 import "../lib/dss-interfaces/src/dss/VowAbstract.sol";
 
+// TODO add Dog and Clip Abstract 
+
 interface DogAbstract {
     function wards(address) external view returns (uint256);
     function rely(address) external;
@@ -53,41 +55,9 @@ contract SpellAction {
 
     address constant MCD_VAT             = 0xCe1410e4b98058fA7534FA8fcEe28E82056EB0e9;
     address constant MCD_VOW             = 0xb002A319887185e56d787A5c90900e13834a85E3;
-    address constant MCD_ADM             = 0x35D1BC6e287f13AA10B3d44489f5959B1063C995;
-    address constant MCD_END             = 0x970b3b28EBD466f2eC181630D4c3C93DfE280448;
-    address constant FLIPPER_MOM         = 0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472;
-    address constant MCD_DOG;
-    address constant MCD_CAT_OLD         = 0x2125C30dA5DcA0819aEC5e4cdbF58Bfe91918e43;
-
-    address constant MCD_FLIP_ETH_A      = 0xF32836B9E1f47a0515c6Ec431592D5EbC276407f;
-    address constant MCD_FLIP_ETH_A_OLD  = 0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1;
-
-    address constant MCD_FLIP_BAT_A      = 0xF7C569B2B271354179AaCC9fF1e42390983110BA;
-    address constant MCD_FLIP_BAT_A_OLD  = 0x5EdF770FC81E7b8C2c89f71F30f211226a4d7495;
-
-    address constant MCD_FLIP_USDC_A     = 0xbe359e53038E41a1ffA47DAE39645756C80e557a;
-    address constant MCD_FLIP_USDC_A_OLD = 0x545521e0105C5698f75D6b3C3050CfCC62FB0C12;
-
-    address constant MCD_FLIP_USDC_B     = 0x77282aD36aADAfC16bCA42c865c674F108c4a616;
-    address constant MCD_FLIP_USDC_B_OLD = 0x6002d3B769D64A9909b0B26fC00361091786fe48;
-
-    address constant MCD_FLIP_WBTC_A     = 0x58CD24ac7322890382eE45A3E4F903a5B22Ee930;
-    address constant MCD_FLIP_WBTC_A_OLD = 0xF70590Fa4AaBe12d3613f5069D02B8702e058569;
-
-    address constant MCD_FLIP_ZRX_A      = 0xa4341cAf9F9F098ecb20fb2CeE2a0b8C78A18118;
-    address constant MCD_FLIP_ZRX_A_OLD  = 0x92645a34d07696395b6e5b8330b000D0436A9aAD;
-
-    address constant MCD_FLIP_KNC_A      = 0x57B01F1B3C59e2C0bdfF3EC9563B71EEc99a3f2f;
-    address constant MCD_FLIP_KNC_A_OLD  = 0xAD4a0B5F3c6Deb13ADE106Ba6E80Ca6566538eE6;
-
-    address constant MCD_FLIP_TUSD_A     = 0x9E4b213C4defbce7564F2Ac20B6E3bF40954C440;
-    address constant MCD_FLIP_TUSD_A_OLD = 0x04C42fAC3e29Fd27118609a5c36fD0b3Cb8090b3;
-
-    address constant MCD_FLIP_MANA_A     = 0x0a1D75B4f49BA80724a214599574080CD6B68357;
-    address constant MCD_FLIP_MANA_A_OLD = 0x4bf9D2EBC4c57B9B783C12D30076507660B58b3a;
-
-    address constant YEARN               = 0xCF63089A8aD2a9D8BD6Bb8022f3190EB7e1eD0f1;
-    address constant OSM_ETHUSD          = 0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763;
+    address constant MCD_FLIP_ETH_A      = 0xd6D7C74729bB83c35138E54b8d5530ea96920c92;
+    address public MCD_CLIP_ETH_A;
+    address public MCD_DOG;
 
     // Decimals & precision
     uint256 constant THOUSAND = 10 ** 3;
@@ -96,8 +66,9 @@ contract SpellAction {
     uint256 constant RAY      = 10 ** 27;
     uint256 constant RAD      = 10 ** 45;
 
-    constructor(address dog) public {
+    constructor(address dog, address clipper) public {
         MCD_DOG = dog;
+        MCD_CLIP = clipper;
     }
 
     function execute() external {
@@ -112,105 +83,54 @@ contract SpellAction {
         require(CatAbstract(MCD_DOG).vat() == MCD_VAT,              "non-matching-vat");
         require(CatAbstract(MCD_DOG).live() == 1,                   "dog-not-live");
 
-        vat.rely(address(dog));
-        vow.rely(address(dog));
+        /// DOG
 
-        clip = new Clipper(address(vat), address(spot), address(dog), ilk);
-        clip.rely(address(dog));
+        DogAbstract(MCD_DOG).file("vow", MCD_VOW);
+        VatAbstract(MCD_VAT).rely(MCD_DOG);
+        VowAbstract(MCD_VOW).rely(MCD_DOG);
 
-        dog.file(ilk, "clip", address(clip));
-        dog.file(ilk, "chop", 1.1 ether); // 10% chop
-        dog.file(ilk, "hole", rad(1000 ether));
-        dog.file("Hole", rad(1000 ether));
-        dog.rely(address(clip));
+        VatAbstract(MCD_VAT).rely(MCD_CLIP_ETH_A) // Is this needed?
 
-        vat.rely(address(clip));
+        DogAbstract(MCD_DOG).file("Hole", 30 * MILLION * RAD);
 
-        /*** Update Dog ***/
-        CatAbstract(MCD_CAT).file("vow", MCD_VOW);
-        VatAbstract(MCD_VAT).rely(MCD_CAT);
-        VatAbstract(MCD_VAT).deny(MCD_CAT_OLD);
-        VowAbstract(MCD_VOW).rely(MCD_CAT);
-        VowAbstract(MCD_VOW).deny(MCD_CAT_OLD);
-        EndAbstract(MCD_END).file("cat", MCD_CAT);
-        CatAbstract(MCD_CAT).rely(MCD_END);
+        /// CLIP
+        /* StairstepExponentialDecrease calc = new StairstepExponentialDecrease();
+        calc.file("cut",  ray(0.01 ether));   // 1% decrease
+        calc.file("step", 1);                 // Decrease every 1 second
 
-        CatAbstract(MCD_CAT).file("box", 30 * MILLION * RAD);
+        clip.file("buf",  ray(1.25 ether));   // 25% Initial price buffer
+        clip.file("calc", address(calc));     // File price contract
+        clip.file("cusp", ray(0.3 ether));    // 70% drop before reset
+        clip.file("tail", 3600);              // 1 hour before reset */
 
-        /*** Set Auth in Flipper Mom ***/
-        FlipperMomAbstract(FLIPPER_MOM).setAuthority(MCD_ADM);
 
-        /*** ETH-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_ETH_A), FlipAbstract(MCD_FLIP_ETH_A_OLD));
+        _flipToClip(ClipAbstract(MCD_CLIP_ETH_A), FlipAbstract(MCD_FLIP_ETH_A));
 
-        /*** BAT-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_BAT_A), FlipAbstract(MCD_FLIP_BAT_A_OLD));
 
-        /*** USDC-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_USDC_A), FlipAbstract(MCD_FLIP_USDC_A_OLD));
-        FlipperMomAbstract(FLIPPER_MOM).deny(MCD_FLIP_USDC_A); // Auctions disabled
-
-        /*** USDC-B Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_USDC_B), FlipAbstract(MCD_FLIP_USDC_B_OLD));
-        FlipperMomAbstract(FLIPPER_MOM).deny(MCD_FLIP_USDC_B); // Auctions disabled
-
-        /*** WBTC-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_WBTC_A), FlipAbstract(MCD_FLIP_WBTC_A_OLD));
-
-        /*** TUSD-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_TUSD_A), FlipAbstract(MCD_FLIP_TUSD_A_OLD));
-        FlipperMomAbstract(FLIPPER_MOM).deny(MCD_FLIP_TUSD_A); // Auctions disabled
-
-        /*** ZRX-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_ZRX_A), FlipAbstract(MCD_FLIP_ZRX_A_OLD));
-
-        /*** KNC-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_KNC_A), FlipAbstract(MCD_FLIP_KNC_A_OLD));
-
-        /*** MANA-A Flip ***/
-        _changeFlip(FlipAbstract(MCD_FLIP_MANA_A), FlipAbstract(MCD_FLIP_MANA_A_OLD));
-
-        // *********************
-        // *** Other Changes ***
-        // *********************
-
-        /*** Risk Parameter Adjustments ***/
-
-        // set the global debt ceiling to 588,000,000
-        // 688 (current DC) - 100 (USDC-A decrease)
-        VatAbstract(MCD_VAT).file("Line", 588 * MILLION * RAD);
-
-        // Set the USDC-A debt ceiling
-        //
-        // Existing debt: 140 million
-        // New debt ceiling: 40 million
-        uint256 USDC_A_LINE = 40 * MILLION * RAD;
-        VatAbstract(MCD_VAT).file("USDC-A", "line", USDC_A_LINE);
-
-        /*** Whitelist yearn on ETHUSD Oracle ***/
-        OsmAbstract(OSM_ETHUSD).kiss(YEARN);
     }
 
-    function _changeFlip(FlipAbstract newFlip, FlipAbstract oldFlip) internal {
-        bytes32 ilk = newFlip.ilk();
+    function _flipToClip(ClipAbstract newClip, FlipAbstract oldFlip) internal {
+        bytes32 ilk = newClip.ilk();
         require(ilk == oldFlip.ilk(), "non-matching-ilk");
-        require(newFlip.vat() == oldFlip.vat(), "non-matching-vat");
-        require(newFlip.cat() == MCD_CAT, "non-matching-cat");
-        require(newFlip.vat() == MCD_VAT, "non-matching-vat");
+        require(newClip.vat() == oldFlip.vat(), "non-matching-vat");
+        require(newClip.dog() == MCD_DOG, "non-matching-cat");
+        require(newClip.vat() == MCD_VAT, "non-matching-vat");
 
-        CatAbstract(MCD_CAT).file(ilk, "flip", address(newFlip));
-        (, uint oldChop,) = CatAbstract(MCD_CAT_OLD).ilks(ilk);
-        CatAbstract(MCD_CAT).file(ilk, "chop", oldChop / 10 ** 9);
+        DogAbstract(MCD_DOG).file(ilk, "clip", address(newClip));
+        DogAbstract(MCD_DOG).file(ilk, "chop", 1.1 ether); // 10% chop
+        DogAbstract(MCD_DOG).file(ilk, "hole", 30 * MILLION * RAD); // 30 MM DAI
+        DogAbstract(MCD_DOG).file(ilk, "chip", 0.02 * WAD); // linear increase of 2% of tab
+        DogAbstract(MCD_DOG).file(ilk, "tip", 2 * RAD); // flat fee of two DAI
 
-        CatAbstract(MCD_CAT).file(ilk, "dunk", 50 * THOUSAND * RAD);
-        CatAbstract(MCD_CAT).rely(address(newFlip));
+        DogAbstract(MCD_DOG).rely(address(newClip));
 
-        newFlip.rely(MCD_CAT);
-        newFlip.rely(MCD_END);
-        newFlip.rely(FLIPPER_MOM);
-        newFlip.file("beg", oldFlip.beg());
-        newFlip.file("ttl", oldFlip.ttl());
-        newFlip.file("tau", oldFlip.tau());
+        newClip.rely(MCD_DOG);
+        newClip.rely(MCD_END);
+
+
+        newClip.file("beg", oldFlip.beg());
+        newClip.file("ttl", oldFlip.ttl());
+        newClip.file("tau", oldFlip.tau());
     }
 }
 
@@ -230,9 +150,9 @@ contract DssSpell {
     string constant public description =
         "2020-08-28 MakerDAO Executive Spell | Hash: 0x67885f84f0d31dc816fc327d9912bae6f207199d299543d95baff20cf6305963";
 
-    constructor(address dog) public {
+    constructor(address dog, address clipper) public {
         sig = abi.encodeWithSignature("execute()");
-        action = address(new SpellAction(dog));
+        action = address(new SpellAction(dog, clipper));
         bytes32 _tag;
         address _action = action;
         assembly { _tag := extcodehash(_action) }
