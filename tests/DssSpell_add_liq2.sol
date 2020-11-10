@@ -25,15 +25,15 @@ import "../lib/dss-interfaces/src/dss/OsmAbstract.sol";
 import "../lib/dss-interfaces/src/dss/VatAbstract.sol";
 import "../lib/dss-interfaces/src/dss/VowAbstract.sol";
 
-// TODO add Dog and Clip Abstract 
+// TODO add Dog and Clip Abstract
 
 interface DogAbstract {
     function wards(address) external view returns (uint256);
     function rely(address) external;
     function deny(address) external;
-    function box() external view returns (uint256);
-    function litter() external view returns (uint256);
-    function ilks(bytes32) external view returns (address, uint256, uint256);
+    function Dirt() external view returns (uint256);
+    function Hole() external view returns (uint256);
+    function ilks(bytes32) external view returns (address, uint256, uint256, uint256, uint256, uint256);
     function live() external view returns (uint256);
     function vat() external view returns (address);
     function vow() external view returns (address);
@@ -41,9 +41,25 @@ interface DogAbstract {
     function file(bytes32, uint256) external;
     function file(bytes32, bytes32, uint256) external;
     function file(bytes32, bytes32, address) external;
-    function bite(bytes32, address) external returns (uint256);
-    function claw(uint256) external;
+    function chop(bytes32) external view returns (uint256);
+    function bark(bytes32, address) external returns (uint256);
+    function digs(bytes32, uint256) external;
     function cage() external;
+}
+
+interface ClipAbstract {
+  function dog() external view returns (address);
+  function vat() external view returns (address);
+  function vow() external view returns (address);
+  function wards(address) external view returns (uint256);
+  function rely(address) external;
+  function deny(address) external;
+  function file(bytes32, address) external;
+  function file(bytes32, uint256) external;
+}
+
+interface AbacusAbstract {
+    function file(bytes32, uint256) external;
 }
 
 contract SpellAction {
@@ -56,8 +72,9 @@ contract SpellAction {
     address constant MCD_VAT             = 0xCe1410e4b98058fA7534FA8fcEe28E82056EB0e9;
     address constant MCD_VOW             = 0xb002A319887185e56d787A5c90900e13834a85E3;
     address constant MCD_FLIP_ETH_A      = 0xd6D7C74729bB83c35138E54b8d5530ea96920c92;
-    address public MCD_CLIP_ETH_A;
     address public MCD_DOG;
+    address public MCD_CLIP_ETH_A;
+    address public MCD_ABACUS_ETH_A;
 
     // Decimals & precision
     uint256 constant THOUSAND = 10 ** 3;
@@ -66,9 +83,10 @@ contract SpellAction {
     uint256 constant RAY      = 10 ** 27;
     uint256 constant RAD      = 10 ** 45;
 
-    constructor(address dog, address clipper) public {
+    constructor(address dog, address clipper, address abacus) public {
         MCD_DOG = dog;
-        MCD_CLIP = clipper;
+        MCD_CLIP_ETH_A = clipper;
+        MCD_ABACUS_ETH_A = abacus;
     }
 
     function execute() external {
@@ -84,26 +102,18 @@ contract SpellAction {
         require(CatAbstract(MCD_DOG).live() == 1,                   "dog-not-live");
 
         /// DOG
-
         DogAbstract(MCD_DOG).file("vow", MCD_VOW);
         VatAbstract(MCD_VAT).rely(MCD_DOG);
         VowAbstract(MCD_VOW).rely(MCD_DOG);
 
-        VatAbstract(MCD_VAT).rely(MCD_CLIP_ETH_A) // Is this needed?
-
         DogAbstract(MCD_DOG).file("Hole", 30 * MILLION * RAD);
 
-        /// CLIP
-        /* StairstepExponentialDecrease calc = new StairstepExponentialDecrease();
-        calc.file("cut",  ray(0.01 ether));   // 1% decrease
-        calc.file("step", 1);                 // Decrease every 1 second
+        /// ABACUS
+        AbacusAbstract(MCD_ABACUS_ETH_A).file("cut",  0.01 * RAY);   // 1% decrease
+        AbacusAbstract(MCD_ABACUS_ETH_A).file("step", 1);            // Decrease every 1 second
 
-        clip.file("buf",  ray(1.25 ether));   // 25% Initial price buffer
-        clip.file("calc", address(calc));     // File price contract
-        clip.file("cusp", ray(0.3 ether));    // 70% drop before reset
-        clip.file("tail", 3600);              // 1 hour before reset */
-
-
+        // CLIP
+        VatAbstract(MCD_VAT).rely(MCD_CLIP_ETH_A)                // Is this needed?
         _flipToClip(ClipAbstract(MCD_CLIP_ETH_A), FlipAbstract(MCD_FLIP_ETH_A));
 
 
@@ -127,16 +137,16 @@ contract SpellAction {
         newClip.rely(MCD_DOG);
         newClip.rely(MCD_END);
 
-
-        newClip.file("beg", oldFlip.beg());
-        newClip.file("ttl", oldFlip.ttl());
-        newClip.file("tau", oldFlip.tau());
+        newClip.file("buf",  1.25 * RAY);   // 25% Initial price buffer
+        newClip.file("calc", address(MCD_ABACUS_ETH_A));  // File price contract
+        newClip.file("cusp", 0.3 * RAY);                  // 70% drop before reset
+        newClip.file("tail", 3600);         // 1 hour before reset
     }
 }
 
 contract DssSpell {
     DSPauseAbstract public pause =
-        DSPauseAbstract(0xbE286431454714F511008713973d3B053A2d38f3);
+        DSPauseAbstract(0xd34835EaE60dA418abfc538B7b55332fC5F10340);
     address         public action;
     bytes32         public tag;
     uint256         public eta;
@@ -145,14 +155,12 @@ contract DssSpell {
     bool            public done;
 
     // Provides a descriptive tag for bot consumption
-    // This should be modified weekly to provide a summary of the actions
-    // Hash: seth keccak -- "$(wget https://raw.githubusercontent.com/makerdao/community/6304d5d461f6a0811699eb04fa48b95d68515d8f/governance/votes/Executive%20vote%20-%20August%2028%2C%202020.md -q -O - 2>/dev/null)"
     string constant public description =
-        "2020-08-28 MakerDAO Executive Spell | Hash: 0x67885f84f0d31dc816fc327d9912bae6f207199d299543d95baff20cf6305963";
+        "Auction-Demo-Keeper LIQ2.0 Support";
 
-    constructor(address dog, address clipper) public {
+    constructor(address dog, address clipper, address abacus) public {
         sig = abi.encodeWithSignature("execute()");
-        action = address(new SpellAction(dog, clipper));
+        action = address(new SpellAction(dog, clipper, abacus));
         bytes32 _tag;
         address _action = action;
         assembly { _tag := extcodehash(_action) }
@@ -175,7 +183,7 @@ contract DssSpell {
         pause.plot(action, tag, sig, eta);
     }
 
-    function cast() public officeHours {
+    function cast() public /* officeHours */ {
         require(!done, "spell-already-cast");
         done = true;
         pause.exec(action, tag, sig, eta);
