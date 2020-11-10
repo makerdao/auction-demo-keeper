@@ -109,35 +109,30 @@ seth send $MCD_ABACUS_ETH_A 'deny(address)' $ETH_FROM
 cd -
 
 cd $LIB/..
-DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
+dapp --use solc:0.5.12 build
+# TODO Figure out how to keep this spell in tests folders
+# Look here: https://github.com/dapphub/dapptools/issues/27
+# DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
 export DSS_SPELL_LIQ2=$(dapp create DssSpell $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
 
 
-echo balance
-seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM)
-
-echo approve
+# Vote, lift, schedule, and cast spell to support LIQ2.0
+echo 'MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))'
 seth send $MCD_GOV 'approve(address)' $MCD_ADM
-
-echo lock
 seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
+seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
+seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
+echo 'DssSpell located at: $DSS_SPELL_LIQ2'
+echo 'New Hat: $(seth call $MCD_ADM 'hat()')'
 
-echo vote
-seth send $MCD_ADM 'vote(address[])' [$ETH_FROM]
 
-echo lift
-seth send $MCD_ADM 'lift(address)' $ETH_FROM
-
-hat=$(seth call $MCD_ADM 'hat()')
-seth --to-dec $(seth call $MCD_GOV 'approvals(address)' $hat)
-echo $hat
 
 # ########################################
 # # build CalleeMakerOtc from exchange-callee
-# cd $/LIB/exchange-callee
-# dapp --use solc:0.5.12 build
-# OASIS_CALLEE=$(dapp create CalleeMakerOtc)
-# cd -
+cd $LIB/exchange-callee
+dapp --use solc:0.5.12 build
+OASIS_CALLEE=$(dapp create CalleeMakerOtc $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
+cd -
 
 
 

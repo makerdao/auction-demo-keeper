@@ -11,3 +11,6 @@
 	branch = liq-2.0
 	path = lib/dss
 	url = https://github.com/makerdao/dss.git
+[submodule "lib/dss-interfaces"]
+	path = lib/dss-interfaces
+	url = https://github.com/makerdao/dss-interfaces.git

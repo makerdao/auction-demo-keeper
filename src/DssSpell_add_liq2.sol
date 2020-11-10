@@ -15,17 +15,12 @@
 
 pragma solidity 0.5.12;
 
-import "../lib/dss-interfaces/src/dapp/DSPauseAbstract.sol";
-
-import "../lib/dss-interfaces/src/dss/CatAbstract.sol";
-import "../lib/dss-interfaces/src/dss/EndAbstract.sol";
-import "../lib/dss-interfaces/src/dss/FlipAbstract.sol";
-import "../lib/dss-interfaces/src/dss/FlipperMomAbstract.sol";
-import "../lib/dss-interfaces/src/dss/OsmAbstract.sol";
-import "../lib/dss-interfaces/src/dss/VatAbstract.sol";
-import "../lib/dss-interfaces/src/dss/VowAbstract.sol";
-
-// TODO add Dog and Clip Abstract
+import "lib/dss-interfaces/src/dapp/DSPauseAbstract.sol";
+import "lib/dss-interfaces/src/dss/CatAbstract.sol";
+import "lib/dss-interfaces/src/dss/EndAbstract.sol";
+import "lib/dss-interfaces/src/dss/FlipAbstract.sol";
+import "lib/dss-interfaces/src/dss/VatAbstract.sol";
+import "lib/dss-interfaces/src/dss/VowAbstract.sol";
 
 interface DogAbstract {
     function wards(address) external view returns (uint256);
@@ -69,9 +64,9 @@ contract SpellAction {
     // The contracts in this list should correspond to MCD on testchain, which can be verified at
     // https://github.com/makerdao/testchain/blob/a293003c3a68474b12e303f54de6e455cefee82c/out/addresses-mcd.json
 
-    address constant MCD_VAT             = 0xCe1410e4b98058fA7534FA8fcEe28E82056EB0e9;
-    address constant MCD_VOW             = 0xb002A319887185e56d787A5c90900e13834a85E3;
-    address constant MCD_FLIP_ETH_A      = 0xd6D7C74729bB83c35138E54b8d5530ea96920c92;
+    address constant MCD_VAT             = 0xb002A319887185e56d787A5c90900e13834a85E3;
+    address constant MCD_VOW             = 0x32fE44E2061A19419C0F112596B6f6ea77EC6511;
+    address constant MCD_FLIP_ETH_A      = 0xc1F5856c066cfdD59D405DfCf1e77F667537bc99;
     address public MCD_DOG;
     address public MCD_CLIP_ETH_A;
     address public MCD_ABACUS_ETH_A;
@@ -93,6 +88,7 @@ contract SpellAction {
 
         // ************************
         // *** Liquidations 2.0 ***
+        // *** Initial parameters used from https://github.com/makerdao/dss/blob/liq-2.0/src/test/clip.t.sol ***
         // ************************
 
         require(CatAbstract(MCD_CAT_OLD).vat() == MCD_VAT,          "non-matching-vat");
@@ -106,7 +102,7 @@ contract SpellAction {
         VatAbstract(MCD_VAT).rely(MCD_DOG);
         VowAbstract(MCD_VOW).rely(MCD_DOG);
 
-        DogAbstract(MCD_DOG).file("Hole", 30 * MILLION * RAD);
+        DogAbstract(MCD_DOG).file("Hole", 1000 * RAD);
 
         /// ABACUS
         AbacusAbstract(MCD_ABACUS_ETH_A).file("cut",  0.01 * RAY);   // 1% decrease
@@ -128,7 +124,7 @@ contract SpellAction {
 
         DogAbstract(MCD_DOG).file(ilk, "clip", address(newClip));
         DogAbstract(MCD_DOG).file(ilk, "chop", 1.1 ether); // 10% chop
-        DogAbstract(MCD_DOG).file(ilk, "hole", 30 * MILLION * RAD); // 30 MM DAI
+        DogAbstract(MCD_DOG).file(ilk, "hole", 1000 * RAD); // 30 MM DAI
         DogAbstract(MCD_DOG).file(ilk, "chip", 0.02 * WAD); // linear increase of 2% of tab
         DogAbstract(MCD_DOG).file(ilk, "tip", 2 * RAD); // flat fee of two DAI
 
