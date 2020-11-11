@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#  Copyright (C) 2019-2020 Maker Ecosystem Growth Holdings, INC.
+#  Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published by
@@ -108,24 +108,26 @@ seth send $MCD_ABACUS_ETH_A 'deny(address)' $ETH_FROM
 # seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
 cd -
 
-cd $LIB/..
+cd "$LIB/spells-kovan"
 dapp --use solc:0.5.12 build
 # TODO Figure out how to keep this spell in tests folders
 # Look here: https://github.com/dapphub/dapptools/issues/27
 # DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
-export DSS_SPELL_LIQ2=$(dapp create DssSpell $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
-
+# Source is in the intg-6937-liq-2 branch of spells-kovan
+export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
 
 # Vote, lift, schedule, and cast spell to support LIQ2.0
-echo 'MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))'
-seth send $MCD_GOV 'approve(address)' $MCD_ADM
+echo "MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))"
+Hey Nikolaj! Yes, I think I’ll need to ease into the early 5 am calls.. I’ve rescheduled for 5:30 am tomorrow and will try again next week. Speak soon! Thanks
 seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
 seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
 seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
-echo 'DssSpell located at: $DSS_SPELL_LIQ2'
-echo 'New Hat: $(seth call $MCD_ADM 'hat()')'
-
-
+echo "DssSpell located at: $DSS_SPELL_LIQ2"
+echo "New Hat: $(seth call $MCD_ADM 'hat()')"
+echo "DSPause Delay: $(seth call $MCD_PAUSE 'delay()')"
+seth send $DSS_SPELL_LIQ2 'schedule()'
+seth send $DSS_SPELL_LIQ2 'cast()'
+echo "DssSpell casted"
 
 # ########################################
 # # build CalleeMakerOtc from exchange-callee

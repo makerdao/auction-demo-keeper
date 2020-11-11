@@ -14,3 +14,7 @@
 [submodule "lib/dss-interfaces"]
 	path = lib/dss-interfaces
 	url = https://github.com/makerdao/dss-interfaces.git
+[submodule "lib/spells-kovan"]
+	branch = intg-6937-liq-2
+	path = lib/spells-kovan
+	url = https://github.com/makerdao/spells-kovan.git
