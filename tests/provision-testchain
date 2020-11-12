@@ -118,14 +118,16 @@ export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $
 
 # Vote, lift, schedule, and cast spell to support LIQ2.0
 echo "MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))"
-Hey Nikolaj! Yes, I think I’ll need to ease into the early 5 am calls.. I’ve rescheduled for 5:30 am tomorrow and will try again next week. Speak soon! Thanks
+seth send $MCD_GOV 'approve(address)' $MCD_ADM
 seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
 seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
 seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
 echo "DssSpell located at: $DSS_SPELL_LIQ2"
 echo "New Hat: $(seth call $MCD_ADM 'hat()')"
 echo "DSPause Delay: $(seth call $MCD_PAUSE 'delay()')"
-seth send $DSS_SPELL_LIQ2 'schedule()'
+seth send $MCD_GOV 'approve(address)' $MCD_ADM # Dummy transaction
+export TX_HASH=$(seth send --async $DSS_SPELL_LIQ2 'schedule()')
+seth run-tx $TX_HASH --debug
 seth send $DSS_SPELL_LIQ2 'cast()'
 echo "DssSpell casted"
 
