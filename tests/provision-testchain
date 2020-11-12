@@ -127,7 +127,7 @@ echo "New Hat: $(seth call $MCD_ADM 'hat()')"
 echo "DSPause Delay: $(seth call $MCD_PAUSE 'delay()')"
 seth send $MCD_GOV 'approve(address)' $MCD_ADM # Dummy transaction
 export TX_HASH=$(seth send --async $DSS_SPELL_LIQ2 'schedule()')
-seth run-tx $TX_HASH --debug
+seth run-tx --debug --source Testchain-DssSpell-Liq2.sol $TX_HASH
 seth send $DSS_SPELL_LIQ2 'cast()'
 echo "DssSpell casted"
 
