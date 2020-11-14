@@ -45,14 +45,14 @@ done
 
 
 ########################################
-# Create 75 Dai to populate Maker-otc
+# Create 500 Dai to populate Maker-otc
 # Amount of collateral to join and lock (Wad)
 # ETH is priced at 150 DAI
 ink=10
 # Amount of Dai to draw and exit (Wad)
 art=500
 
-mcd -C testnet wrap $ink
+mcd -C testnet wrap $ink > /dev/null
 id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
 
 # Give approval to the deployer's proxy. Used to bypass approval message
@@ -60,6 +60,7 @@ seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(set
 mcd -C testnet --ilk=ETH-A cdp $id lock $ink > /dev/null
 mcd -C testnet --ilk=ETH-A cdp $id draw $art > /dev/null
 echo "Created CDP $id with ink=$ink and art=$art"
+echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
 
 
 # ########################################
@@ -70,10 +71,8 @@ dapp --use solc:0.5.12 build
 export OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
 cd -
 
-mcd -C testnet wrap 10
+mcd -C testnet wrap 10 > /dev/null
 
-# This should be the same address as PROXY_DEPLOYER in testchain/out/addresses-mcd
-# export DS_PROXY=$(seth call $PROXY_REGISTRY 'proxies(address)(address)' $ETH_FROM)
 seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 seth send $MCD_DAI 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 
@@ -93,14 +92,16 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 ########################################
 # Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
 cd "$LIB/dss"
-dapp --use solc:0.5.12 build
+dapp --use solc:0.6.7 build
 export MCD_DOG=$(dapp create Dog $MCD_VAT)
 seth send $MCD_DOG 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_DOG 'deny(address)' $ETH_FROM
 
-export MCD_CLIP_ETH_A=$(dapp create Clipper $MCD_VAT $MCD_SPOT $MCD_DOG "$(seth --to-bytes32 "$(seth --from-ascii "ETH-A")")")
+export MCD_CLIP_ETH_A=$(dapp create Clipper $MCD_VAT $MCD_SPOT $MCD_DOG $(seth --to-bytes32 "$(seth --from-ascii "ETH-A")"))
 seth send $MCD_CLIP_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_CLIP_ETH_A 'deny(address)' $ETH_FROM
+
+echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 
 export MCD_ABACUS_ETH_A=$(dapp create StairstepExponentialDecrease)
 seth send $MCD_ABACUS_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
@@ -108,35 +109,66 @@ seth send $MCD_ABACUS_ETH_A 'deny(address)' $ETH_FROM
 # seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
 cd -
 
+# Source is in the intg-6937-liq-2 branch of spells-kovan
 cd "$LIB/spells-kovan"
 dapp --use solc:0.5.12 build
-# TODO Figure out how to keep this spell in tests folders
-# Look here: https://github.com/dapphub/dapptools/issues/27
-# DAPP_SRC="$LIB/../tests" dapp --use solc:0.5.12 build
-# Source is in the intg-6937-liq-2 branch of spells-kovan
 export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
 
 # Vote, lift, schedule, and cast spell to support LIQ2.0
 echo "MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))"
 seth send $MCD_GOV 'approve(address)' $MCD_ADM
-seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
+seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth)) # 10 MKR
 seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
 seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
 echo "DssSpell located at: $DSS_SPELL_LIQ2"
 echo "New Hat: $(seth call $MCD_ADM 'hat()')"
 echo "DSPause Delay: $(seth call $MCD_PAUSE 'delay()')"
-seth send $MCD_GOV 'approve(address)' $MCD_ADM # Dummy transaction
-export TX_HASH=$(seth send --async $DSS_SPELL_LIQ2 'schedule()')
-seth run-tx --debug --source Testchain-DssSpell-Liq2.sol $TX_HASH
+echo "DSPause Address: $MCD_PAUSE"
+echo "DSPause Owner: $(seth call $MCD_PAUSE 'owner()')"
+echo "DSPause Authority: $(seth call $MCD_PAUSE 'authority()')"
+seth send $DSS_SPELL_LIQ2 'schedule()'
 seth send $DSS_SPELL_LIQ2 'cast()'
 echo "DssSpell casted"
+cd -
 
 # ########################################
-# # build CalleeMakerOtc from exchange-callee
-cd $LIB/exchange-callee
-dapp --use solc:0.5.12 build
-OASIS_CALLEE=$(dapp create CalleeMakerOtc $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
+# # build CalleeMakerOtc from exchange-callees
+cd "$LIB/exchange-callees"
+dapp --use solc:0.6.7 build
+OASIS_CALLEE=$(dapp create CalleeMakerOtcDai $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
 cd -
+
+####################################
+# Confirm there are no auctions
+echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
+
+#####################################
+# Create a risky 100 Dai vault, liquidate it, and confirm that an auction was kicked
+ink=1    # ETH is priced at 150 DAI
+art=100  # Amount of Dai to draw and exit (Wad)
+
+mcd -C testnet wrap $ink > /dev/null
+id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
+
+# Give approval to the deployer's proxy. Used to bypass approval message
+seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+mcd -C testnet --ilk=ETH-A cdp $id lock $ink > /dev/null
+mcd -C testnet --ilk=ETH-A cdp $id draw $art > /dev/null
+echo "Created CDP $id with ink=$ink and art=$art"
+echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
+
+# Call drip to push Vault into an unsafe position
+seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii "ETH-A")")
+
+# Confiscate the Vault and send to liquidation
+export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)' $(seth --to-uint256 2))
+
+seth call $MCD_VAT 'ilks(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii "ETH-A")")
+
+seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-ascii "ETH-A")") $UNSAFE_URN
+
+#Confirm that there is an auction
+echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 
 
 

@@ -32,7 +32,7 @@ export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
 export ETH_RPC_URL=http://127.1:2000
 
 # Spin up testchain, provision it, and run tests against it before shutting down
-./../lib/testchain/scripts/launch -s default --fast --ci \
+./../lib/testchain/scripts/launch -s default --fast --throw-revert --ci \
    $CWD/provision-testchain
    $CWD/run-tests
 
