@@ -143,9 +143,9 @@ echo "ETH-C ilk"
 mcd -C testnet --ilk=$ilk_safe ilk
 
 #####################################
-# Create a risky 100 Dai vault, liquidate it, and confirm that an auction was kicked
+# Create a risky 199.99 Dai vault, liquidate it, and confirm that an auction was kicked
 ink_unsafe=2    # ETH is priced at 150 DAI
-art_unsafe=133  # Amount of Dai to draw and exit (Wad)
+art_unsafe=199.9995  # Amount of Dai to draw and exit (Wad)
 ilk_unsafe='ETH-A'
 
 echo "ETH-A ilk"
@@ -161,7 +161,7 @@ mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe lock $ink_unsafe > /dev/null
 echo "Draw from unsafe CDP id"
 mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $art_unsafe > /dev/null
 echo "Created Vault:"
-mcd -C testnet cdp $id_unsafe
+mcd -C testnet cdp $id_unsafe urn
 
 echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
 
@@ -169,14 +169,7 @@ echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FR
 seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)")
 
 # Confiscate the Vault and send to liquidation
-export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)' $(seth --to-uint256 $id_unsafe))
-
-echo "Vaults"
-mcd -C testnet cdp ls $ETH_FROM
-
-echo "Urn Safe"
-mcd -C testnet cdp $id_safe
-
+export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
 
 seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN
 
