@@ -18,3 +18,6 @@
 	branch = intg-6937-liq-2
 	path = lib/spells-kovan
 	url = https://github.com/makerdao/spells-kovan.git
+[submodule "lib/maker-otc-support-methods"]
+	path = lib/maker-otc-support-methods
+	url = https://github.com/daifoundation/maker-otc-support-methods.git
