@@ -1,3 +1,7 @@
+var/
+
+# Defaults ============================
+
 # Logs
 logs
 *.log

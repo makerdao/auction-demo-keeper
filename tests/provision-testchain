@@ -9,7 +9,7 @@
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PdaiICULAR PURPOSE.  See the
 #  GNU Affero General Public License for more details.
 
 #  You should have received a copy of the GNU Affero General Public License
@@ -47,7 +47,7 @@ done
 # Create 500 Dai to populate Maker-otc
 # Amount of collateral to join and lock (Wad)
 ink_safe=10 # ETH is priced at 150 DAI
-art_safe=500 # Amount of Dai to draw and exit (Wad)
+dai_safe=500 # Amount of Dai to draw and exit (Wad)
 ilk_safe='ETH-C'
 
 mcd -C testnet wrap $ink_safe > /dev/null
@@ -56,9 +56,8 @@ id_safe=$(mcd -C testnet --ilk=$ilk_safe cdp open | sed -n "s/^Opened: cdp //p")
 # Give approval to the deployer's proxy. Used to bypass approval message
 seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 mcd -C testnet --ilk=$ilk_safe cdp $id_safe lock $ink_safe > /dev/null
-mcd -C testnet --ilk=$ilk_safe cdp $id_safe draw $art_safe > /dev/null
-echo "Created CDP $id_safe with ink=$ink_safe and art=$art_safe"
-echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
+mcd -C testnet --ilk=$ilk_safe cdp $id_safe draw $dai_safe > /dev/null
+echo "Created CDP $id_safe with ink=$ink_safe and dai=$dai_safe"
 
 # ########################################
 # Build OasisLiquidityProvider and populate maker-otc
@@ -98,8 +97,6 @@ export MCD_CLIP_ETH_A=$(dapp create Clipper $MCD_VAT $MCD_SPOT $MCD_DOG $(seth -
 seth send $MCD_CLIP_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_CLIP_ETH_A 'deny(address)' $ETH_FROM
 
-echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
-
 export MCD_ABACUS_ETH_A=$(dapp create StairstepExponentialDecrease)
 seth send $MCD_ABACUS_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_ABACUS_ETH_A 'deny(address)' $ETH_FROM
@@ -112,17 +109,12 @@ dapp --use solc:0.5.12 build
 export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
 
 # Vote, lift, schedule, and cast spell to support LIQ2.0
-echo "MKR Balance of ETH_FROM: $(seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM))"
 seth send $MCD_GOV 'approve(address)' $MCD_ADM
 seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth)) # 10 MKR
 seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
 seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
 echo "DssSpell located at: $DSS_SPELL_LIQ2"
 echo "New Hat: $(seth call $MCD_ADM 'hat()')"
-echo "DSPause Delay: $(seth call $MCD_PAUSE 'delay()')"
-echo "DSPause Address: $MCD_PAUSE"
-echo "DSPause Owner: $(seth call $MCD_PAUSE 'owner()')"
-echo "DSPause Authority: $(seth call $MCD_PAUSE 'authority()')"
 seth send $DSS_SPELL_LIQ2 'schedule()'
 seth send $DSS_SPELL_LIQ2 'cast()'
 echo "DssSpell casted"
@@ -145,7 +137,7 @@ mcd -C testnet --ilk=$ilk_safe ilk
 #####################################
 # Create a risky 199.99 Dai vault, liquidate it, and confirm that an auction was kicked
 ink_unsafe=2    # ETH is priced at 150 DAI
-art_unsafe=199.9995  # Amount of Dai to draw and exit (Wad)
+dai_unsafe=199.9995  # Amount of Dai to draw and exit (Wad)
 ilk_unsafe='ETH-A'
 
 echo "ETH-A ilk"
@@ -159,7 +151,7 @@ seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(set
 echo "Lock in unsafe CDP id"
 mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe lock $ink_unsafe > /dev/null
 echo "Draw from unsafe CDP id"
-mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $art_unsafe > /dev/null
+mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $dai_unsafe > /dev/null
 echo "Created Vault:"
 mcd -C testnet cdp $id_unsafe urn
 
@@ -179,14 +171,14 @@ echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 # ########################################
 # Build maker-otc-support-methods and deploy
 
-cd "$LIB/maker-otc-support-methods"
-dapp --use solc:0.5.12 build
-export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
-echo "OTC_SUPPORT $OTC_SUPPORT"
-echo "MCD_DOG $MCD_DOG"
-echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
-echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
-echo "OASIS_CALLEE $OASIS_CALLEE"
+# cd "$LIB/maker-otc-support-methods"
+# dapp --use solc:0.5.12 build
+# export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
+# echo "OTC_SUPPORT $OTC_SUPPORT"
+# echo "MCD_DOG $MCD_DOG"
+# echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
+# echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
+# echo "OASIS_CALLEE $OASIS_CALLEE"
 
 
 

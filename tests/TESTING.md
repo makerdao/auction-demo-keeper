@@ -4,5 +4,5 @@
 
 ```
 cd auction-demo-keeper
-dapp update
+git submodule update --init --recursive
 ```
