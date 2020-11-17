@@ -142,22 +142,6 @@ echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 echo "ETH-C ilk"
 mcd -C testnet --ilk=$ilk_safe ilk
 
-
-# ########################################
-# Build maker-otc-support-methods and deploy
-
-cd "$LIB/maker-otc-support-methods"
-dapp --use solc:0.5.12 build
-export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
-echo "OTC_SUPPORT $OTC_SUPPORT"
-cd -
-echo "MCD_DOG $MCD_DOG"
-echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
-echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
-echo "OASIS_CALLEE $OASIS_CALLEE"
-
-
-
 #####################################
 # Create a risky 199.99 Dai vault, liquidate it, and confirm that an auction was kicked
 ink_unsafe=2    # ETH is priced at 150 DAI
@@ -192,7 +176,17 @@ seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-as
 #Confirm that there is an auction
 echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 
+# ########################################
+# Build maker-otc-support-methods and deploy
 
+cd "$LIB/maker-otc-support-methods"
+dapp --use solc:0.5.12 build
+export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
+echo "OTC_SUPPORT $OTC_SUPPORT"
+echo "MCD_DOG $MCD_DOG"
+echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
+echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
+echo "OASIS_CALLEE $OASIS_CALLEE"
 
 
 
