@@ -1,15 +1,19 @@
 {
-  "rpcURL": "https://mainnet.infura.io/v3/7f7c152ce22a402dabdbd47f9a397a4c",
-  "dai": "0x6b175474e89094c44da98b954eedeac495271d0f",
-  "MakerOTCSupportMethods": "0x010df1Cd88f927C8A77f39265C3EAc634EC072c0",
-  "OasisDex": "0x794e6e91555438aFc3ccF1c5076A74F42133d08D",
+  "rpcURL": "http://localhost:2000",
+  "dai": "",
+  "MakerOTCSupportMethods": "",
+  "OasisDex": "",
+  "delay": "5000",
   "collateral": {
-    "ETH": {
-      "name": "ETH",
-      "erc20addr": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "clipper": "0x"
+    "ETH-A": {
+      "name": "ETH-A",
+      "erc20addr": "",
+      "clipper": "",
+      "abacus": "",
+      "callee": ""
     }
   },
-  "minProfit": "1.05",
+  "minProfitNum": "5",
+  "minProfitDen": "100",
   "minSize": "1"
 }
