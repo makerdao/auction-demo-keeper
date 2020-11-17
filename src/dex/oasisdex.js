@@ -10,7 +10,7 @@ export default class oasisDexAdaptor {
   _asset;
   constructor (asset) {
     this._provider = network.provider;
-    this.asset = asset;
+    this._asset = asset;
     this._otcSupportMethods = new ethers.Contract(Config.vars.MakerOTCSupportMethods, supportMethodsAbi, this._provider);
     this._oasisDex = new ethers.Contract(Config.vars.OasisDex, matchingMarketAbi, this._provider);
 
@@ -26,6 +26,14 @@ export default class oasisDexAdaptor {
       Config.vars.dai, this._asset );
     this._book = offers.ids.map( (v, i) => ( {id:v, payAmt: offers.payAmts[i], buyAmt:offers.buyAmts[i]} ) )
       .filter(v=>(!(v.id.eq(0))));
+  };
+
+  baseBook = () => {
+    return this._book.map(entry => {return {
+      id:entry.id.toNumber(),
+      payAmt:ethers.utils.formatUnits(entry.payAmt),
+      buyAmt:ethers.utils.formatUnits(entry.buyAmt)}
+    });
   };
 
   opportunity = ( price ) => {
