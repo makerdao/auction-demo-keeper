@@ -15,9 +15,81 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-set -e
+# This script was inspired from https://github.com/makerdao/testchain/blob/dai.js/scripts/launch
 
 # Launch testchain with default-auction-demo-keeper snapshot
-./../lib/testchain/scripts/launch \
--s ../../../snapshots/default-auction-demo-keeper --fast
+# ./../lib/testchain/scripts/launch \
+# -s ../../../snapshots/default-auction-demo-keeper --fast
+
+# ./../lib/testchain/scripts/launch \
+# -s default-auction-demo-keeper --fast
+
+set -e
+
+export CWD="${0%/*}"
+export LIB=$CWD/../lib
+export TESTCHAIN=$CWD/../lib/testchain
+export VAR=$CWD/../var
+export OUT=$CWD/../out
+export PORT=2000
+
+# Check if a testnet is already running
+if ! nc -z 127.0.0.1 $PORT; then
+  mkdir -p $VAR
+
+  snapshot="default-auction-demo-keeper"
+  echo "Loading snapshots/$snapshot."
+  rm -rf $VAR/chaindata
+  mkdir $VAR/chaindata
+  tar xzf $CWD/../snapshots/$snapshot.tgz -C $VAR/chaindata
+
+
+  # Configure seth
+  export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
+  export SETH_STATUS=yes
+  export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
+  export ETH_RPC_URL=http://127.1:$PORT
+
+  # Start a testnet
+  GANACHE_CLI=$TESTCHAIN/node_modules/.bin/ganache-cli
+  if [ ! -e $GANACHE_CLI ]; then
+    echo "Installing Ganache..."
+    cd $CWD/lib/testchain
+    yarn install
+    cd -
+  fi
+
+  echo "Starting Ganache..."
+  ganache_args=(
+    $GANACHE_CLI
+    -i 999
+    -p $PORT
+    -a 1000
+    -l $ETH_GAS
+    -m "hill law jazz limb penalty escape public dish stand bracket blue jar"
+    --db $VAR/chaindata
+  )
+
+  "${ganache_args[@]}" > $VAR/ganache.out 2>&1 & netpid=$!
+
+  # Wait for the testnet to become responsive
+  until curl -s -o/dev/null "$ETH_RPC_URL"; do
+    sleep 1
+    if [ -z "$(ps -p $netpid -o pid=)" ]; then
+      echo "Ganache stopped running. Check var/ganache.out for errors."
+      exit 1
+    fi
+  done
+
+  # Stop the testnet when this script exits
+  trap "kill $netpid" EXIT
+
+else
+  echo "Testchain is already running on port $PORT."
+fi
+
+# The testnet will continue to run with its deployed contracts
+# until the user confirms it should shut down.
+echo "Press Ctrl-C to stop the testchain."
+while true; do read; done
 

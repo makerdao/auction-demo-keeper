@@ -22,9 +22,6 @@ export CWD="${0%/*}"
 export LIB=$CWD/../lib
 export TESTCHAIN=$CWD/../lib/testchain
 
-# VAR=$CWD/../var
-# OUT=$CWD/../out
-
 # Configure seth
 export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
 export SETH_STATUS=yes
@@ -32,9 +29,13 @@ export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
 export ETH_RPC_URL=http://127.1:2000
 
 # Spin up testchain, provision it, and run tests against it before shutting down
+# ./../lib/testchain/scripts/launch -s default --fast --ci \
+#    $CWD/provision-testchain
+#    . $TESTCHAIN/scripts/create-snapshot default-auction-demo-keeper
+
 ./../lib/testchain/scripts/launch -s default --fast --ci \
    $CWD/provision-testchain
-   . $TESTCHAIN/scripts/create-snapshot default-auction-demo-keeper --force
+   $CWD/create-snapshot default-auction-demo-keeper --force
 
 END_TIME=`date +%s`
 ELAPSED=`echo $END_TIME - $START_TIME | bc`

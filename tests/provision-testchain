@@ -168,6 +168,11 @@ seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-as
 #Confirm that there is an auction
 echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 
+echo "MCD_DOG $MCD_DOG"
+echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
+echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
+echo "OASIS_CALLEE $OASIS_CALLEE"
+
 # ########################################
 # Build maker-otc-support-methods and deploy
 
