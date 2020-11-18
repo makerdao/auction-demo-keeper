@@ -15,22 +15,13 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# This script was inspired from https://github.com/makerdao/testchain/blob/dai.js/scripts/launch
-
-# Launch testchain with default-auction-demo-keeper snapshot
-# ./../lib/testchain/scripts/launch \
-# -s ../../../snapshots/default-auction-demo-keeper --fast
-
-# ./../lib/testchain/scripts/launch \
-# -s default-auction-demo-keeper --fast
+# This script was inspired by https://github.com/makerdao/testchain/blob/dai.js/scripts/launch
 
 set -e
 
 export CWD="${0%/*}"
-export LIB=$CWD/../lib
 export TESTCHAIN=$CWD/../lib/testchain
 export VAR=$CWD/../var
-export OUT=$CWD/../out
 export PORT=2000
 
 # Check if a testnet is already running
@@ -46,15 +37,13 @@ if ! nc -z 127.0.0.1 $PORT; then
 
   # Configure seth
   export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
-  export SETH_STATUS=yes
-  export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
   export ETH_RPC_URL=http://127.1:$PORT
 
   # Start a testnet
   GANACHE_CLI=$TESTCHAIN/node_modules/.bin/ganache-cli
   if [ ! -e $GANACHE_CLI ]; then
     echo "Installing Ganache..."
-    cd $CWD/lib/testchain
+    cd $TESTCHAIN
     yarn install
     cd -
   fi

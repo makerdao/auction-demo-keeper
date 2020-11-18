@@ -17,10 +17,12 @@
 
 set -e
 
-# TODO: Figure out why $CWD was modified without explicit reassignment
-# Is it because of the context that this script runs in?
-export LIB=$CWD/../../
-
+########################################
+# Configure seth
+export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
+export SETH_STATUS=yes
+export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
+export ETH_RPC_URL=http://127.1:$PORT
 export ETH_FROM=$(seth rpc eth_coinbase)
 
 ########################################
@@ -174,6 +176,7 @@ echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
 echo "OASIS_CALLEE $OASIS_CALLEE"
 
 # ########################################
+# Todo: resolve the build error and create a new snapshot that includes this contract
 # Build maker-otc-support-methods and deploy
 
 # cd "$LIB/maker-otc-support-methods"
