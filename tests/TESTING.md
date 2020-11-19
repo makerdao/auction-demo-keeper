@@ -12,7 +12,7 @@ These scripts can also be used to re-provision the testchain, update and add new
 
 ## Installation and Requirements
 
-The testing section of this repo inherits the requirements found in [`makerdao/testchain`](https://github.com/makerdao/testchain#installation-and-requirements). Remember to `cd` into `auction-demo-keeper/lib/testchain` before attempting to install Ganache.
+The testing section of this repo inherits the requirements found in [`makerdao/testchain`](https://github.com/makerdao/testchain#installation-and-requirements). For your convenience, Ganache will be installed automatically on the first run on `build/run-testchain`. If you need to install Ganache manually, remember to `cd` into `auction-demo-keeper/lib/testchain`.
 
 If you're wanting to create a new snapshot, `jq` is a requirement.
 

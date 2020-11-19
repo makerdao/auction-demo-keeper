@@ -179,6 +179,7 @@ echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 cd "$LIB/maker-otc-support-methods"
 dapp --use solc:0.5.12 build --extract
 export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
+cd -
 
 echo "OTC_SUPPORT $OTC_SUPPORT"
 echo "MCD_DOG $MCD_DOG"
