@@ -43,24 +43,24 @@ export OUT=$CWD/../out
 export PORT=2000
 
 mkdir -p $OUT
-jq -S . $TESTCHAIN/out/addresses-mcd.json > $OUT/addresses-mcd.json
+# jq -S . $TESTCHAIN/out/addresses-mcd.json > $OUT/addresses-mcd.json
 
 ./../lib/testchain/scripts/launch -s default --fast --ci \
    $CWD/provision-testchain
    $CWD/create-snapshot $s --force
-   
+
 
 ########################################
 # Copy over maker-otc address
 MAKER_OTC=$(cat $TESTCHAIN/out/addresses.json | jq '.MAKER_OTC')
 cat $OUT/addresses-temp.json | jq ". += {MAKER_OTC: $MAKER_OTC}" > $OUT/addresses-for-keeper.json
 rm $OUT/addresses-temp.json
-jq -s '.[0] * .[1]' $OUT/addresses-mcd.json $OUT/addresses-for-keeper.json > $OUT/addresses-all.json
+# jq -s '.[0] * .[1]' $OUT/addresses-mcd.json $OUT/addresses-for-keeper.json > $OUT/addresses-all.json
 
-# Copy over all abis
-mkdir -p $OUT/abi/scd && mkdir -p $OUT/abi/mcd
-sudo cp $TESTCHAIN/out/*.abi $OUT/abi/scd
-sudo cp $TESTCHAIN/out/mcd/*.abi $OUT/abi/mcd
+# # Copy over all abis
+# mkdir -p $OUT/abi/scd && mkdir -p $OUT/abi/mcd
+# sudo cp $TESTCHAIN/out/*.abi $OUT/abi/scd
+# sudo cp $TESTCHAIN/out/mcd/*.abi $OUT/abi/mcd
 
 
 ########################################

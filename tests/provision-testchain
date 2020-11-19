@@ -173,12 +173,22 @@ seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-as
 #Confirm that there is an auction
 echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
 
+# ########################################
+# Todo: resolve the build error and create a new snapshot that includes this contract
+# Build maker-otc-support-methods and deploy
+cd "$LIB/maker-otc-support-methods"
+dapp --use solc:0.5.12 build --extract
+export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
+
+echo "OTC_SUPPORT $OTC_SUPPORT"
 echo "MCD_DOG $MCD_DOG"
 echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
 echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
 echo "OASIS_CALLEE $OASIS_CALLEE"
 
+
 ########################################
+# Save addresses and copy over ABIs
 function write_json {
   if [ -z "$1" ]; then
     echo "No output file passed. Use write_json path/to/file.json"
@@ -191,7 +201,8 @@ function write_json {
     "MCD_DOG": "$MCD_DOG",
     "MCD_CLIP_ETH_A": "$MCD_CLIP_ETH_A",
     "MCD_ABACUS_ETH_A": "$MCD_ABACUS_ETH_A",
-    "OASIS_CALLEE": "$OASIS_CALLEE"
+    "OASIS_CALLEE": "$OASIS_CALLEE",
+    "OTC_SUPPORT": "$OTC_SUPPORT"
   }
 EOM
 }
@@ -204,21 +215,9 @@ cp $LIB/dss/out/Clipper.abi \
 $LIB/dss/out/Dog.abi \
 $LIB/dss/out/StairstepExponentialDecrease.abi \
 $LIB/exchange-callees/out/CalleeMakerOtcDai.abi \
+$LIB/testchain/out/MatchingMarket.abi \
+$LIB/maker-otc-support-methods/out/MakerOtcSupportMethods.abi \
 $OUT/abi/keeper
-
-# ########################################
-# Todo: resolve the build error and create a new snapshot that includes this contract
-# Build maker-otc-support-methods and deploy
-
-# cd "$LIB/maker-otc-support-methods"
-# dapp --use solc:0.5.12 build
-# export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
-# echo "OTC_SUPPORT $OTC_SUPPORT"
-# echo "MCD_DOG $MCD_DOG"
-# echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
-# echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
-# echo "OASIS_CALLEE $OASIS_CALLEE"
-
 
 
 
