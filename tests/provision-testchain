@@ -17,6 +17,9 @@
 
 set -e
 
+export LIB=$CWD/../../
+export OUT=$CWD/../../../out
+
 ########################################
 # Configure seth
 export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
@@ -174,6 +177,33 @@ echo "MCD_DOG $MCD_DOG"
 echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
 echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
 echo "OASIS_CALLEE $OASIS_CALLEE"
+
+########################################
+function write_json {
+  if [ -z "$1" ]; then
+    echo "No output file passed. Use write_json path/to/file.json"
+    exit 1
+  fi
+
+  echo "Publishing output into $1"
+  cat > $1 <<- EOM
+  {
+    "MCD_DOG": "$MCD_DOG",
+    "MCD_CLIP_ETH_A": "$MCD_CLIP_ETH_A",
+    "MCD_ABACUS_ETH_A": "$MCD_ABACUS_ETH_A",
+    "OASIS_CALLEE": "$OASIS_CALLEE"
+  }
+EOM
+}
+
+write_json "$OUT/addresses-for-keeper.json"
+jq -s '.[0] * .[1]' $OUT/addresses-mcd.json $OUT/addresses-for-keeper.json > $OUT/addresses-merged.json
+
+cp $LIB/dss/out/Clipper.abi \
+$LIB/dss/out/Dog.abi \
+$LIB/dss/out/StairstepExponentialDecrease.abi \
+$LIB/exchange-callees/out/CalleeMakerOtcDai.abi \
+$OUT/abi/keeper
 
 # ########################################
 # Todo: resolve the build error and create a new snapshot that includes this contract

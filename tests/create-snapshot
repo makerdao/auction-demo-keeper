@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 CWD="${0%/*}"
-VAR=$CWD/../var
 SNAPSHOTS=$CWD/../snapshots
 
 TESTCHAIN=$CWD/../lib/testchain

@@ -17,16 +17,46 @@
 
 set -e
 
+# arg parse and help log inspired from https://stackoverflow.com/questions/16483119/an-example-of-how-to-use-getopts-in-bash
+usage() { echo "Usage: $0 [-s <snapshot-name-string>] " 1>&2; exit 1; }
+
+while getopts s: flag
+do
+    case "${flag}" in
+        s) s=${OPTARG};;
+        *) usage;;
+    esac
+done
+shift "$((OPTIND-1))"
+
+if [ -z "${s}" ]; then
+    usage
+fi
+
+########################################
+
 START_TIME=`date +%s`
 export CWD="${0%/*}"
 export TESTCHAIN=$CWD/../lib/testchain
-export VAR=$CWD/../var
-export LIB=$CWD/../lib
+export OUT=$CWD/../out
 export PORT=2000
+
+mkdir -p $OUT
+jq -S . $TESTCHAIN/out/addresses-mcd.json > $OUT/addresses-mcd.json
 
 ./../lib/testchain/scripts/launch -s default --fast --ci \
    $CWD/provision-testchain
-   $CWD/create-snapshot default-auction-demo-keeper --force
+   $CWD/create-snapshot $s --force
+
+# Copy over maker-otc address and all abis
+MAKER_OTC=$(cat $TESTCHAIN/out/addresses.json | jq '.MAKER_OTC')
+echo $MAKER_OTC
+cat $OUT/addresses-merged.json | jq ". += {MAKER_OTC: $MAKER_OTC}" > $OUT/addresses-all.json
+rm $OUT/addresses-merged.json
+
+sudo cp $TESTCHAIN/out/abi/*.abi $OUT/abi/scd
+sudo cp $TESTCHAIN/out/abi/mcd/*.abi $OUT/abi/mcd
+
 
 END_TIME=`date +%s`
 ELAPSED=`echo $END_TIME - $START_TIME | bc`
