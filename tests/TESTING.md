@@ -22,9 +22,9 @@ To run the testchain with the `default-auction-demo-keeper` snapshot, simply run
 ```
 ./run-testchain
 ```
-It will have a single live auction. For a full list of contracts included in the `default-auction-demo-keeper` snapshot, you can reference the ____ address files generated from the provisioning script.
+It will have a single live auction. For a full list of contracts included in the `default-auction-demo-keeper` snapshot, you can reference the address files in `/out`, which is generated from the provisioning script.
 
-You're now able to implement `auction-demo-keeper` tests in `keeper.test.js` and run them against the testchain. If you need to connect to the testchain through seth, ensure the following env variables are set:
+You're now able to implement `auction-demo-keeper` tests in `keeper.test.js` and run them against the testchain. If you need to connect to the testchain through `seth`, ensure the following env variables are set:
 ```
 export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
 export SETH_STATUS=yes
@@ -43,11 +43,8 @@ If an instance of `$SNAPSHOT_NAME` already exists in `snapshots` (this includes 
 
 ## Misc
 
+Addresses and ABIs for the latest snapshot can be found in `/out`.
+More information on how to access the deployer address can be found [here](https://github.com/makerdao/testchain#deployer-account).
 
-```
-MCD_DOG 0x177dD44aa5a7A476d565D6500A2021d3414958d6
-MCD_CLIP_ETH_A 0x9C478ee982B97E0E7938dad2Dbd79475aFbBA10E
-MCD_ABACUS_ETH_A 0x942694fd91bdbF92697d94DF3ed0A893F003F3e9
-OASIS_CALLEE 0x959F9b393914ebF4118CB3E565Ef2001CE94d0aE
-```
+
 

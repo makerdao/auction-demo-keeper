@@ -17,6 +17,8 @@
 
 set -e
 
+
+########################################
 # arg parse and help log inspired from https://stackoverflow.com/questions/16483119/an-example-of-how-to-use-getopts-in-bash
 usage() { echo "Usage: $0 [-s <snapshot-name-string>] " 1>&2; exit 1; }
 
@@ -34,7 +36,6 @@ if [ -z "${s}" ]; then
 fi
 
 ########################################
-
 START_TIME=`date +%s`
 export CWD="${0%/*}"
 export TESTCHAIN=$CWD/../lib/testchain
@@ -47,17 +48,22 @@ jq -S . $TESTCHAIN/out/addresses-mcd.json > $OUT/addresses-mcd.json
 ./../lib/testchain/scripts/launch -s default --fast --ci \
    $CWD/provision-testchain
    $CWD/create-snapshot $s --force
+   
 
-# Copy over maker-otc address and all abis
+########################################
+# Copy over maker-otc address
 MAKER_OTC=$(cat $TESTCHAIN/out/addresses.json | jq '.MAKER_OTC')
-echo $MAKER_OTC
-cat $OUT/addresses-merged.json | jq ". += {MAKER_OTC: $MAKER_OTC}" > $OUT/addresses-all.json
-rm $OUT/addresses-merged.json
+cat $OUT/addresses-temp.json | jq ". += {MAKER_OTC: $MAKER_OTC}" > $OUT/addresses-for-keeper.json
+rm $OUT/addresses-temp.json
+jq -s '.[0] * .[1]' $OUT/addresses-mcd.json $OUT/addresses-for-keeper.json > $OUT/addresses-all.json
 
-sudo cp $TESTCHAIN/out/abi/*.abi $OUT/abi/scd
-sudo cp $TESTCHAIN/out/abi/mcd/*.abi $OUT/abi/mcd
+# Copy over all abis
+mkdir -p $OUT/abi/scd && mkdir -p $OUT/abi/mcd
+sudo cp $TESTCHAIN/out/*.abi $OUT/abi/scd
+sudo cp $TESTCHAIN/out/mcd/*.abi $OUT/abi/mcd
 
 
+########################################
 END_TIME=`date +%s`
 ELAPSED=`echo $END_TIME - $START_TIME | bc`
 echo "Finished building testchain in" $ELAPSED "seconds."
