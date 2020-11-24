@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#  Copyright (C) 2019-2020 Maker Ecosystem Growth Holdings, INC.
+#  Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published by
@@ -9,7 +9,7 @@
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PdaiICULAR PURPOSE.  See the
 #  GNU Affero General Public License for more details.
 
 #  You should have received a copy of the GNU Affero General Public License
@@ -17,10 +17,15 @@
 
 set -e
 
-# TODO: Figure out why $CWD was modified without explicit reassignment
-# Is it because of the context that this script runs in?
 export LIB=$CWD/../../
+export OUT=$CWD/../../../out
 
+########################################
+# Configure seth
+export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
+export SETH_STATUS=yes
+export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
+export ETH_RPC_URL=http://127.1:$PORT
 export ETH_FROM=$(seth rpc eth_coinbase)
 
 ########################################
@@ -43,37 +48,32 @@ for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses-mcd.json | sed -e 's
     eval export $keyval
 done
 
-
 ########################################
-# Create 75 Dai to populate Maker-otc
+# Create 500 Dai to populate Maker-otc
 # Amount of collateral to join and lock (Wad)
-# ETH is priced at 150 DAI
-ink=10
-# Amount of Dai to draw and exit (Wad)
-art=500
+ink_safe=10 # ETH is priced at 150 DAI
+dai_safe=500 # Amount of Dai to draw and exit (Wad)
+ilk_safe='ETH-C'
 
-mcd -C testnet wrap $ink
-id=$(mcd -C testnet --ilk=ETH-C cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
+mcd -C testnet wrap $ink_safe > /dev/null
+id_safe=$(mcd -C testnet --ilk=$ilk_safe cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
 
 # Give approval to the deployer's proxy. Used to bypass approval message
 seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
-mcd -C testnet --ilk=ETH-A cdp $id lock $ink > /dev/null
-mcd -C testnet --ilk=ETH-A cdp $id draw $art > /dev/null
-echo "Created CDP $id with ink=$ink and art=$art"
-
+mcd -C testnet --ilk=$ilk_safe cdp $id_safe lock $ink_safe > /dev/null
+mcd -C testnet --ilk=$ilk_safe cdp $id_safe draw $dai_safe > /dev/null
+echo "Created CDP $id_safe with ink=$ink_safe and dai=$dai_safe"
 
 # ########################################
 # Build OasisLiquidityProvider and populate maker-otc
 # pushd ../../oasis-liquidity-provider/
-cd $LIB/oasis-liquidity-provider
+cd "$LIB/oasis-liquidity-provider"
 dapp --use solc:0.5.12 build
 export OASIS_LIQUIDITY_PROVIDER=$(dapp create OasisLiquidityProvider)
 cd -
 
-mcd -C testnet wrap 10
+mcd -C testnet wrap 10 > /dev/null
 
-# This should be the same address as PROXY_DEPLOYER in testchain/out/addresses-mcd
-# export DS_PROXY=$(seth call $PROXY_REGISTRY 'proxies(address)(address)' $ETH_FROM)
 seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 seth send $MCD_DAI 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
 
@@ -92,34 +92,133 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 
 ########################################
 # Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
-echo balance
-seth --to-dec $(seth call $MCD_GOV 'balanceOf(address)' $ETH_FROM)
+cd "$LIB/dss"
+dapp --use solc:0.6.7 build --extract
+export MCD_DOG=$(dapp create Dog $MCD_VAT)
+seth send $MCD_DOG 'rely(address)' $MCD_PAUSE_PROXY
+seth send $MCD_DOG 'deny(address)' $ETH_FROM
 
-echo approve
+export MCD_CLIP_ETH_A=$(dapp create Clipper $MCD_VAT $MCD_SPOT $MCD_DOG $(seth --to-bytes32 "$(seth --from-ascii 'ETH-A')"))
+seth send $MCD_CLIP_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
+seth send $MCD_CLIP_ETH_A 'deny(address)' $ETH_FROM
+
+export MCD_ABACUS_ETH_A=$(dapp create StairstepExponentialDecrease)
+seth send $MCD_ABACUS_ETH_A 'rely(address)' $MCD_PAUSE_PROXY
+seth send $MCD_ABACUS_ETH_A 'deny(address)' $ETH_FROM
+# seth send $MCD_DOG 'file(bytes32,address)' "$(seth --to-bytes32 "$(seth --from-ascii "vow")")" "$MCD_VOW"
+cd -
+
+# Source is in the intg-6937-liq-2 branch of spells-kovan
+cd "$LIB/spells-kovan"
+dapp --use solc:0.5.12 build
+export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
+
+# Vote, lift, schedule, and cast spell to support LIQ2.0
 seth send $MCD_GOV 'approve(address)' $MCD_ADM
-
-echo lock
-seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth))
-
-echo vote
-seth send $MCD_ADM 'vote(address[])' [$ETH_FROM]
-
-echo lift
-seth send $MCD_ADM 'lift(address)' $ETH_FROM
-
-hat=$(seth call $MCD_ADM 'hat()')
-seth --to-dec $(seth call $MCD_GOV 'approvals(address)' $hat)
-echo $hat
+seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth)) # 10 MKR
+seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
+seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
+echo "DssSpell located at: $DSS_SPELL_LIQ2"
+echo "New Hat: $(seth call $MCD_ADM 'hat()')"
+seth send $DSS_SPELL_LIQ2 'schedule()'
+seth send $DSS_SPELL_LIQ2 'cast()'
+echo "DssSpell casted"
+cd -
 
 # ########################################
-# # build CalleeMakerOtc from exchange-callee
-# cd $/LIB/exchange-callee
-# dapp --use solc:0.5.12 build
-# OASIS_CALLEE=$(dapp create CalleeMakerOtc)
-# cd -
+# # build CalleeMakerOtc from exchange-callees
+cd "$LIB/exchange-callees"
+dapp --use solc:0.6.7 build --extract
+OASIS_CALLEE=$(dapp create CalleeMakerOtcDai $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
+cd -
+
+####################################
+# Confirm there are no auctions
+echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
+
+echo "ETH-C ilk"
+mcd -C testnet --ilk=$ilk_safe ilk
+
+#####################################
+# Create a risky 199.99 Dai vault, liquidate it, and confirm that an auction was kicked
+ink_unsafe=2    # ETH is priced at 150 DAI
+dai_unsafe=199.9995  # Amount of Dai to draw and exit (Wad)
+ilk_unsafe='ETH-A'
+
+echo "ETH-A ilk"
+mcd -C testnet --ilk=$ilk_unsafe ilk
+
+mcd -C testnet wrap $ink_unsafe > /dev/null
+id_unsafe=$(mcd -C testnet --ilk=$ilk_unsafe cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
+
+# Give approval to the deployer's proxy. Used to bypass approval message
+seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+echo "Lock in unsafe CDP id"
+mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe lock $ink_unsafe > /dev/null
+echo "Draw from unsafe CDP id"
+mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $dai_unsafe > /dev/null
+echo "Created Vault:"
+mcd -C testnet cdp $id_unsafe urn
+
+echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
+
+# Call drip to push Vault into an unsafe position
+seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)")
+
+# Confiscate the Vault and send to liquidation
+export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
+
+seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN
+
+#Confirm that there is an auction
+echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
+
+# ########################################
+# Todo: resolve the build error and create a new snapshot that includes this contract
+# Build maker-otc-support-methods and deploy
+cd "$LIB/maker-otc-support-methods"
+dapp --use solc:0.5.12 build --extract
+export OTC_SUPPORT=$(dapp create MakerOtcSupportMethods)
+cd -
+
+echo "OTC_SUPPORT $OTC_SUPPORT"
+echo "MCD_DOG $MCD_DOG"
+echo "MCD_CLIP_ETH_A $MCD_CLIP_ETH_A"
+echo "MCD_ABACUS_ETH_A $MCD_ABACUS_ETH_A"
+echo "OASIS_CALLEE $OASIS_CALLEE"
 
 
+########################################
+# Save addresses and copy over ABIs
+function write_json {
+  if [ -z "$1" ]; then
+    echo "No output file passed. Use write_json path/to/file.json"
+    exit 1
+  fi
 
+  echo "Publishing output into $1"
+  cat > $1 <<- EOM
+  {
+    "MCD_DOG": "$MCD_DOG",
+    "MCD_CLIP_ETH_A": "$MCD_CLIP_ETH_A",
+    "MCD_ABACUS_ETH_A": "$MCD_ABACUS_ETH_A",
+    "OASIS_CALLEE": "$OASIS_CALLEE",
+    "OTC_SUPPORT": "$OTC_SUPPORT"
+  }
+EOM
+}
+
+write_json "$OUT/addresses-temp.json"
+
+mkdir -p $OUT/abi && mkdir -p $OUT/abi/keeper
+
+cp $LIB/dss/out/Clipper.abi \
+$LIB/dss/out/Dog.abi \
+$LIB/dss/out/StairstepExponentialDecrease.abi \
+$LIB/exchange-callees/out/CalleeMakerOtcDai.abi \
+$LIB/testchain/out/MatchingMarket.abi \
+$LIB/maker-otc-support-methods/out/MakerOtcSupportMethods.abi \
+$OUT/abi/keeper
 
 
 
