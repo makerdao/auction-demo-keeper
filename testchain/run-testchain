@@ -20,8 +20,8 @@
 set -e
 
 export CWD="${0%/*}"
-export TESTCHAIN=$CWD/../lib/testchain
-export VAR=$CWD/../var
+export TESTCHAIN=$CWD/../node_modules/@makerdao/testchain
+export VAR=$CWD/var
 export PORT=2000
 
 # Check if a testnet is already running
@@ -32,7 +32,7 @@ if ! nc -z 127.0.0.1 $PORT; then
   echo "Loading snapshots/$snapshot."
   rm -rf $VAR/chaindata
   mkdir $VAR/chaindata
-  tar xzf $CWD/../snapshots/$snapshot.tgz -C $VAR/chaindata
+  tar xzf $CWD/snapshots/$snapshot.tgz -C $VAR/chaindata
 
 
   # Configure seth

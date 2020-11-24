@@ -44,6 +44,7 @@
     "@babel/register": "^7.12.1",
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
-    "@babel/runtime": "^7.12.5"
+    "@babel/runtime": "^7.12.5",
+    "@makerdao/testchain": "^1.1.22"
   }
 }
