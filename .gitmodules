@@ -1,23 +1,20 @@
-[submodule "lib/testchain"]
-	path = testchain/lib/testchain
-	url = https://github.com/makerdao/testchain.git
-[submodule "lib/oasis-liquidity-provider"]
+[submodule "testchain/lib/oasis-liquidity-provider"]
 	path = testchain/lib/oasis-liquidity-provider
 	url = https://github.com/daifoundation/oasis-liquidity-provider.git
-[submodule "lib/exchange-callees"]
+[submodule "testchain/lib/exchange-callees"]
 	path = testchain/lib/exchange-callees
 	url = https://github.com/makerdao/exchange-callees.git
-[submodule "lib/dss"]
-	branch = liq-2.0
+[submodule "testchain/lib/dss"]
 	path = testchain/lib/dss
 	url = https://github.com/makerdao/dss.git
-[submodule "lib/dss-interfaces"]
+	branch = liq-2.0
+[submodule "testchain/lib/dss-interfaces"]
 	path = testchain/lib/dss-interfaces
 	url = https://github.com/makerdao/dss-interfaces.git
-[submodule "lib/spells-kovan"]
-	branch = intg-6937-liq-2
+[submodule "testchain/lib/spells-kovan"]
 	path = testchain/lib/spells-kovan
 	url = https://github.com/makerdao/spells-kovan.git
-[submodule "lib/maker-otc-support-methods"]
+	branch = intg-6937-liq-2
+[submodule "testchain/lib/maker-otc-support-methods"]
 	path = testchain/lib/maker-otc-support-methods
 	url = https://github.com/daifoundation/maker-otc-support-methods.git
