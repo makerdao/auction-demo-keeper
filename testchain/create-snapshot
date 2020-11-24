@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 CWD="${0%/*}"
-SNAPSHOTS=$CWD/../snapshots
+SNAPSHOTS=$CWD/snapshots
 
-TESTCHAIN=$CWD/../lib/testchain
+TESTCHAIN=$CWD/../node_modules/@makerdao/testchain
 
 otherargs=()
 while [[ "$#" > 0 ]]; do case $1 in
@@ -26,4 +26,4 @@ if [ -e $SNAPSHOTS/$name ]; then
   fi
 fi
 
-tar czf $SNAPSHOTS/$name.tgz -C $TESTCHAIN/var/chaindata .
+tar czf $SNAPSHOTS/$name.tgz -C $CWD/var/chaindata .
