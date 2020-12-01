@@ -16,9 +16,9 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 set -e
-
-export LIB=$CWD/../../
-export OUT=$CWD/../../../out
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export LIB=$DIR/lib/
+export OUT=$DIR/out
 
 ########################################
 # Configure seth

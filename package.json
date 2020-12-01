@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/npmstart.js",
-    "testchain": "",
-    "buildtestchain": "",
+    "testchain": "./testchain/run-testchain",
+    "buildtestchain": "./testchain/build-testchain -s mychain",
     "lint": "eslint src",
     "test": "jest ./tests"
   },
@@ -45,6 +45,6 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/runtime": "^7.12.5",
-    "@makerdao/testchain": "^1.1.22"
+    "@makerdao/testchain": "^1.1.23"
   }
 }

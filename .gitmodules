@@ -11,10 +11,10 @@
 [submodule "testchain/lib/dss-interfaces"]
 	path = testchain/lib/dss-interfaces
 	url = https://github.com/makerdao/dss-interfaces.git
+[submodule "testchain/lib/maker-otc-support-methods"]
+	path = testchain/lib/maker-otc-support-methods
+	url = https://github.com/daifoundation/maker-otc-support-methods.git
 [submodule "testchain/lib/spells-kovan"]
 	path = testchain/lib/spells-kovan
 	url = https://github.com/makerdao/spells-kovan.git
 	branch = intg-6937-liq-2
-[submodule "testchain/lib/maker-otc-support-methods"]
-	path = testchain/lib/maker-otc-support-methods
-	url = https://github.com/daifoundation/maker-otc-support-methods.git
