@@ -1,5 +1,8 @@
 # auction-demo-keeper
 
+### Invocation
+
+=======
 The auction demo keeper is an implementation of the [Liq 2.0](https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632) contracts in Javascript. With this demo keeper we aim to showcase the simplicity of running a keeper on top of the Liq 2.0 mechanism of the Maker Protocol.
 
 ## Status
@@ -17,5 +20,6 @@ git clone https://github.com/makerdao/auction-demo-keeper.git && cd auction-demo
 
 ## Run
 
-1 - Run testchain script: `./tests/run-testchain`  
+1 - Run testchain script: `yarn run testchain`  
 2 - Run tests: `yarn run test`
+

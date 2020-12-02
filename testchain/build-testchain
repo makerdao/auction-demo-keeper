@@ -38,14 +38,14 @@ fi
 ########################################
 START_TIME=`date +%s`
 export CWD="${0%/*}"
-export TESTCHAIN=$CWD/../lib/testchain
-export OUT=$CWD/../out
+export TESTCHAIN=$CWD/../node_modules/@makerdao/testchain
+export OUT=$CWD/out
 export PORT=2000
 
 mkdir -p $OUT
 # jq -S . $TESTCHAIN/out/addresses-mcd.json > $OUT/addresses-mcd.json
 
-./../lib/testchain/scripts/launch -s default --fast --ci \
+$TESTCHAIN/scripts/launch -s default --fast --ci \
    $CWD/provision-testchain
    $CWD/create-snapshot $s --force
 
