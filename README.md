@@ -1,16 +1,28 @@
 # auction-demo-keeper
 
-### Invocation
+## Intro & Goal
 
-=======
-The auction demo keeper is an implementation of the [Liq 2.0](https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632) contracts in Javascript. With this demo keeper we aim to showcase the simplicity of running a keeper on top of the Liq 2.0 mechanism of the Maker Protocol.
+*tl;dr - Integration example of LIQ2.0 & flash loan functionality therein*
+
+Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.0.]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) This "demo" keeper will work out of the box, be simple in design, and will be adequately documented. Since we cannot make assumptions on the availability of open source keepers supporting LIQ2.0, the reference keeper must be functional and capital efficient, though not built for performance. Albeit complex, LIQ2.0's innovation is the compatibility with flash loans, which will be a supported feature in the keeper.
+
+## Operation Diagram
+
+![Operation Diagram](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9e1349f9-0316-4814-af2b-0075de502fed/Auction-Demo-Keeper_Operation.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20201202%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201202T160238Z&X-Amz-Expires=86400&X-Amz-Signature=d4837a1e8018f358a489459cb4d20799df5298c7271d09b6e557484658f93f71&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Auction-Demo-Keeper_Operation.jpeg%22)
+
+## Who's it for
+
+- Perspective Auction Keepers - Interested in incorporating LIQ2.0 in their proprietary infra
+
+## Why build it
+
+- It's an educational resource that'll help keeper operators to transition their systems from LIQ1.x to LIQ2.0
+- Demonstrate novel, more capital efficient methods of LIQ2.0 participation
+- We need a keeper for LIQ2.0 that works out of the box
 
 ## Status
 
-The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai. 
-
-WIP:
-- Testchain with snapshots (active auctions, market opportunities)
+The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
   
 ## Install
 
@@ -21,5 +33,4 @@ git clone https://github.com/makerdao/auction-demo-keeper.git && cd auction-demo
 ## Run
 
 1 - Run testchain script: `yarn run testchain`  
-2 - Run tests: `yarn run test`
-
+2 - In a separate shell run tests: `yarn run test`
