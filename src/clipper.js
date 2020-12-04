@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
+import transact from './transact';
 
 
 export default class clipper {
@@ -94,7 +95,10 @@ export default class clipper {
   }
 
   // eslint-disable-next-line no-unused-vars
-  execute ( id, size, price ) {
+  execute () {
     //TODO use this._exchange.callee.address to get exchange callee address
+    // 
+    // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
+    // await transacttion.transac_async();
   }
 }

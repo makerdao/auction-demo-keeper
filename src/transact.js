@@ -3,25 +3,58 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 
 
-export default class transact {
-  _ethers;
+export default class Transact {
+  _provider;
   _abi;
   _address;
   _contract;
   _function_name;
   _parameters;
+  _unsigned_tx;
+  _singer;
 
-  constructor( ilkType ) {
-    this._ethers = ethers;
-    this._abi = abi;
-    this._address = address;
-    this._contract = contract;
-    this._function_name = function_name;
-    this._parameters = parameters;
-
+  constructor(unsigned_tx, signer) {
+    this._unsigned_tx = unsigned_tx;
+    this._signer = signer;
+    // this._abi = abi;
+    // this._address = address;
+    // this._function_name = function_name;
+    // this._parameters = parameters;
+    //
+    // this._contract = ethers.Contract(this._address, this._abi, this._provider)
   }
 
-  async transact( ) {
+  async transact_async() {
+
+    const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
+    await this._signer.sendTransaction(signed_tx).then(console.log);
+
+
+
+
+
+
+
+    // var url = 'ADD_YOUR_ETHEREUM_NODE_URL';
+    // var customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+    // var privateKey = "0x0111111111111111111122222222222222222223333333333333333333344445";
+    // var wallet = new ethers.Wallet(privateKey);
+    // console.log("Address: " + wallet.address);
+    // tx = {
+    //   to: "0x6E0d01A76C3Cf4288372a29124A26D4353EE51BE",
+    //   value: ethers.utils.parseEther("0.05"),
+    //   chainId: 42,
+    //   nonce: 3
+    // }
+    // customHttpProvider.estimateGas(tx).then(function(estimate) {
+    //     tx.gasLimit = estimate;
+    //     tx.gasPrice = ethers.utils.parseUnits("0.14085197", "gwei");
+    //     wallet.signTransaction(tx).then((signedTX)=>{
+    // 	customHttpProvider.sendTransaction(signedTX).then(console.log);
+    //   });
+    // });
+
+
 
 
   }
