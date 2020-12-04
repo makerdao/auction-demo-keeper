@@ -3,16 +3,19 @@ import network from '../singleton/network';
 import { ethers, BigNumber } from 'ethers';
 import supportMethodsAbi from '../../abi/MakerOtcSupportMethods.json';
 import matchingMarketAbi from '../../abi/MatchingMarket.json';
+import oasisCalleeAbi from '../../abi/CalleeMakerOtcDai.json';
+
 
 export default class oasisDexAdaptor {
   _book=[];
   _lastBlock=0;
   _asset;
-  constructor (asset) {
+  constructor (asset , callee ) {
     this._provider = network.provider;
     this._asset = asset;
     this._otcSupportMethods = new ethers.Contract(Config.vars.MakerOTCSupportMethods, supportMethodsAbi, this._provider);
     this._oasisDex = new ethers.Contract(Config.vars.OasisDex, matchingMarketAbi, this._provider);
+    this._callee = new ethers.Contract(callee, oasisCalleeAbi, this._provider);
 
     //TODO: Optimize by subscribing to contract events to update _book without explicit refetch.
   }
@@ -42,10 +45,5 @@ export default class oasisDexAdaptor {
       .filter ( v=> v.payAmt.div(v.buyAmt).gte(price.div(ethers.constants.WeiPerEther)))
       .reduce( (previous, current) => previous.add(current.buyAmt), BigNumber.from(0));
   };
-
-  // eslint-disable-next-line no-unused-vars
-  execute ( id, size, price ) {
-    //TODO call exchange-callees
-  }
 
 }

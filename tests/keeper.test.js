@@ -62,7 +62,7 @@ test('kick an auction check that its price decreases', () => {
 
 
 test('check order book', async () => {
-  const oasis = new oasisDexAdaptor( Config.vars.collateral['ETH-A'].erc20addr );
+  const oasis = new oasisDexAdaptor( Config.vars.collateral['ETH-A'].erc20addr, Config.vars.collateral['ETH-A'].callee );
   await oasis.fetch();
   expect(ethers.utils.formatUnits(await oasis.opportunity(ethers.utils.parseUnits('0.9')))).toBe('0.5');
 },10000);
