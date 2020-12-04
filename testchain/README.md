@@ -29,7 +29,7 @@ You're now able to implement `auction-demo-keeper` tests in `keeper.test.js` and
 export ETH_GAS=${ETH_GAS:-"7000000"} # Ganache's default block gas limit
 export SETH_STATUS=yes
 export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
-export ETH_RPC_URL=http://127.1:$PORT
+export ETH_RPC_URL=http://127.1:2000
 export ETH_FROM=$(seth rpc eth_coinbase)
 ```
 
