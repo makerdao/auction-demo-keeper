@@ -22,7 +22,7 @@ To run the testchain with the `default-auction-demo-keeper` snapshot, simply run
 ```
 ./run-testchain
 ```
-It will have a single live auction. For a full list of keeper-related contracts included in the `default-auction-demo-keeper` snapshot and relevant to the keeper, you can reference the contents in `/out`, which is generated from the provisioning script. Moreover, after initializing and updating git submodules (instructions below), you'll find addresses and ABIs for MCD (i.e. `dss`) and SCD in `lib/testchain/out`.
+It will have a single live auction. For a full list of keeper-related contracts included in the `default-auction-demo-keeper` snapshot and relevant to the keeper, you can reference the contents in `/out`, which is generated from the provisioning script. Moreover, after initializing and updating git submodules (instructions below), you'll find addresses and ABIs for MCD (i.e. `dss`) and SCD in `node_modules/@makerdao/testchain/out`.
 
 You're now able to implement `auction-demo-keeper` tests in `keeper.test.js` and run them against the testchain. If you need to connect to the testchain through `seth`, ensure the following env variables are set:
 ```
