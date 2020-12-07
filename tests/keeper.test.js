@@ -76,9 +76,7 @@ test('try transaction', async () => {
   console.log("Address: " + signer.address);
 
   const dai = new ethers.Contract(Config.vars.dai, daiAbi, signer.provider);
-  console.log("Dai" + dai);
   const approval_transaction = await dai.populateTransaction.approve(Config.vars.OasisDex, ethers.utils.parseEther("1.0"));
-  console.log("Approval Unsigned: " + approval_transaction);
   const txn = new Transact(approval_transaction, signer);
   await txn.transact_async();
 
