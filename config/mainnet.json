@@ -3,6 +3,7 @@
   "dai": "",
   "MakerOTCSupportMethods": "",
   "OasisDex": "",
+  "txnReplaceTimeout": "1",
   "delay": "5000",
   "collateral": {
     "ETH-A": {

@@ -27,28 +27,40 @@ export default class Transact {
     // this._contract = ethers.Contract(this._address, this._abi, this._provider)
   }
 
-  async transact_async() {
+  async sign_and_send() {
+    const nonce = this._signer.getTransactionCount()
+    const gasLimit = this._signer.estimateGas(this._unsiged_tx)
+    const network = this._signer.provider.getNetwork()
+
+    // this._unsigned_tx.nonce = nonce;
+    // this._unsigned_tx.gasLimit = gasLimit;
+    // this._unsigned_tx.chainId = network.chainId;
+
+    await Promise.all([nonce, gasLimit, network]).then(values => {
+      this._unsigned_tx.nonce = values[0];
+      this._unsigned_tx.gasLimit = values[1];
+      this._unsigned_tx.chainId = values[2].chainId;
+    })
+
 
     console.log(JSON.stringify(this._unsigned_tx, null, 4));
-
-    const nonce = await this._signer.getTransactionCount()
-
-    this._unsigned_tx.nonce = nonce;
-
-    const gasLimit = await this._signer.estimateGas(this._unsiged_tx);
-
-    this._unsigned_tx.gasLimit = gasLimit;
-
-    const network = await this._signer.provider.getNetwork()
-
-    this._unsigned_tx.chainId = network.chainId;
-
-    console.log(JSON.stringify(this._unsigned_tx, null, 4));
-
-
 
     const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
-    await this._signer.provider.sendTransaction(signed_tx).then(console.log);
+    return await this._signer.provider.sendTransaction(signed_tx);
+
+  }
+
+  async transact_async() {
+
+    while(true) {
+      let receipt = await this.sign_and_send();
+      console.log(receipt)
+      result = this._signer.provider.waitForTransaction(receipt.hash, timeout = Config.txnReplaceTimeout)
+      break;
+    }
+
+
+
 
 
     // singer.populateTransaction is not the same as contract.populateTransaction.method
