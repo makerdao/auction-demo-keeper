@@ -16,6 +16,9 @@ export default class Transact {
   constructor(unsigned_tx, signer) {
     this._unsigned_tx = unsigned_tx;
     this._signer = signer;
+
+    console.log("Approval Unsigned within function" + unsigned_tx)
+    console.log(JSON.stringify(unsigned_tx, null, 4));
     // this._abi = abi;
     // this._address = address;
     // this._function_name = function_name;
@@ -26,8 +29,59 @@ export default class Transact {
 
   async transact_async() {
 
+    console.log(JSON.stringify(this._unsigned_tx, null, 4));
+
+    const nonce = await this._signer.getTransactionCount()
+
+    this._unsigned_tx.nonce = nonce;
+
+    const gasLimit = await this._signer.estimateGas(this._unsiged_tx);
+
+    this._unsigned_tx.gasLimit = gasLimit;
+
+    const network = await this._signer.provider.getNetwork()
+
+    this._unsigned_tx.chainId = network.chainId;
+
+    console.log(JSON.stringify(this._unsigned_tx, null, 4));
+
+
+
     const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
-    await this._signer.sendTransaction(signed_tx).then(console.log);
+    await this._signer.provider.sendTransaction(signed_tx).then(console.log);
+
+
+    // singer.populateTransaction is not the same as contract.populateTransaction.method
+    // For some reason, signer.populateTransaction deletes the `from` and `data` attribute
+    // const tx = await this._signer.populateTransaction(this._unsiged_tx);
+
+
+
+
+
+
+    //
+    // console.log("pre sign")
+    //
+    // await this._signer.provider.getBlock(612).then(block => {
+    //   console.log(block.gasLimit);
+    // });
+    //
+    // console.log("tx gas limit");
+    // console.log(this._unsiged_tx.gasLimit)
+    // console.log(this._unsiged_tx.nonce)
+
+    // console.log(this._unsigned_tx);
+    // console.log(this._signer);
+    //
+    // const signed_tx = await this._signer.signTransaction(this._unsiged_tx);
+    //
+    // console.log("pre send")
+    //
+    // const tx_hash = await this._signer.provider.sendTransaction(signed_tx);
+    //
+    // console.log(tx_hash)
+
 
 
 
