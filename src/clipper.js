@@ -3,9 +3,11 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
+import transact from './transact';
 
 
 export default class clipper {
+  _exhcange;
   _collateral;
   _collateralName;
   _clipper;
@@ -17,9 +19,10 @@ export default class clipper {
   _takeListener;
   _redoListener;
 
-  constructor( ilkType ) {
+  constructor( ilkType , exchange ) {
     const collInfo = Config.vars.collateral[ilkType];
 
+    this._exchange = exchange;
     this._collateralName = ilkType;
     this._clipperAddr = collInfo.clipper;
     this._collateral = collInfo.erc20addr;
@@ -89,5 +92,13 @@ export default class clipper {
       }
     }
     return Promise.all(readPromises);
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  execute () {
+    //TODO use this._exchange.callee.address to get exchange callee address
+    // 
+    // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
+    // await transacttion.transac_async();
   }
 }

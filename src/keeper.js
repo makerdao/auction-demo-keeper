@@ -43,8 +43,8 @@ export default class keeper {
   }
 
   async _clipperInit( collateral ) {
-    const oasis = new oasisDexAdaptor( collateral.erc20addr );
-    const clip = new clipper( collateral.name );
+    const oasis = new oasisDexAdaptor( collateral.erc20addr, collateral.callee );
+    const clip = new clipper( collateral.name , oasis);
     await oasis.fetch();
     await clip.init();
 

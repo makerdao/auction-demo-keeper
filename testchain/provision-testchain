@@ -113,10 +113,26 @@ cd "$LIB/spells-kovan"
 dapp --use solc:0.5.12 build
 export DSS_SPELL_LIQ2=$(dapp create DssSpellTestchain $MCD_DOG $MCD_CLIP_ETH_A $MCD_ABACUS_ETH_A)
 
-# Vote, lift, schedule, and cast spell to support LIQ2.0
-seth send $MCD_GOV 'approve(address)' $MCD_ADM
-seth send $MCD_ADM 'lock(uint)' $(seth --to-uint256 $(seth --to-wei 10 eth)) # 10 MKR
-seth send $MCD_ADM 'vote(address[])' [$DSS_SPELL_LIQ2]
+# DS-Chief Management
+function mint_approve_lock {
+  seth send $MCD_GOV 'mint(uint)' $1
+  seth send $MCD_GOV 'approve(address)' $MCD_ADM
+  seth send $MCD_ADM 'lock(uint)' $1
+  seth send $MCD_ADM 'vote(address[])' [$2]
+}
+
+# DS-Chief Launch
+ZERO_ADDRESS='0x0000000000000000000000000000000000000000'
+EIGHTY_K=$(seth --to-uint256 $(seth --to-wei 80000 eth))
+mint_approve_lock $EIGHTY_K $ZERO_ADDRESS
+seth send $MCD_ADM 'launch()'
+MCD_ADM_IOU=$(seth call $MCD_ADM 'IOU()(address)')
+seth send $MCD_ADM_IOU 'approve(address)' $MCD_ADM
+seth send $MCD_ADM 'free(uint)' $EIGHTY_K
+
+# DS-Chief Vote, schedule, and cast spell to support LIQ2.0
+TEN=$(seth --to-uint256 $(seth --to-wei 10 eth))
+mint_approve_lock $TEN $DSS_SPELL_LIQ2
 seth send $MCD_ADM 'lift(address)' $DSS_SPELL_LIQ2
 echo "DssSpell located at: $DSS_SPELL_LIQ2"
 echo "New Hat: $(seth call $MCD_ADM 'hat()')"
@@ -216,7 +232,7 @@ cp $LIB/dss/out/Clipper.abi \
 $LIB/dss/out/Dog.abi \
 $LIB/dss/out/StairstepExponentialDecrease.abi \
 $LIB/exchange-callees/out/CalleeMakerOtcDai.abi \
-$LIB/testchain/out/MatchingMarket.abi \
+$TESTCHAIN/out/MatchingMarket.abi \
 $LIB/maker-otc-support-methods/out/MakerOtcSupportMethods.abi \
 $OUT/abi/keeper
 
