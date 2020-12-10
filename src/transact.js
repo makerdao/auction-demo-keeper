@@ -8,15 +8,58 @@ import { NonceManager } from '@ethersproject/experimental';
 
 const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay));};
 
-export default class Transact {
+
+// Geometrically increasing gas price.
+//
+// Start with `initial_price`, then increase it every 'every_secs' seconds by a fixed coefficient.
+// Coefficient defaults to 1.125 (12.5%), the minimum increase for Parity to replace a transaction.
+// Coefficient can be adjusted, and there is an optional upper limit.
+// https://github.com/makerdao/pymaker/blob/master/pymaker/gas.py#L168
+export class GeometricGasPrice {
+  _initial_price;
+  _every_secs;
+  _coefficient;
+  _max_price;
+
+  constructor(initial_price, every_secs, coefficient=1.125, max_price = null) {
+    this._initial_price = initial_price;
+    this._every_secs = every_secs;
+    this._coefficient = coefficient;
+    this._max_price = max_price;
+  }
+
+  // Gas price in wei [integer]
+  get_gas_price(time_elapsed) {
+    let result = this._initial_price;
+
+    if (time_elapsed >= this.every_secs) {
+      for (const second in [...Array(Math.floor(time_elapsed/self.every_secs))]) {
+        result *= this._coefficient;
+      }
+    }
+
+    if (this._max_price !== null) {
+      result = Math.min(result, this._max_price)
+    }
+
+    return Math.ceil(result)
+  }
+
+
+}
+
+export class Transact {
   _unsigned_tx;
   _singer;
   _timeout;
+  _initial_time;
+  _gasStrategy;
 
-  constructor(unsigned_tx, signer, timeout) {
+  constructor(unsigned_tx, signer, timeout, gasStrategy = null) {
     this._unsigned_tx = unsigned_tx;
     this._signer = signer;
     this._timeout = timeout;
+    this._gasStrategy = gasStrategy;
 
   }
 
@@ -33,12 +76,19 @@ export default class Transact {
     const network = this._signer.provider.getNetwork()
 
     await Promise.all([pendingNonce, gasLimit, network]).then(values => {
-      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce);
+      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce)
       this._unsigned_tx.gasLimit = values[1];
       this._unsigned_tx.chainId = values[2].chainId;
     })
 
-    this._unsigned_tx.gasPrice = this.gasPrice()
+    const seconds_elapsed = Math.round((new Date() - this._initial_time)/1000);
+    // console.log(seconds_elapsed)
+    // Defaults to the node's suggested gas price if gasStrategy is not supplied
+    this._unsigned_tx.gasPrice = await ( (this._gasStrategy === null) ? (
+        this._signer.getGasPrice()
+      ) : (
+        ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
+      ));
 
     console.log(`Sending a transaction \n
       from ${this._signer.address} \n
@@ -53,7 +103,9 @@ export default class Transact {
   }
 
   async transact_async() {
+    this._initial_time = new Date();
     let minConfirmations = 1;
+
     let response = await this.sign_and_send();
 
     while(true) {
@@ -79,7 +131,7 @@ export default class Transact {
         console.log("Transaction still pending. Will send a replacement transaction")
         response = await this.sign_and_send(response.nonce);
       }
-      
+
     }
 
     //return receipt; // TODO figure out how to return the receipt once it's resolved
