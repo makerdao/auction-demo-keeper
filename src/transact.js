@@ -15,11 +15,13 @@ const sleep = async function(delay) {await new Promise((r) => setTimeout(r, dela
 // Coefficient defaults to 1.125 (12.5%), the minimum increase for Parity to replace a transaction.
 // Coefficient can be adjusted, and there is an optional upper limit.
 // https://github.com/makerdao/pymaker/blob/master/pymaker/gas.py#L168
+//
+// NOTE: This class is limited by JS's MAX_SAFE_INTEGER, which is 9 MM Gwei
 export class GeometricGasPrice {
-  _initial_price;
-  _every_secs;
-  _coefficient;
-  _max_price;
+  _initial_price; // wei
+  _every_secs;    // seconds
+  _coefficient;   // unitless
+  _max_price;     // wei
 
   constructor(initial_price, every_secs, coefficient=1.125, max_price = null) {
     this._initial_price = initial_price;
@@ -32,10 +34,13 @@ export class GeometricGasPrice {
   get_gas_price(time_elapsed) {
     let result = this._initial_price;
 
-    if (time_elapsed >= this.every_secs) {
-      for (const second in [...Array(Math.floor(time_elapsed/self.every_secs))]) {
+    if (time_elapsed >= this._every_secs) {
+      const cycles = [...Array(Math.floor(time_elapsed/this._every_secs))]
+
+      cycles.forEach(() => {
         result *= this._coefficient;
-      }
+      })
+
     }
 
     if (this._max_price !== null) {
@@ -61,10 +66,6 @@ export class Transact {
     this._timeout = timeout;
     this._gasStrategy = gasStrategy;
 
-  }
-
-  gasPrice() {
-    return ethers.utils.parseUnits("10.14085197", "gwei");
   }
 
   // Does not handle transaction locking: https://github.com/makerdao/pymaker/blob/master/pymaker/__init__.py#L715

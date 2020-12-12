@@ -9,8 +9,6 @@ import oasisDexAdaptor from '../src/dex/oasisdex';
 import config from '../config/testchain.json';
 import clipper from "../src/clipper";
 import keeper from "../src/keeper";
-import { Transact, GeometricGasPrice } from "../src/transact"
-import daiAbi from '../abi/Dai.json';
 
 network.rpcURL = 'http://localhost:2000';
 Config.vars = config;
@@ -73,23 +71,3 @@ test('check order book', async () => {
   await oasis.fetch();
   expect(ethers.utils.formatUnits(await oasis.opportunity(ethers.utils.parseUnits('0.9')))).toBe('0.5');
 },10000);
-
-test('txn-manager: try transaction w/ node gasStrategy', async () => {
-
-  const dai = new ethers.Contract(Config.vars.dai, daiAbi, signer.provider);
-  const approval_transaction = await dai.populateTransaction.approve(Config.vars.OasisDex, ethers.utils.parseEther("1.0"));
-  const txn = new Transact(approval_transaction, signer, Config.vars.txnReplaceTimeout);
-  await txn.transact_async();
-
-}, 10000)
-
-test('txn-manager: try transaction w/ geometric gasStrategy', async () => {
-
-  const dai = new ethers.Contract(Config.vars.dai, daiAbi, signer.provider);
-  const approval_transaction = await dai.populateTransaction.approve(Config.vars.OasisDex, ethers.utils.parseEther("1.0"));
-  const initial_price = await signer.getGasPrice()
-  const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), (Config.vars.txnReplaceTimeout / 1000))
-  const txn = new Transact(approval_transaction, signer, Config.vars.txnReplaceTimeout, gasStrategy);
-  await txn.transact_async();
-
-}, 20000)
