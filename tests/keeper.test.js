@@ -11,6 +11,7 @@ import clipper from "../src/clipper";
 import keeper from "../src/keeper";
 import Transact from "../src/transact"
 import daiAbi from '../abi/Dai.json';
+import getWallet from '../src/wallet';
 
 network.rpcURL = 'http://localhost:2000';
 Config.vars = config;
@@ -80,4 +81,10 @@ test('try transaction', async () => {
   const txn = new Transact(approval_transaction, signer);
   await txn.transact_async();
 
-}, 10000)
+}, 10000);
+
+test('test wallet', async () => {
+  const wallet = await getWallet();
+  console.log('Test Wallet ', wallet);
+  expect(wallet.address).toBeDefined();
+}, 10000);
