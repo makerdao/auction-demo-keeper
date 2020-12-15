@@ -3,7 +3,7 @@ import mainnetConfig from '../config/mainnet.json';
 import testchainConfig from '../config/testchain.json';
 import Config from './singleton/config';
 import network from './singleton/network';
-import clipper from './clipper';
+import Clipper from './clipper';
 import { ethers } from 'ethers';
 
 let _this;
@@ -44,7 +44,7 @@ export default class keeper {
 
   async _clipperInit( collateral ) {
     const oasis = new oasisDexAdaptor( collateral.erc20addr, collateral.callee );
-    const clip = new clipper( collateral.name , oasis);
+    const clip = new Clipper( collateral.name , oasis);
     await oasis.fetch();
     await clip.init();
 
