@@ -3,46 +3,61 @@
 * As an alternative, user can also paste in his private key
 */
 
-const ethers = require('ethers');
 const fs = require('fs');
+const path = require('path');
+const ethers = require('ethers');
 
 // import { ethers } from 'ethers';
 // import fs from 'fs';
+// import path from 'path';
 
-// Declare file path to JSONWalletKeystore and its password file
-const jsonWallet = require('../tests/testwallet.json');
-const walletPass = '../tests/walletPass.txt';
+// one needs to pass in the filepath to the wallet and password that is relative to the working directory
+
+const jsonWallet = '/tests/testwallet.json';
+const walletPass = '/tests/jsonpassword.txt';
+
+
+// console.log('paths', jsonWallet, walletPass);
+
 
 // Reads Password from the JSONWallet Password File
-async function getPassword() {
-    let password;
+function getPassword() {    
     try {
-        let data = await fs.readFileSync(walletPass).toString();
+        // let data =  fs.readFileSync(walletPass, 'utf8');
+        const workingDirPath = path.resolve();
+        // const fullpath = path.join(workingDirPath,'auction-demo-keeper', walletPass);
+        const fullpath = path.join(workingDirPath, walletPass);
+        const data = fs.readFileSync(fullpath, 'utf8').toString();
         console.log('data ', data);
-        password = await data.substring(0, data.length - 1);
+        return data;
 
     } catch (error) {
         console.log('Error reading pass file', error.stack);
     }
-    console.log('password 2 ', password);
-    return password;
+    
 }
 // getPassword();
 
- async function getWallet() {
-    const JSONWalletPath = JSON.stringify(jsonWallet);
-    if (!JSONWalletPath) console.log('Error with reading JSON Wallet');
+async function getWallet() {
+    try {
+        const workingPath = path.resolve();
+        const fullPath = path.join(workingPath, jsonWallet);
+        const readJSON = fs.readFileSync(fullPath, 'utf8');
+        const JSONWallet = JSON.parse(readJSON);
+        if (!JSONWallet) console.log('Error with reading JSON Wallet');
+        const JSONWalletPassword = getPassword();
+        const wallet = await new ethers.Wallet.fromEncryptedJson(JSON.stringify(JSONWallet), JSONWalletPassword);
+        console.log('wallet', wallet);
+        return wallet;
+    } catch (error) {
+        console.log(error);
+    }
 
-    const JSONWalletPassword = await getPassword();
-
-    const wallet = await new ethers.Wallet.fromEncryptedJson(JSONWalletPath, JSONWalletPassword);
-    console.log('wallet', wallet);
-    return wallet;
 }
 
 getWallet();
 
-//to do
+//to do`
 // get test wallet from testchain pricat keys
 
 // transforn it into a class
