@@ -1,17 +1,17 @@
 import { ethers } from 'ethers';
 import fs from 'fs';
-import Engine from './lib/testrunner/src/engine';
-import { ETH } from './lib/testrunner/node_modules/makerdao/dai-plugin-mcd';
+import Engine from '../testchain/lib/testrunner/src/engine';
+import { ETH } from '../testchain/lib/testrunner/node_modules/@makerdao/dai-plugin-mcd';
 
 
-// Deployer Account for Testchain
+// Deployer Account for Testchain, passphrase=''
 const keydata = {
   "address": "16fb96a5fa0427af0c8f7cf1eb4870231c8154b6",
   "crypto": {
     "cipher": "aes-128-ctr",
-    "ciphertext": "d2b787746c29148b01ae7079ab729541554951ce5a9fa661b399a13e08b0f1a6",
+    "ciphertext": "2e634fb145ec7a081dbc2c92b9d98212ba8eb1dcc297b8a8de6a935881035c83",
     "cipherparams": {
-      "iv": "cd5dd273ecc23dac0956e1cfe36d526a"
+      "iv": "389ed2d689fe73ad2dce53c23260afc3"
     },
     "kdf": "scrypt",
     "kdfparams": {
@@ -19,26 +19,25 @@ const keydata = {
       "n": 262144,
       "p": 1,
       "r": 8,
-      "salt": "c200dd2837dec57adaf6ccaabaec84d40cebe2bf244f2e9baa2a19b8081a1140"
+      "salt": "9a42ea3966ca7ee9e84bb5e201978e69740272940daf1e232e0fc474cb6cc8d9"
     },
-    "mac": "e529e74ad3155e141aebf0fc1b6629d1a67b620b1f21f68d10549806a26957e7"
+    "mac": "cb3f6da2d001618abbefbe918fb88a5945045f15bbe90cd380570f1a9359bdea"
   },
   "id": "53b50ebf-a9b0-44f8-86de-5d6ed919e6ad",
   "version": 3
 };
 
 
-export class CreateAuction {
+export default class CreateAuction {
   _collateralName;
   _vaultCollateralSize;
-
 
   constructor(collateralName, collateralSize) {
     this._collateralName = collateralName;
     this._vaultCollateralSize = collateralSize;
   }
 
-  async startAuction() {
+  async createRiskyVault() {
     fs.mkdirSync('/tmp/testrunner', { recursive: true });
     fs.writeFileSync('/tmp/testrunner/key', JSON.stringify(keydata));
 
@@ -49,8 +48,8 @@ export class CreateAuction {
           ['user1'],
           [
             ['cdpOpenUnsafe', {
-                collateral: ETH(1),
-                ilk: this._collateralName;
+                collateral: ETH(this._vaultCollateralSize),
+                ilk: this._collateralName
               }
             ]
           ]
@@ -58,10 +57,10 @@ export class CreateAuction {
       ],
       address: keydata.address,
       keystore: '/tmp/testrunner',
-      url: 'http://localhost:2000',
-      password: 'test123'
+      url: 'http://localhost:2000'
     });
     const report = await engine.run();
     console.log(report)
   }
+
 }

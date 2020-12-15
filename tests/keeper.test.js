@@ -49,7 +49,7 @@ test('active auction has a price', async () => {
 },10000);
 
 test('kick an auction and check that it is listed', async () => {
-  const newAuction = new CreateAuction( 'ETH-A' , 0);
+  const newAuction = new CreateAuction( 'ETH-A' , 1);
   await newAuction.startAuction();
 }, 10000);
 
