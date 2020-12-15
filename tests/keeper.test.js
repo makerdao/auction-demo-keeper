@@ -48,9 +48,10 @@ test('active auction has a price', async () => {
   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
 },10000);
 
-test('kick an auction and check that it is listed', () => {
-  // generate an auction
-});
+test('kick an auction and check that it is listed', async () => {
+  const newAuction = new CreateAuction( 'ETH-A' , 0);
+  await newAuction.startAuction();
+}, 10000);
 
 test('kick an auction and check that it is listed', () => {
   //generate an auction, check that clipper saw it, take it, check that clipper removed it from

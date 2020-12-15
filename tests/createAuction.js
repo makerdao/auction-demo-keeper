@@ -1,139 +1,67 @@
 import { ethers } from 'ethers';
+import fs from 'fs';
+import Engine from './lib/testrunner/src/engine';
+import { ETH } from './lib/testrunner/node_modules/makerdao/dai-plugin-mcd';
 
 
+// Deployer Account for Testchain
+const keydata = {
+  "address": "16fb96a5fa0427af0c8f7cf1eb4870231c8154b6",
+  "crypto": {
+    "cipher": "aes-128-ctr",
+    "ciphertext": "d2b787746c29148b01ae7079ab729541554951ce5a9fa661b399a13e08b0f1a6",
+    "cipherparams": {
+      "iv": "cd5dd273ecc23dac0956e1cfe36d526a"
+    },
+    "kdf": "scrypt",
+    "kdfparams": {
+      "dklen": 32,
+      "n": 262144,
+      "p": 1,
+      "r": 8,
+      "salt": "c200dd2837dec57adaf6ccaabaec84d40cebe2bf244f2e9baa2a19b8081a1140"
+    },
+    "mac": "e529e74ad3155e141aebf0fc1b6629d1a67b620b1f21f68d10549806a26957e7"
+  },
+  "id": "53b50ebf-a9b0-44f8-86de-5d6ed919e6ad",
+  "version": 3
+};
 
-const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay));};
+
+export class CreateAuction {
+  _collateralName;
+  _vaultCollateralSize;
 
 
-// Geometrically increasing gas price.
-//
-// Start with `initial_price`, then increase it every 'every_secs' seconds by a fixed coefficient.
-// Coefficient defaults to 1.125 (12.5%), the minimum increase for Parity to replace a transaction.
-// Coefficient can be adjusted, and there is an optional upper limit.
-// https://github.com/makerdao/pymaker/blob/master/pymaker/gas.py#L168
-//
-// NOTE: This class is limited by JS's MAX_SAFE_INTEGER, which is 9 MM Gwei
-export class GeometricGasPrice {
-  _initial_price; // wei
-  _every_secs;    // seconds
-  _coefficient;   // unitless
-  _max_price;     // wei
-
-  constructor(initial_price, every_secs, coefficient=1.125, max_price = null) {
-    this._initial_price = initial_price;
-    this._every_secs = every_secs;
-    this._coefficient = coefficient;
-    this._max_price = max_price;
+  constructor(collateralName, collateralSize) {
+    this._collateralName = collateralName;
+    this._vaultCollateralSize = collateralSize;
   }
 
-  // Gas price in wei [integer]
-  get_gas_price(time_elapsed) {
-    let result = this._initial_price;
+  async startAuction() {
+    fs.mkdirSync('/tmp/testrunner', { recursive: true });
+    fs.writeFileSync('/tmp/testrunner/key', JSON.stringify(keydata));
 
-    if (time_elapsed >= this._every_secs) {
-      const cycles = [...Array(Math.floor(time_elapsed/this._every_secs))]
-
-      cycles.forEach(() => {
-        result *= this._coefficient;
-      })
-
-    }
-
-    if (this._max_price !== null) {
-      result = Math.min(result, this._max_price)
-    }
-
-    return Math.ceil(result)
+    const engine = new Engine({
+      actors: { user1: 'selfTestUser' },
+      actions: [
+        [
+          ['user1'],
+          [
+            ['cdpOpenUnsafe', {
+                collateral: ETH(1),
+                ilk: this._collateralName;
+              }
+            ]
+          ]
+        ]
+      ],
+      address: keydata.address,
+      keystore: '/tmp/testrunner',
+      url: 'http://localhost:2000',
+      password: 'test123'
+    });
+    const report = await engine.run();
+    console.log(report)
   }
-
-
-}
-
-export class Transact {
-  _unsigned_tx;
-  _singer;
-  _timeout;
-  _initial_time;
-  _gasStrategy;
-
-  constructor(unsigned_tx, signer, timeout, gasStrategy = null) {
-    this._unsigned_tx = unsigned_tx;
-    this._signer = signer;
-    this._timeout = timeout;
-    this._gasStrategy = gasStrategy;
-
-  }
-
-  // Does not handle transaction locking: https://github.com/makerdao/pymaker/blob/master/pymaker/__init__.py#L715
-  async sign_and_send(_previousNonce = null) {
-
-    // Take into account transactions done with other wallets (i.e. MetaMask): https://github.com/makerdao/pymaker/pull/201#issuecomment-731382038
-    const pendingNonce = this._signer.getTransactionCount("pending")
-    const gasLimit = this._signer.estimateGas(this._unsiged_tx)
-    const network = this._signer.provider.getNetwork()
-
-    await Promise.all([pendingNonce, gasLimit, network]).then(values => {
-      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce)
-      this._unsigned_tx.gasLimit = values[1];
-      this._unsigned_tx.chainId = values[2].chainId;
-    })
-
-    const seconds_elapsed = Math.round((new Date() - this._initial_time)/1000);
-    // console.log(seconds_elapsed)
-    // Defaults to the node's suggested gas price if gasStrategy is not supplied
-    this._unsigned_tx.gasPrice = await ( (this._gasStrategy === null) ? (
-        this._signer.getGasPrice()
-      ) : (
-        ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
-      ));
-
-    console.log(`Sending a transaction \n
-      from ${this._signer.address} \n
-      to ${this._unsigned_tx.to} \n
-      nonce ${this._unsigned_tx.nonce} \n
-      gasLimit ${this._unsigned_tx.gasLimit.toNumber()} \n
-      gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),"gwei")} Gwei`)
-
-    const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
-    return await this._signer.provider.sendTransaction(signed_tx);
-
-  }
-
-  async transact_async() {
-    this._initial_time = new Date();
-    let minConfirmations = 1;
-
-    let response = await this.sign_and_send();
-
-    while(true) {
-
-      let receipt = undefined;
-      // This promise resolves once the transaction has been mined (confirmed by a minConfirmation size)
-      // Set a timer on the promise, equivalent to the transaction replacement timeout
-      this._signer.provider.waitForTransaction(response.hash, minConfirmations, this._timeout)
-        .then(result => {
-          receipt = result;
-        });
-
-      // Wait until the timeout is reached to either confirm publishing or replace transaction
-      await sleep(this._timeout);
-
-      // Check if transaction was published
-      if (receipt != undefined) {
-        break;
-
-      // Replace Transaction if it wasn't mined within the allotted timeout
-      } else {
-        // Sign and send the same transaction, but with a higher gas price
-        console.log("Transaction still pending. Will send a replacement transaction")
-        response = await this.sign_and_send(response.nonce);
-      }
-
-    }
-
-    //return receipt; // TODO figure out how to return the receipt once it's resolved
-    return response;
-  }
-
-
 }
