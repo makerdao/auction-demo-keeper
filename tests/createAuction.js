@@ -37,7 +37,7 @@ export default class CreateAuction {
     this._vaultCollateralSize = collateralSize;
   }
 
-  async createRiskyVault() {
+  async startAuction() {
     fs.mkdirSync('/tmp/testrunner', { recursive: true });
     fs.writeFileSync('/tmp/testrunner/key', JSON.stringify(keydata));
 
