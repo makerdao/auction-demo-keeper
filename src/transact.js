@@ -53,7 +53,7 @@ export class GeometricGasPrice {
 
 }
 
-export class Transact {
+export default class Transact {
   _unsigned_tx;
   _singer;
   _timeout;
