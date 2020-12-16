@@ -6,17 +6,16 @@
 import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
-import network from './singleton/network';
 
 export default class Wallet {
     _passwordPath;
     _JSONKeystorePath;
-    _rpcURL;
+    _provider;
 
-    constructor(passwordPath, JSONKeystorePath, rpcURL) {
+    constructor(passwordPath, JSONKeystorePath, provider) {
         this._passwordPath = passwordPath;
         this._JSONKeystorePath = JSONKeystorePath;
-        this._rpcURL = rpcURL; 
+        this._provider = provider; 
     }
 
     
@@ -44,8 +43,7 @@ export default class Wallet {
             const JSONWalletPassword = this._getPassword();
             const wallet = await new ethers.Wallet.fromEncryptedJson(JSON.stringify(JSONWallet), JSONWalletPassword);
 
-            network.rpcURL = this._rpcURL;
-            const signer = new ethers.Wallet(wallet, network.provider);
+            const signer = new ethers.Wallet(wallet, this._provider);
             return signer;
         } catch (error) {
             console.log(error);
