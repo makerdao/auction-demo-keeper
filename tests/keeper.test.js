@@ -9,7 +9,7 @@ import oasisDexAdaptor from '../src/dex/oasisdex';
 import config from '../config/testchain.json';
 import clipper from '../src/clipper';
 import keeper from '../src/keeper';
-import Transact from '../src/transact'
+import { Transact } from '../src/transact';
 import daiAbi from '../abi/Dai.json';
 import Wallet from '../src/wallet';
 
@@ -77,14 +77,13 @@ test('check order book', async () => {
 },10000);
 
 
-test('test wallet', async () => {
+test('kay facility: test wallet', async () => {
   const wallet = new Wallet('/tests/jsonpassword.txt', '/tests/testwallet.json');
-  const signer = await wallet.getWallet();
-  console.log('Test Wallet ', signer);
-  expect(signer.address).toBeDefined();
+  const jsonWallet = await wallet.getWallet();
+  expect(jsonWallet.address).toBeDefined();
 }, 10000);
 
-test('try transaction', async () => {
+test('key facility: try transaction', async () => {
 
   const wallet = new Wallet('/tests/jsonpassword.txt', '/tests/testwallet.json');
   const jsonWallet = await wallet.getWallet();
@@ -94,7 +93,7 @@ test('try transaction', async () => {
 
   const dai = new ethers.Contract(Config.vars.dai, daiAbi, signer.provider);
   const approval_transaction = await dai.populateTransaction.approve(Config.vars.OasisDex, ethers.utils.parseEther("1.0"));
-  const txn = new Transact(approval_transaction, signer);
+  const txn = new Transact(approval_transaction, signer, Config.vars.txnReplaceTimeout);
   await txn.transact_async();
 
 }, 10000);
