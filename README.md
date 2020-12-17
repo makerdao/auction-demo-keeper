@@ -8,7 +8,7 @@ Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.
 
 ## Operation Diagram
 
-![Operation Diagram](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9e1349f9-0316-4814-af2b-0075de502fed/Auction-Demo-Keeper_Operation.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20201202%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201202T160238Z&X-Amz-Expires=86400&X-Amz-Signature=d4837a1e8018f358a489459cb4d20799df5298c7271d09b6e557484658f93f71&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Auction-Demo-Keeper_Operation.jpeg%22)
+![Operation Diagram](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9e1349f9-0316-4814-af2b-0075de502fed/Auction-Demo-Keeper_Operation.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20201210%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201210T154639Z&X-Amz-Expires=86400&X-Amz-Signature=624eac48ae4f83817c154ef4aa46d8a806835b20345ab5c0b1490d64e4de3e28&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Auction-Demo-Keeper_Operation.jpeg%22)
 
 ## Who's it for
 
