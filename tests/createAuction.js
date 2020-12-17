@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import fs from 'fs';
+import path from 'path';
 import Engine from '../testchain/lib/testrunner/src/engine';
 import { ETH } from '../testchain/lib/testrunner/node_modules/@makerdao/dai-plugin-mcd';
 
@@ -40,6 +41,9 @@ export default class CreateAuction {
   async startAuction() {
     fs.mkdirSync('/tmp/testrunner', { recursive: true });
     fs.writeFileSync('/tmp/testrunner/key', JSON.stringify(keydata));
+    const workingDirPath = path.resolve();
+    const fullpath = path.join(workingDirPath, './node_modules/@makerdao/testchain/out/addresses-mcd.json');
+    console.log(fullpath);
 
     const engine = new Engine({
       actors: { user1: 'selfTestUser' },
@@ -55,8 +59,7 @@ export default class CreateAuction {
           ]
         ]
       ],
-      address: keydata.address,
-      keystore: '/tmp/testrunner',
+      addressesConfig: fullpath,
       url: 'http://localhost:2000'
     });
     const report = await engine.run();
