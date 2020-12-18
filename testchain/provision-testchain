@@ -228,6 +228,8 @@ write_json "$OUT/addresses-temp.json"
 
 mkdir -p $OUT/abi && mkdir -p $OUT/abi/keeper
 
+
+# Come back and convert .abi to .json
 cp $LIB/dss/out/Clipper.abi \
 $LIB/dss/out/Dog.abi \
 $LIB/dss/out/StairstepExponentialDecrease.abi \

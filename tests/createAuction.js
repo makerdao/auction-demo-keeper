@@ -1,6 +1,9 @@
 import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
+import { Transact } from "../src/transact";
+import TestchainConfig from '../testchain/out/addresses-for-keeper.json';
+import dogAbi from '../testchain/out/abi/keeper/Dog.json';
 import Engine from '../testchain/lib/testrunner/src/engine';
 import { ETH } from '../testchain/lib/testrunner/node_modules/@makerdao/dai-plugin-mcd';
 
@@ -32,10 +35,12 @@ const keydata = {
 export default class CreateAuction {
   _collateralName;
   _vaultCollateralSize;
+  _signer;
 
-  constructor(collateralName, collateralSize) {
+  constructor(collateralName, collateralSize, signer) {
     this._collateralName = collateralName;
     this._vaultCollateralSize = collateralSize;
+    this._signer = signer;
   }
 
   async startAuction() {
@@ -64,6 +69,12 @@ export default class CreateAuction {
     });
     const report = await engine.run();
     console.log(report)
+
+    // Liquidate the unsafe vault and start an auction
+    const dog = new ethers.Contract(TestchainConfig.MCD_DOG, dogAbi, this._signer.provider);
+    // const bark_transaction = await dog.populateTransaction.bark(/*TODO: convert to bytes32*/ this._collateralName, /*TODO: Find out the urnAddress*/);
+    // const txn = new Transact(bark_transaction, this._signer);
+    // await txn.transact_async();
   }
 
 }

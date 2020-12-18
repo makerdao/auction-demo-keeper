@@ -42,14 +42,14 @@ test('read active auctions', async () => {
 },10000);
 
 test('active auction has a price', async () => {
-  const clip = new Clipper( 'ETH-A' );
+  const clip = new Clipper('ETH-A');
   await clip.init();
   const auctions = await clip.activeAuctions();
   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
 },10000);
 
 test('kick an auction and check that it is listed', async () => {
-  const newAuction = new CreateAuction( 'ETH-A' , 1);
+  const newAuction = new CreateAuction('ETH-A', 1, signer);
   await newAuction.startAuction();
 }, 10000);
 
