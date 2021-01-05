@@ -8,7 +8,7 @@ Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.
 
 ## Operation Diagram
 
-![Operation Diagram](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9e1349f9-0316-4814-af2b-0075de502fed/Auction-Demo-Keeper_Operation.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20201210%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201210T154639Z&X-Amz-Expires=86400&X-Amz-Signature=624eac48ae4f83817c154ef4aa46d8a806835b20345ab5c0b1490d64e4de3e28&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Auction-Demo-Keeper_Operation.jpeg%22)
+![Operation Diagram](./diagram.jpeg)
 
 ## Who's it for
 
@@ -32,5 +32,5 @@ git clone https://github.com/makerdao/auction-demo-keeper.git && cd auction-demo
 
 ## Run
 
-1 - Run testchain script: `yarn run testchain`  
+1 - Run testchain script: `yarn run testchain`  ( Run with node version  `12.-.-` for a working version)  
 2 - In a separate shell run tests: `yarn run test`
