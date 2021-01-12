@@ -34,7 +34,8 @@ test('keeper initialization, and one opportunity check loop', async () => {
 }, 10000);
 
 test('basic connectivity', async () => {
-  expect(typeof (await network.provider.getNetwork()).chainId).toBe('number');
+  let id = await network.provider.getNetwork();
+  expect(typeof id.chainId).toBe('number');
 });
 
 test('read active auctions', async () => {
