@@ -44,7 +44,7 @@ test('read active auctions', async () => {
   expect(auctions.length).toBeGreaterThan(0);
 },10000);
 
-test('active auction has a price', async () => {
+test('active auctiosn has a price', async () => {
   const clip = new clipper( 'ETH-A' );
   await clip.init();
   const auctions = await clip.activeAuctions();
