@@ -4,8 +4,6 @@ import { ethers, BigNumber } from 'ethers';
 import supportMethodsAbi from '../../abi/MakerOtcSupportMethods.json';
 import matchingMarketAbi from '../../abi/MatchingMarket.json';
 import oasisCalleeAbi from '../../abi/CalleeMakerOtcDai.json';
-import clipperAbi from '../../abi/clipper.json';
-import Transact from '../transact';
 
 
 export default class oasisDexAdaptor {
@@ -51,24 +49,6 @@ export default class oasisDexAdaptor {
   };
 
 
-  execute = async (_amt, _maxPrice, _minProfit, _profitAddr, _gemA, who, _signer) => {
-    
-    //encoding calldata
-    let typesArray = ['address', 'address', 'uint256'];
-    let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemA, minProfit]);
-    
-    let id = abiCoder.encode(['uint256'], [1]);
-    let amt = ethers.utils.parseEther(`${_amt}`);
-    let maxPrice = ethers.utils.parseEther(`${_maxPrice}`);
-    let minProfit = ethers.utils.parseEther(`${_minProfit}`);
 
-    const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, who, flashData );
-    console.log('Take_Transaction ', take_transaction);
-    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
-    await txn.transact_async();
-
-  }
 
 }
