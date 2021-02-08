@@ -2,8 +2,6 @@
 
 ## Intro & Goal
 
-*tl;dr - Integration example of LIQ2.0 & flash loan functionality therein*
-
 Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.0.]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) This "demo" keeper will work out of the box, be simple in design, though not built for performance and will be adequately documented. Albeit complex, LIQ2.0's innovation is the compatibility with flash loans, which will be a supported feature in the keeper.
 
 ## Operation Diagram
