@@ -184,7 +184,8 @@ seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk
 # Confiscate the Vault and send to liquidation
 export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
 
-seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN
+# Liquidate the unsafe Urn and send bark rewards to ETH_from
+seth send $MCD_DOG 'bark(bytes32,address,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN $ETH_FROM
 
 #Confirm that there is an auction
 echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
