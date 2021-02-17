@@ -93,7 +93,7 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 ########################################
 # Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
 cd "$LIB/dss"
-dapp --use solc:0.6.7 build --extract
+dapp --use solc:0.6.11 build --extract
 export MCD_DOG=$(dapp create Dog $MCD_VAT)
 seth send $MCD_DOG 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_DOG 'deny(address)' $ETH_FROM
@@ -144,7 +144,7 @@ cd -
 # ########################################
 # # build CalleeMakerOtc from exchange-callees
 cd "$LIB/exchange-callees"
-dapp --use solc:0.6.7 build --extract
+dapp --use solc:0.6.11 build --extract
 OASIS_CALLEE=$(dapp create CalleeMakerOtcDai $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
 cd -
 
