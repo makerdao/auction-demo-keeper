@@ -2,9 +2,7 @@
 
 ## Intro & Goal
 
-*tl;dr - Integration example of LIQ2.0 & flash loan functionality therein*
-
-Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.0.]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) This "demo" keeper will work out of the box, be simple in design, and will be adequately documented. Since we cannot make assumptions on the availability of open source keepers supporting LIQ2.0, the reference keeper must be functional and capital efficient, though not built for performance. Albeit complex, LIQ2.0's innovation is the compatibility with flash loans, which will be a supported feature in the keeper.
+Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.0.]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) This "demo" keeper will work out of the box, be simple in design, though not built for performance and will be adequately documented. Albeit complex, LIQ2.0's innovation is the compatibility with flash loans, which will be a supported feature in the keeper.
 
 ## Operation Diagram
 
@@ -12,11 +10,11 @@ Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.
 
 ## Who's it for
 
-- Perspective Auction Keepers - Interested in incorporating LIQ2.0 in their proprietary infra
+- Perspective Auction Keepers - Interested in incorporating LIQ2.0 in their proprietary infrastructure.
 
 ## Why build it
 
-- It's an educational resource that'll help keeper operators to transition their systems from LIQ1.x to LIQ2.0
+- It's an educational resource that'll help keeper operators transition their systems from LIQ1.x to LIQ2.0
 - Demonstrate novel, more capital efficient methods of LIQ2.0 participation
 - We need a keeper for LIQ2.0 that works out of the box
 
