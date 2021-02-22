@@ -18,6 +18,3 @@
 	path = testchain/lib/spells-kovan
 	url = https://github.com/makerdao/spells-kovan.git
 	branch = intg-6937-liq-2
-[submodule "testchain/lib/testrunner"]
-	path = testchain/lib/testrunner
-	url = https://github.com/makerdao/testrunner.git
