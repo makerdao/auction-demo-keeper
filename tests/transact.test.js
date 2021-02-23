@@ -12,9 +12,6 @@ import daiAbi from '../abi/Dai.json';
 network.rpcURL = 'http://localhost:2000';
 Config.vars = config;
 
-
-const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay));};
-
 // Testchain Deployer Address
 const privateKey = "0x474BEB999FED1B3AF2EA048F963833C686A0FBA05F5724CB6417CF3B8EE9697E";
 const signer = new ethers.Wallet(privateKey, network.provider);
@@ -89,7 +86,7 @@ test('txn-manager: try transaction w/ geometric gasStrategy', async () => {
   const dai = new ethers.Contract(Config.vars.dai, daiAbi, signer.provider);
   const approval_transaction = await dai.populateTransaction.approve(Config.vars.OasisDex, ethers.utils.parseEther("1.0"));
   const initial_price = await signer.getGasPrice()
-  const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), (Config.vars.txnReplaceTimeout / 1000))
+  const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient, Config.vars.maxGasPrice)
   const txn = new Transact(approval_transaction, signer, Config.vars.txnReplaceTimeout, gasStrategy);
   await txn.transact_async();
 
