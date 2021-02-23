@@ -21,7 +21,11 @@ Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.
 ## Status
 
 The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
-  
+
+## Future improvements
+
+1. Consider the gas costs of the smart contract function calls while evaluating the opportunity's profit. 
+
 ## Install
 
 ```bash
