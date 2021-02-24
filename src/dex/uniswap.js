@@ -16,13 +16,16 @@ export default class UniswapAdaptor {
         this._uniswap = new ethers.Contract(Config.vars.uniswap, uniswapRouter, this._provider);
     }
 
-    opportunity = async (ilkAmount) => {
+    // what format does ilkAmount have? is it in ETHER or WEI ? 
+    fetch = async (ilkAmount) => {
+        const WETH = await this._uniswap.WETH();
+
         const blockNumber = await this._provider.getBlockNumber();
         if (blockNumber === this._lastBlock) return;
         this._lastBlock = blockNumber;
 
-        const WETH = await this._uniswap['WETH()'];
 
-        const offer = await this._uniswap['getAmountsOut(uint amountIn, address[] memory path)'](ilkAmount, [`${WETH}`, `${Config.vars.dai}`]);
+        const offer = await this._uniswap.getAmountsOut(ilkAmount, [WETH, Config.vars.dai]);
+        this._book = offer.map(v => ethers.utils.formatUnits(v));
     }
 }
