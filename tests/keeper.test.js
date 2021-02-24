@@ -17,7 +17,7 @@ network.rpcURL = 'http://localhost:2000';
 Config.vars = config;
 
 
-const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay));};
+const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay*1000));};
 
 // Testchain Deployer Address
 const privateKey = '0x474BEB999FED1B3AF2EA048F963833C686A0FBA05F5724CB6417CF3B8EE9697E';
@@ -29,7 +29,7 @@ console.log('Address: ' + signer.address);
 test('keeper initialization, and one opportunity check loop', async () => {
   const keepr = new keeper('http://localhost:2000', 'testchain');
   keepr.run();
-  await sleep(8000);
+  await sleep(8);
   keepr.stop();
 }, 10000);
 

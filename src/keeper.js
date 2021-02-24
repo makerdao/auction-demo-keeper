@@ -48,7 +48,7 @@ export default class keeper {
     await oasis.fetch();
     await clip.init();
 
-    const timer = setInterval(() => {this._opportunityCheck(collateral,oasis,clip)}, Config.vars.delay);
+    const timer = setInterval(() => {this._opportunityCheck(collateral,oasis,clip)}, Config.vars.delay * 1000);
     return({oasis, clip, timer});
   }
 

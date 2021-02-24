@@ -3,8 +3,6 @@
   "dai": "",
   "MakerOTCSupportMethods": "",
   "OasisDex": "",
-  "txnReplaceTimeout": "5000",
-  "delay": "5000",
   "collateral": {
     "ETH-A": {
       "name": "ETH-A",
@@ -14,6 +12,10 @@
       "callee": ""
     }
   },
+  "txnReplaceTimeout": "4",
+  "delay": "5",
+  "dynamicGasCoefficient": "1.125",
+  "maxGasPrice": "500",
   "minProfitNum": "5",
   "minProfitDen": "100",
   "minSize": "1"
