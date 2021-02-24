@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import { NonceManager } from '@ethersproject/experimental';
 
 
-const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay));};
+const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay*1000));};
 
 
 // Geometrically increasing gas price.
@@ -56,14 +56,14 @@ export class GeometricGasPrice {
 export class Transact {
   _unsigned_tx;
   _singer;
-  _timeout;
+  _timeout;     // seconds
   _initial_time;
   _gasStrategy;
 
   constructor(unsigned_tx, signer, timeout, gasStrategy = null) {
     this._unsigned_tx = unsigned_tx;
     this._signer = signer;
-    this._timeout = timeout;
+    this._timeout = timeout * 1000; // convert to miliseconds
     this._gasStrategy = gasStrategy;
 
   }
@@ -120,7 +120,7 @@ export class Transact {
         });
 
       // Wait until the timeout is reached to either confirm publishing or replace transaction
-      await sleep(this._timeout);
+      await sleep(this._timeout / 1000);
 
       // Check if transaction was published
       if (receipt != undefined) {
