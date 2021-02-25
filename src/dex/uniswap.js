@@ -3,16 +3,13 @@ import network from '../singleton/network';
 import { ethers, BigNumber } from 'ethers';
 import uniswapRouter from '../../abi/UniswapV2Router02.json';
 
-
 export default class UniswapAdaptor {
     _book=[]
     _lastBlock = 0;
-    _asset;
 
-    constructor(asset) {
-        this.provider = network.provider;
-        this._asset = asset;
-        this._uniswap = new ethers.Contract(Config.vars.uniswap, uniswapRouter, this._provider);
+    constructor() {
+        this._provider = network.provider;
+        this._uniswap = new ethers.Contract('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', uniswapRouter, this._provider);
     }
 
     // ilkAmount in WEI

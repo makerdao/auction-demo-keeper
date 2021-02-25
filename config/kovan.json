@@ -1,5 +1,5 @@
 {
-    "rpcURL": "https://kovan.infura.io/v3...",
+    "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
     "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
     "OasisDex": "0xe325acB9765b02b8b418199bf9650972299235F4",
@@ -13,7 +13,7 @@
         "callee": ""
       }
     },
-    "txnReplaceTimeout": "4",
+    "txnReplaceTimeout": "9",
     "delay": "5",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "500",
