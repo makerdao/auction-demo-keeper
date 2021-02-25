@@ -3,6 +3,7 @@
     "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
     "OasisDex": "0xe325acB9765b02b8b418199bf9650972299235F4",
+    "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "collateral": {
       "ETH-A": {
         "name": "ETH-A",
