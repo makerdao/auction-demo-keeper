@@ -52,49 +52,54 @@ for keyval in $(grep -E '": [^\{]' $TESTCHAIN/out/addresses-mcd.json | sed -e 's
     eval export $keyval
 done
 
-# ########################################
-# # Export addresses for LIQ2.0
-# for keyval in $(grep -E '": [^\{]' $OUT/addresses-for-keeper.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
-#     eval export $keyval
-# done
-# ########################################
+########################################
+# Export addresses for LIQ2.0
+for keyval in $(grep -E '": [^\{]' $OUT/addresses-for-keeper.json | sed -e 's/: /=/' -e "s/\(\,\)$//"); do
+    eval export $keyval
+done
+########################################
 
 # Create a risky 199.99 Dai vault, liquidate it, and confirm that an auction was kicked
 ink_unsafe=2    # ETH is priced at 150 DAI
 dai_unsafe=199.9995  # Amount of Dai to draw and exit (Wad)
 ilk_unsafe=ETH-A
 
-seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
-
-echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
-
-echo $ilk_unsafe
-
-mcd -C testnet --ilk=ETH-A ilk
-
-echo after
-mcd -C testnet wrap $ink_unsafe > /dev/null
-id_unsafe=$(mcd -C testnet --ilk=$ilk_unsafe cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
-
-# Give approval to the deployer's proxy. Used to bypass approval message
-seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
-echo "Lock in unsafe CDP id"
-mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe lock $ink_unsafe > /dev/null
-echo "Draw from unsafe CDP id"
-mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $dai_unsafe > /dev/null
-echo "Created Vault:"
-mcd -C testnet cdp $id_unsafe urn
+echo $MCD_DAI
 
 echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
 
-# Call drip to push Vault into an unsafe position
-seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)")
-
-# Confiscate the Vault and send to liquidation
-export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
-
-# Liquidate the unsafe Urn and send bark rewards to ETH_from
-seth send $MCD_DOG 'bark(bytes32,address,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN $ETH_FROM
-
-#Confirm that there is an auction
-echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
+# echo "New Hat: $(seth call $MCD_ADM 'hat()')"
+#
+#
+# echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
+#
+# echo $ilk_unsafe
+#
+# mcd -C testnet --ilk=ETH-A ilk
+#
+# echo after
+# mcd -C testnet wrap $ink_unsafe > /dev/null
+# id_unsafe=$(mcd -C testnet --ilk=$ilk_unsafe cdp open | sed -n "s/^Opened: cdp //p") > /dev/null
+#
+# # Give approval to the deployer's proxy. Used to bypass approval message
+# seth send $ETH 'approve(address,uint)' $PROXY_DEPLOYER $(seth --to-uint256 $(seth --to-wei 10000000 eth))
+# echo "Lock in unsafe CDP id"
+# mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe lock $ink_unsafe > /dev/null
+# echo "Draw from unsafe CDP id"
+# mcd -C testnet --ilk=$ilk_unsafe cdp $id_unsafe draw $dai_unsafe > /dev/null
+# echo "Created Vault:"
+# mcd -C testnet cdp $id_unsafe urn
+#
+# echo "User has $(seth --to-dec $(seth call $MCD_DAI 'balanceOf(address)' $ETH_FROM)) DAI"
+#
+# # Call drip to push Vault into an unsafe position
+# seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)")
+#
+# # Confiscate the Vault and send to liquidation
+# export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
+#
+# # Liquidate the unsafe Urn and send bark rewards to ETH_from
+# seth send $MCD_DOG 'bark(bytes32,address,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN $ETH_FROM
+#
+# #Confirm that there is an auction
+# echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
