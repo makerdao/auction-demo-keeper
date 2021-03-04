@@ -18,6 +18,5 @@
   "delay": "5",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "500",
-  "minProfitNum": "5",
-  "minProfitDen": "100"
+  "minProfitPercentage": "1.01"
 }
