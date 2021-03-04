@@ -93,7 +93,7 @@ seth send $PROXY_DEPLOYER 'execute(address,bytes memory)' $OASIS_LIQUIDITY_PROVI
 ########################################
 # Deploy the DSSspell and add LIQ2.0 to MCD via DS-Chief
 cd "$LIB/dss"
-dapp --use solc:0.6.7 build --extract
+dapp --use solc:0.6.11 build --extract
 export MCD_DOG=$(dapp create Dog $MCD_VAT)
 seth send $MCD_DOG 'rely(address)' $MCD_PAUSE_PROXY
 seth send $MCD_DOG 'deny(address)' $ETH_FROM
@@ -144,7 +144,7 @@ cd -
 # ########################################
 # # build CalleeMakerOtc from exchange-callees
 cd "$LIB/exchange-callees"
-dapp --use solc:0.6.7 build --extract
+dapp --use solc:0.6.11 build --extract
 OASIS_CALLEE=$(dapp create CalleeMakerOtcDai $MAKER_OTC $MCD_CLIP_ETH_A $MCD_JOIN_DAI)
 cd -
 
@@ -184,7 +184,8 @@ seth send $MCD_JUG 'drip(bytes32)' $(seth --to-bytes32 "$(seth --from-ascii $ilk
 # Confiscate the Vault and send to liquidation
 export UNSAFE_URN=$(seth call $CDP_MANAGER 'urns(uint256)(address)' $(seth --to-uint256 $id_unsafe))
 
-seth send $MCD_DOG 'bark(bytes32,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN
+# Liquidate the unsafe Urn and send bark rewards to ETH_from
+seth send $MCD_DOG 'bark(bytes32,address,address)' $(seth --to-bytes32 "$(seth --from-ascii $ilk_unsafe)") $UNSAFE_URN $ETH_FROM
 
 #Confirm that there is an auction
 echo "Live Auction IDs: $(seth call $MCD_CLIP_ETH_A 'list()')"
@@ -228,6 +229,8 @@ write_json "$OUT/addresses-temp.json"
 
 mkdir -p $OUT/abi && mkdir -p $OUT/abi/keeper
 
+
+# Come back and convert .abi to .json
 cp $LIB/dss/out/Clipper.abi \
 $LIB/dss/out/Dog.abi \
 $LIB/dss/out/StairstepExponentialDecrease.abi \
