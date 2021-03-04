@@ -6,7 +6,7 @@ import clipperAbi from '../abi/clipper';
 import transact from './transact';
 
 
-export default class clipper {
+export default class Clipper {
   _exhcange;
   _collateral;
   _collateralName;
@@ -36,10 +36,10 @@ export default class clipper {
     this._abacusAddr = await this._clipper.calc();
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
 
-    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, event) => {
+    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, kpr, coin, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        this._activeAuctions[id] = { top, tab, lot, id, usr, tic };
+        this._activeAuctions[id] = { top, tab, lot, id, usr, tic, kpr, coin };
       });
     } );
 
@@ -97,7 +97,7 @@ export default class clipper {
   // eslint-disable-next-line no-unused-vars
   execute () {
     //TODO use this._exchange.callee.address to get exchange callee address
-    // 
+    //
     // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
     // await transacttion.transac_async();
   }

@@ -9,7 +9,8 @@
       "erc20addr": "",
       "clipper": "",
       "abacus": "",
-      "callee": ""
+      "oasisCallee": "",
+      "uniswapCallee": ""
     }
   },
   "txnReplaceTimeout": "4",
