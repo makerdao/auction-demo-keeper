@@ -60,7 +60,7 @@ export class Transact {
   _initial_time;
   _gasStrategy;
 
-  constructor(unsigned_tx, signer, timeout, gasStrategy = null) {
+  constructor(unsigned_tx, signer, timeout = 15000, gasStrategy = null) {
     this._unsigned_tx = unsigned_tx;
     this._signer = signer;
     this._timeout = timeout * 1000; // convert to miliseconds

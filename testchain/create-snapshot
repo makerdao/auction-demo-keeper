@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 CWD="${0%/*}"
 SNAPSHOTS=$CWD/snapshots
-
 TESTCHAIN=$CWD/../node_modules/@makerdao/testchain
 
 otherargs=()

@@ -7,11 +7,9 @@ import network from '../src/singleton/network';
 import {expect} from '@jest/globals';
 import oasisDexAdaptor from '../src/dex/oasisdex';
 import config from '../config/testchain.json';
-import clipper from '../src/clipper';
-import keeper from '../src/keeper';
-import { Transact } from '../src/transact';
-import daiAbi from '../abi/Dai.json';
-import Wallet from '../src/wallet';
+import Clipper from "../src/clipper";
+import Keeper from "../src/keeper";
+import CreateAuction from "./createAuction.js";
 
 network.rpcURL = 'http://localhost:2000';
 Config.vars = config;
@@ -27,7 +25,7 @@ console.log('Address: ' + signer.address);
 
 
 test('keeper initialization, and one opportunity check loop', async () => {
-  const keepr = new keeper('http://localhost:2000', 'testchain');
+  const keepr = new Keeper('http://localhost:2000', 'testchain');
   keepr.run();
   await sleep(8);
   keepr.stop();
@@ -39,22 +37,21 @@ test('basic connectivity', async () => {
 });
 
 test('read active auctions', async () => {
-  const clip = new clipper( 'ETH-A' );
+  const clip = new Clipper( 'ETH-A' );
   await clip.init();
   const auctions = await clip.activeAuctions();
   expect(auctions.length).toBeGreaterThan(0);
 },10000);
 
 test('active auction has a price', async () => {
-  const clip = new clipper( 'ETH-A' );
+  const clip = new Clipper('ETH-A');
   await clip.init();
   const auctions = await clip.activeAuctions();
   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
 },10000);
 
-test('kick an auction and check that it is listed', () => {
-  // generate an auction
-});
+test('kick an auction and check that it is listed', async () => {
+}, 50000);
 
 test('kick an auction and check that it is listed', () => {
   //generate an auction, check that clipper saw it, take it, check that clipper removed it from

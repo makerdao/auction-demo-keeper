@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@ethersproject/experimental": "5.0.7",
+    "@makerdao/dai": "^0.32.11",
+    "@makerdao/dai-plugin-mcd": "^1.6.21",
     "bignumber.js": "^9.0.1",
     "dotenv": "^8.2.0",
     "ethers": "^5.0.19",
@@ -41,7 +43,7 @@
     "@babel/register": "^7.12.1",
     "@babel/runtime": "^7.12.5",
     "@jest/globals": "^26.6.2",
-    "@makerdao/testchain": "^1.1.23",
+    "@makerdao/testchain": "1.1.27",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.13.0",
     "eslint-loader": "^4.0.2",
