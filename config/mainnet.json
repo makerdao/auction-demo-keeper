@@ -3,20 +3,20 @@
   "dai": "",
   "MakerOTCSupportMethods": "",
   "OasisDex": "",
+  "UniswapV2Router": "",
   "collateral": {
     "ETH-A": {
       "name": "ETH-A",
       "erc20addr": "",
       "clipper": "",
       "abacus": "",
-      "callee": ""
+      "oasisCallee": "",
+      "uniswapCallee": ""
     }
   },
   "txnReplaceTimeout": "4",
   "delay": "5",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "500",
-  "minProfitNum": "5",
-  "minProfitDen": "100",
-  "minSize": "1"
+  "minProfitPercentage": "1.01"
 }

@@ -36,10 +36,10 @@ export default class Clipper {
     this._abacusAddr = await this._clipper.calc();
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
 
-    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, event) => {
+    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, kpr, coin, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        this._activeAuctions[id] = { top, tab, lot, id, usr, tic };
+        this._activeAuctions[id] = { top, tab, lot, id, usr, tic, kpr, coin };
       });
     } );
 
