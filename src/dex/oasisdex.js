@@ -7,10 +7,10 @@ import oasisCalleeAbi from '../../abi/CalleeMakerOtcDai.json';
 
 
 export default class oasisDexAdaptor {
-  _book=[];
-  _lastBlock=0;
+  _book = [];
+  _lastBlock = 0;
   _asset;
-  constructor (asset , callee ) {
+  constructor(asset, callee) {
     this._provider = network.provider;
     this._asset = asset;
     this._otcSupportMethods = new ethers.Contract(Config.vars.MakerOTCSupportMethods, supportMethodsAbi, this._provider);
@@ -22,28 +22,33 @@ export default class oasisDexAdaptor {
 
   fetch = async () => {
     const blockNumber = await this._provider.getBlockNumber();
-    if(blockNumber === this._lastBlock) return;
+    if (blockNumber === this._lastBlock) return;
 
     this._lastBlock = blockNumber;
-    const offers = await this._otcSupportMethods['getOffers(address,address,address)']( Config.vars.OasisDex,
-      Config.vars.dai, this._asset );
-    this._book = offers.ids.map( (v, i) => ( {id:v, payAmt: offers.payAmts[i], buyAmt:offers.buyAmts[i]} ) )
-      .filter(v=>(!(v.id.eq(0))));
+    const offers = await this._otcSupportMethods['getOffers(address,address,address)'](Config.vars.OasisDex,
+      Config.vars.dai, this._asset);
+    this._book = offers.ids.map((v, i) => ({ id: v, payAmt: offers.payAmts[i], buyAmt: offers.buyAmts[i] }))
+      .filter(v => (!(v.id.eq(0))));
   };
 
   baseBook = () => {
-    return this._book.map(entry => {return {
-      id:entry.id.toNumber(),
-      payAmt:ethers.utils.formatUnits(entry.payAmt),
-      buyAmt:ethers.utils.formatUnits(entry.buyAmt)}
+    return this._book.map(entry => {
+      return {
+        id: entry.id.toNumber(),
+        payAmt: ethers.utils.formatUnits(entry.payAmt),
+        buyAmt: ethers.utils.formatUnits(entry.buyAmt)
+      }
     });
   };
 
-  opportunity = ( price ) => {
+  opportunity = (price) => {
     //Total amount of collateral available for sale for a certain price
     return this._book
-      .filter ( v=> v.payAmt.div(v.buyAmt).gte(price.div(ethers.constants.WeiPerEther)))
-      .reduce( (previous, current) => previous.add(current.buyAmt), BigNumber.from(0));
+      .filter(v => v.payAmt.div(v.buyAmt).gte(price.div(ethers.constants.WeiPerEther)))
+      .reduce((previous, current) => previous.add(current.buyAmt), BigNumber.from(0));
   };
+
+
+
 
 }
