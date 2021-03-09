@@ -1,22 +1,22 @@
 {
-    "rpcURL": "https://kovan.infura.io/v3...",
+    "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
     "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
     "OasisDex": "0xe325acB9765b02b8b418199bf9650972299235F4",
+    "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "collateral": {
       "ETH-A": {
         "name": "ETH-A",
         "erc20addr": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
         "clipper": "",
         "abacus": "",
-        "callee": ""
+        "oasisCallee": "",
+        "uniswapCallee": ""
       }
     },
-    "txnReplaceTimeout": "4",
+    "txnReplaceTimeout": "9",
     "delay": "5",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "500",
-    "minProfitNum": "5",
-    "minProfitDen": "100",
-    "minSize": "1"
-  }
+    "minProfitPercentage": "1.01"
+}

@@ -6,7 +6,7 @@ import clipperAbi from '../abi/clipper';
 import Transact from './transact';
 
 
-export default class clipper {
+export default class Clipper {
   _exhcange;
   _collateral;
   _collateralName;
@@ -36,10 +36,10 @@ export default class clipper {
     this._abacusAddr = await this._clipper.calc();
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
 
-    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, event) => {
+    this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, kpr, coin, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        this._activeAuctions[id] = { top, tab, lot, id, usr, tic };
+        this._activeAuctions[id] = { top, tab, lot, id, usr, tic, kpr, coin };
       });
     });
 
@@ -119,7 +119,6 @@ export default class clipper {
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
     await txn.transact_async();
-
   }
 
 }

@@ -3,20 +3,20 @@
   "dai": "0x2d7f58ABB321ee1c63e8aBFF89A7CC100E7EEd01",
   "MakerOTCSupportMethods": "0xaE6a017F1adda2C8574acF2CCcAC733069eF33aa",
   "OasisDex": "0x06ef37A95603cb52e2dFF4C2b177C84Cdb3cE989",
+  "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "collateral": {
     "ETH-A": {
       "name": "ETH-A",
       "erc20addr": "0x7ba25F791FA76C3ef40AC98ed42634a8bC24c238",
       "clipper": "0x9C478ee982B97E0E7938dad2Dbd79475aFbBA10E",
       "abacus": "0x942694fd91bdbF92697d94DF3ed0A893F003F3e9",
-      "callee": "0x959F9b393914ebF4118CB3E565Ef2001CE94d0aE"
+      "oasisCallee": "0x959F9b393914ebF4118CB3E565Ef2001CE94d0aE",
+      "uniswapCallee": ""
     }
   },
   "txnReplaceTimeout": "4",
   "delay": "5",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "500",
-  "minProfitNum": "5",
-  "minProfitDen": "100",
-  "minSize": "1"
+  "minProfitPercentage": "1.01"
 }

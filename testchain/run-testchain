@@ -28,7 +28,7 @@ export PORT=2000
 if ! nc -z 127.0.0.1 $PORT; then
   mkdir -p $VAR
 
-  snapshot="default-auction-demo-keeper"
+  snapshot="mychain"
   echo "Loading snapshots/$snapshot."
   rm -rf $VAR/chaindata
   mkdir $VAR/chaindata
