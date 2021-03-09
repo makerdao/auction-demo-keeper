@@ -5,6 +5,14 @@
     "OasisDex": "0xe325acB9765b02b8b418199bf9650972299235F4",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "collateral": {
+      "LINK-A": {
+        "name": "LINK-A",
+        "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
+        "clipper": "",
+        "abacus": "",
+        "oasisCallee": "",
+        "uniswapCallee": ""
+      },
       "ETH-A": {
         "name": "ETH-A",
         "erc20addr": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
