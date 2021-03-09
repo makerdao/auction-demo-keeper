@@ -37,14 +37,14 @@ test('basic connectivity', async () => {
 });
 
 test('read active auctions', async () => {
-  const clip = new Clipper( 'ETH-A' );
+  const clip = new Clipper( 'LINK-A' );
   await clip.init();
   const auctions = await clip.activeAuctions();
   expect(auctions.length).toBeGreaterThan(0);
 },10000);
 
 test('active auction has a price', async () => {
-  const clip = new Clipper('ETH-A');
+  const clip = new Clipper('LINK-A');
   await clip.init();
   const auctions = await clip.activeAuctions();
   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
@@ -69,7 +69,7 @@ test('kick an auction check that its price decreases', () => {
 
 
 test('check order book', async () => {
-  const oasis = new oasisDexAdaptor( Config.vars.collateral['ETH-A'].erc20addr, Config.vars.collateral['ETH-A'].callee );
+  const oasis = new oasisDexAdaptor( Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].oasisCallee );
   await oasis.fetch();
   expect(ethers.utils.formatUnits(await oasis.opportunity(ethers.utils.parseUnits('0.9')))).toBe('0.5');
 },10000);

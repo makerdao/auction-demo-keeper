@@ -1,10 +1,11 @@
 import oasisDexAdaptor from './dex/oasisdex';
-import mainnetConfig from '../config/mainnet.json';
+import kovanConfig from '../config/kovan.json';
 import testchainConfig from '../config/testchain.json';
 import Config from './singleton/config';
 import network from './singleton/network';
 import Clipper from './clipper';
 import { ethers } from 'ethers';
+import UniswapAdaptor from './dex/uniswap.js'
 
 let _this;
 export default class keeper {
@@ -14,8 +15,8 @@ export default class keeper {
 
     let config;
     switch (net) {
-      case 'mainnet':
-        config = mainnetConfig;
+      case 'kovan':
+        config = kovanConfig;
         break;
       default:
         config = testchainConfig;
