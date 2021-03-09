@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
-import transact from './transact';
+import Transact from './transact';
 
 
 export default class Clipper {
@@ -13,13 +13,13 @@ export default class Clipper {
   _clipper;
   _abacus;
   _abacusAddr;
-  _activeAuctions=[];
+  _activeAuctions = [];
 
   _kickListener;
   _takeListener;
   _redoListener;
 
-  constructor( ilkType , exchange ) {
+  constructor(ilkType, exchange) {
     const collInfo = Config.vars.collateral[ilkType];
 
     this._exchange = exchange;
@@ -41,19 +41,19 @@ export default class Clipper {
         const tic = block.timestamp;
         this._activeAuctions[id] = { top, tab, lot, id, usr, tic, kpr, coin };
       });
-    } );
+    });
 
     // eslint-disable-next-line no-unused-vars
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      if ( lot === 0 || tab === 0 ) {
+      if (lot === 0 || tab === 0) {
         // Auction is over
-        delete(this._activeAuctions[id]);
+        delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
         this._activeAuctions[id].lot = lot;
         this._activeAuctions[id].tab = tab;
       }
-    } );
+    });
 
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
@@ -67,38 +67,58 @@ export default class Clipper {
     const auctionsIds = await this._clipper.list();
     const readPromises = [];
     for (const id in auctionsIds) {
-      if(Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
+      if (Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
         readPromises.push(this._clipper.sales(id).then(sale => {
-          return ({id, sale});
+          return ({ id, sale });
         }));
       }
     }
-    (await Promise.all(readPromises)).forEach( details => {
+    (await Promise.all(readPromises)).forEach(details => {
       this._activeAuctions[details.id] = details.sale;
     });
 
-      //TODO: subscribe to file events to update dog, calc and other parameters
+    //TODO: subscribe to file events to update dog, calc and other parameters
   }
 
   activeAuctions() {
-    const currentTime = Math.floor(new Date()/1000);
+    const currentTime = Math.floor(new Date() / 1000);
     const readPromises = [];
 
     for (const auctionId in this._activeAuctions) {
-      if(Object.prototype.hasOwnProperty.call(this._activeAuctions, auctionId)) {
+      if (Object.prototype.hasOwnProperty.call(this._activeAuctions, auctionId)) {
         const auction = this._activeAuctions[auctionId];
-        readPromises.push(this._abacus.price(auction.top, currentTime-auction.tic)
-          .then(price => {return({...auction, price, id:auctionId});}));
+        readPromises.push(this._abacus.price(auction.top, currentTime - auction.tic)
+          .then(price => { return ({ ...auction, price, id: auctionId }); }));
       }
     }
     return Promise.all(readPromises);
   }
 
   // eslint-disable-next-line no-unused-vars
-  execute () {
-    //TODO use this._exchange.callee.address to get exchange callee address
-    //
-    // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
-    // await transacttion.transac_async();
+  // execute () {
+  //TODO use this._exchange.callee.address to get exchange callee address
+  // 
+  // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
+  // await transacttion.transac_async();
+
+  execute = async (_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer) => {
+
+    let minProfit = ethers.utils.parseEther(`${_minProfit}`);
+
+    //encoding calldata
+    let typesArray = ['address', 'address', 'uint256'];
+    let abiCoder = ethers.utils.defaultAbiCoder;
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemA, minProfit]);
+
+    let id = abiCoder.encode(['uint256'], [1]);
+    let amt = ethers.utils.parseEther(`${_amt}`);
+    let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
+
+    const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
+    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, this._exchange.callee.address, flashData);
+    console.log('Take_Transaction ', take_transaction);
+    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
+    await txn.transact_async();
   }
+
 }
