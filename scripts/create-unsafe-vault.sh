@@ -55,16 +55,10 @@ MAX_DAI_HUMAN=$(echo "$MAX_DAI / 10 ^ 45" | bc)
 
 echo ""
 echo "locking ${AMOUNT_ETH} WETH for ${MAX_DAI_HUMAN} DAI..."
-seth send --gas 120000 $MCD_VAT \
+seth send --gas 130000 $MCD_VAT \
      'frob(bytes32,address,address,address,int256,int256)' \
      $ILK_BYTES32 $ETH_FROM $ETH_FROM $ETH_FROM $AMOUNT_WEI $MAX_ART
 
 echo ""
 echo "dripping..."
 seth send --gas 70000 $MCD_JUG 'drip(bytes32)' $ILK_BYTES32
-
-# uncomment to make sure vault is unsafe
-# this tx should fail
-# seth send --gas 120000 $MCD_VAT \
-#      'frob(bytes32,address,address,address,int256,int256)' \
-#      $ILK_BYTES32 $ETH_FROM $ETH_FROM $ETH_FROM 0 1
