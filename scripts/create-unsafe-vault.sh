@@ -27,11 +27,17 @@ MCD_JUG=0xcbB7718c9F39d05aEEDE1c472ca8Bf804b2f1EaD
 AMOUNT_WEI=$(seth --to-wei $AMOUNT_ETH eth)
 ILK_BYTES32=$(seth --from-ascii $ILK_NAME | seth --to-bytes32)
 
-# wrap ETH and join it
+echo "wrapping ${AMOUNT_ETH} ETH..."
 seth send --gas 50000 --value $AMOUNT_WEI $WETH 'deposit()'
+
+echo ""
+echo "setting max WETH allowance for the join adapter..."
 seth send --gas 50000 $WETH 'approve(address,uint256)' \
      $MCD_JOIN_ETH_A $(seth --max-uint)
-seth send --gas 70000 $MCD_JOIN_ETH_A 'join(address,uint256)' \
+
+echo ""
+echo "joining ${AMOUNT_ETH} WETH into MCD..."
+seth send --gas 80000 $MCD_JOIN_ETH_A 'join(address,uint256)' \
      $ETH_FROM $AMOUNT_WEI
 
 # compute maximum art amount
@@ -45,13 +51,16 @@ RATE=${ILK_ARRAY[1]}
 SPOT=${ILK_ARRAY[2]}
 MAX_DAI=$(echo "$SPOT * $AMOUNT_WEI" | bc)
 MAX_ART=$(echo "$MAX_DAI / $RATE" | bc)
+MAX_DAI_HUMAN=$(echo "$MAX_DAI / 10 ^ 45" | bc)
 
-# lock gem for max art
+echo ""
+echo "locking ${AMOUNT_ETH} WETH for ${MAX_DAI_HUMAN} DAI..."
 seth send --gas 120000 $MCD_VAT \
      'frob(bytes32,address,address,address,int256,int256)' \
      $ILK_BYTES32 $ETH_FROM $ETH_FROM $ETH_FROM $AMOUNT_WEI $MAX_ART
 
-# drip
+echo ""
+echo "dripping..."
 seth send --gas 70000 $MCD_JUG 'drip(bytes32)' $ILK_BYTES32
 
 # uncomment to make sure vault is unsafe
