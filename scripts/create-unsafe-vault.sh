@@ -41,17 +41,17 @@ seth send --gas 80000 $MCD_JOIN_ETH_A 'join(address,uint256)' \
      $ETH_FROM $AMOUNT_WEI
 
 # compute maximum art amount
-ILK_DATA=$(seth call $MCD_VAT 'ilks(bytes32)' $ILK_BYTES32)
-ILK_VALUES=$(
-    seth --abi-decode 'Ilk()(uint256,uint256,uint256,uint256,uint256)' \
-         $ILK_DATA
-          )
-readarray -t ILK_ARRAY <<< $ILK_VALUES
-RATE=${ILK_ARRAY[1]}
-SPOT=${ILK_ARRAY[2]}
+RATE=$(seth call $MCD_VAT "ilks(bytes32)(uint256,uint256,uint256,uint256,uint256)" $ETH_ILK | sed -n 2p)
+SPOT=$(seth call $MCD_VAT "ilks(bytes32)(uint256,uint256,uint256,uint256,uint256)" $ETH_ILK | sed -n 3p)
+echo "RATE $RATE"
+echo "SPOT $SPOT"
 MAX_DAI=$(echo "$SPOT * $AMOUNT_WEI" | bc)
 MAX_ART=$(echo "$MAX_DAI / $RATE" | bc)
 MAX_DAI_HUMAN=$(echo "$MAX_DAI / 10 ^ 45" | bc)
+echo "MAX_DAI $MAX_DAI"
+echo "MAX_ART $MAX_ART"
+echo "MAX_DAI_HUMAN $MAX_DAI_HUMAN"
+echo "AMOUNT_WEI $AMOUNT_WEI"
 
 echo ""
 echo "locking ${AMOUNT_ETH} WETH for ${MAX_DAI_HUMAN} DAI..."
