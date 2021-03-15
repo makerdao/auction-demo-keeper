@@ -104,6 +104,7 @@ export default class keeper {
         });
       }
     }
+    console.log('This _clippers Array: ', this._clippers);
   }
 
   stop() {
