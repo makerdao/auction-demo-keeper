@@ -67,11 +67,14 @@ export default class keeper {
 
           // Check if there's a Dai profit from Uniswap by selling the entire auction
           if (uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)) {
+            //check the collateral clipper and call execute function with the right auctino id
+            // this._clippers[collateral name]
             uniswap.execute( auction.id, auction.lot, auction.price );
 
           // If there's not a profit from Uniswap, use Oasis to sell a portion of
           // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
+            //check the collateral clipper and call execute function with the right auctino id
             oasis.execute( auction.id, Math.min(oasisSize, auction.lot), auction.price );
           }
 
