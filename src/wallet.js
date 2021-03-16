@@ -1,6 +1,7 @@
 /* Key facility that allows auction-keeper user to use 
 * his JSON wallet key to sign transactions
 * As an alternative, user can also paste in his private key
+* This modules also enables the reading of a wallet being stored as json
 */
 
 import { ethers } from 'ethers';
