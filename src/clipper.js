@@ -37,6 +37,7 @@ export default class Clipper {
     // initialize the clipper contract object
     this._clipper = new ethers.Contract(this._clipperAddr, clipperAbi, network.provider);
 
+    // _clipper.calc() returns the abacus address of the collateral
     this._abacusAddr = await this._clipper.calc();
     
     // initialize the abacus contract obbject
@@ -106,7 +107,7 @@ export default class Clipper {
   // eslint-disable-next-line no-unused-vars
   // execute () {
   //TODO use this._exchange.callee.address to get exchange callee address
-  // 
+  
   // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
   // await transacttion.transac_async();
 
