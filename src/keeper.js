@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import oasisDexAdaptor from './dex/oasisdex';
 import kovanConfig from '../config/kovan.json';
 import testchainConfig from '../config/testchain.json';
@@ -5,10 +6,17 @@ import Config from './singleton/config';
 import network from './singleton/network';
 import Clipper from './clipper';
 import { ethers } from 'ethers';
-import UniswapAdaptor from './dex/uniswap.js'
+import UniswapAdaptor from './dex/uniswap.js';
+
+
+/* The Keeper module is the entry point for the 
+** auction Demo Keeper
+* all configurations and intitalisation of the demo keeper is being handled here
+*/
 
 let _this;
 export default class keeper {
+
   _clippers = [];
 
   constructor ( rpcUrl, net ) {
@@ -90,7 +98,7 @@ export default class keeper {
     await clip.init();
 
     // Initialize the loop where an opportunity is checked at a perscribed cadence (Cofnig.delay)
-    const timer = setInterval(() => {this._opportunityCheck(collateral,oasis,uniswap,clip)}, Config.vars.delay * 1000);
+    const timer = setInterval(() => {this._opportunityCheck(collateral,oasis,uniswap,clip);}, Config.vars.delay * 1000);
     return({oasis, uniswap, clip, timer});
   }
 
@@ -99,6 +107,7 @@ export default class keeper {
       if(Object.prototype.hasOwnProperty.call(Config.vars.collateral,name)) {
         const collateral = Config.vars.collateral[name];
         this._clipperInit(collateral).then(pair => {
+          // add the pair to the array of clippers
           this._clippers.push(pair);
           console.log('Collateral ' + collateral.name + ' initialized');
         });
@@ -109,6 +118,6 @@ export default class keeper {
   stop() {
     this._clippers.forEach(tupple => {
       clearTimeout(tupple.timer);
-    })
+    });
   }
 }

@@ -1,3 +1,11 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-constant-condition */
+
+/* The Transact module is responsible for
+* handling estimated gas cost and sending signed and unsignedd
+* transactions
+*/
+
 import { ethers } from 'ethers';
 
 // if NonceManager.sendTransaction begins to work, consider refactoring
@@ -30,24 +38,24 @@ export class GeometricGasPrice {
     this._max_price = max_price;
   }
 
-  // Gas price in wei [integer]
+  //Get the Gas price in wei [integer]
   get_gas_price(time_elapsed) {
     let result = this._initial_price;
 
     if (time_elapsed >= this._every_secs) {
-      const cycles = [...Array(Math.floor(time_elapsed/this._every_secs))]
+      const cycles = [...Array(Math.floor(time_elapsed/this._every_secs))];
 
       cycles.forEach(() => {
         result *= this._coefficient;
-      })
+      });
 
     }
 
     if (this._max_price !== null) {
-      result = Math.min(result, this._max_price)
+      result = Math.min(result, this._max_price);
     }
 
-    return Math.ceil(result)
+    return Math.ceil(result);
   }
 
 
@@ -72,15 +80,15 @@ export class Transact {
   async sign_and_send(_previousNonce = null) {
 
     // Take into account transactions done with other wallets (i.e. MetaMask): https://github.com/makerdao/pymaker/pull/201#issuecomment-731382038
-    const pendingNonce = this._signer.getTransactionCount("pending")
-    const gasLimit = this._signer.estimateGas(this._unsiged_tx)
-    const network = this._signer.provider.getNetwork()
+    const pendingNonce = this._signer.getTransactionCount('pending');
+    const gasLimit = this._signer.estimateGas(this._unsiged_tx);
+    const network = this._signer.provider.getNetwork();
 
     await Promise.all([pendingNonce, gasLimit, network]).then(values => {
-      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce)
+      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce);
       this._unsigned_tx.gasLimit = values[1];
       this._unsigned_tx.chainId = values[2].chainId;
-    })
+    });
 
     const seconds_elapsed = Math.round((new Date() - this._initial_time)/1000);
     // console.log(seconds_elapsed)
@@ -96,7 +104,7 @@ export class Transact {
       to ${this._unsigned_tx.to} \n
       nonce ${this._unsigned_tx.nonce} \n
       gasLimit ${this._unsigned_tx.gasLimit.toNumber()} \n
-      gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),"gwei")} Gwei`)
+      gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),'gwei')} Gwei`);
 
     const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
     return await this._signer.provider.sendTransaction(signed_tx);
@@ -129,7 +137,7 @@ export class Transact {
       // Replace Transaction if it wasn't mined within the allotted timeout
       } else {
         // Sign and send the same transaction, but with a higher gas price
-        console.log("Transaction still pending. Will send a replacement transaction")
+        console.log('Transaction still pending. Will send a replacement transaction');
         response = await this.sign_and_send(response.nonce);
       }
 
