@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import network from './singleton/network';
 import { ethers } from 'ethers';
 import Config from './singleton/config';
@@ -30,12 +31,19 @@ export default class Clipper {
     //TODO: start timer every minute
   }
 
+  // Initialize the clipper
   async init() {
 
+    // initialize the clipper contract object
     this._clipper = new ethers.Contract(this._clipperAddr, clipperAbi, network.provider);
+
+    // _clipper.calc() returns the abacus address of the collateral
     this._abacusAddr = await this._clipper.calc();
+    
+    // initialize the abacus contract obbject
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
 
+    // Listen for active auctions
     this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, kpr, coin, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
@@ -44,6 +52,8 @@ export default class Clipper {
     });
 
     // eslint-disable-next-line no-unused-vars
+
+    // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
       if (lot === 0 || tab === 0) {
         // Auction is over
@@ -54,7 +64,7 @@ export default class Clipper {
         this._activeAuctions[id].tab = tab;
       }
     });
-
+    // recall the listener to check for active auctions
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
@@ -97,10 +107,12 @@ export default class Clipper {
   // eslint-disable-next-line no-unused-vars
   // execute () {
   //TODO use this._exchange.callee.address to get exchange callee address
-  // 
+  
   // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
   // await transacttion.transac_async();
 
+
+  // execute an auction
   execute = async (_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer) => {
 
     let minProfit = ethers.utils.parseEther(`${_minProfit}`);
