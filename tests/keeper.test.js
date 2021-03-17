@@ -6,13 +6,15 @@ import Config from '../src/singleton/config';
 import network from '../src/singleton/network';
 import {expect} from '@jest/globals';
 import oasisDexAdaptor from '../src/dex/oasisdex';
-import config from '../config/testchain.json';
+import config from '../config/kovan.json';
 import Clipper from "../src/clipper";
 import Keeper from "../src/keeper";
-import CreateAuction from "./createAuction.js";
+// import CreateAuction from "./createAuction.js";
 
-network.rpcURL = 'http://localhost:2000';
+network.rpcURL = 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a';
 Config.vars = config;
+console.log('network.rpcURL', network.rpcURL);
+console.log('CONFIG ',Config.vars);
 
 
 const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay*1000));};
@@ -25,7 +27,7 @@ console.log('Address: ' + signer.address);
 
 
 test('keeper initialization, and one opportunity check loop', async () => {
-  const keepr = new Keeper('http://localhost:2000', 'testchain');
+  const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
   keepr.run();
   await sleep(8);
   keepr.stop();
