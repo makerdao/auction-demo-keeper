@@ -30,7 +30,7 @@ The current version of the keeper is work in progress. As a step to run the keep
 ## Configuring Keeper
 
 The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
-
+## Parameters
 - rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
 - dai - This is the address of the dai contract on the kovan network
@@ -47,9 +47,9 @@ The configuration of the Keeper is being done by puttong all the necessary param
 
 - delay - Delay period in seconds
 
-- dynamicGasCoefficient - 
+- dynamicGasCoefficient - This is a value that is needed to get a geometric gas price. It's defaults value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
 
-- maxGasPrice - 
+- maxGasPrice - Max gas price that the geometric gas price calculator uses in wei
 
 - minProfitPercentage - 
 ## How to Run:
