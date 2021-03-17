@@ -24,7 +24,7 @@ import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
     let vaultId = vault.id;
     console.log('Vault ID', vaultId);
 
-    console.log('Locking collateral');
+    console.log('Locking 16.49 LINK-A');
     await manager.lock(
         vault.id,
         'LINK-A',
@@ -60,13 +60,13 @@ import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
     console.log('Is Vault safe? ', managedVault.isSafe);
 
     console.log(' ');
-    console.log(`Drawing ${amtDai} from Vault #${vaultId}`);
+    console.log(`Drawing ${DAI(amtDai.toFixed(17))} from Vault #${vaultId}`);
 
     try{
         let drawDai = await manager.draw(
             vaultId,
             'LINK-A',
-            DAI(`${amtDai}`)
+            DAI(amtDai.toFixed(17))
         );
         drawDai;
     }catch(error){
