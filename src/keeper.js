@@ -74,7 +74,7 @@ export default class keeper {
           // If there's not a profit from Uniswap, use Oasis to sell a portion of
           // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
-            //check the collateral clipper and call execute function with the right auctino id
+            //check the collateral clipper and call execute function with the right auction id
             oasis.execute( auction.id, Math.min(oasisSize, auction.lot), auction.price );
           }
 
