@@ -1,3 +1,30 @@
+//  Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
+
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU Affero General Public License for more details.
+
+//  You should have received a copy of the GNU Affero General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+/*
+* JS script intended to to create risky vaults with the LINK-A collateral.
+* And call dog.bark() on all urns right after they are created. 
+*
+*__________________RUN____________________
+* To run:
+* - paste your private key in privateKey
+* - paste dog contract address in dogAddress 
+* - Get free Kovan LINK from https://kovan.chain.link/
+* - Make sure to have enought Kovan ETH
+*/
+
 import Maker from '@makerdao/dai';
 import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
 
@@ -5,6 +32,7 @@ let maker;
 let web3;
 let kprAddress = '';
 const dogAddress = ''; // setup dog contract address
+const privateKey = ''; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];
@@ -15,7 +43,7 @@ let urns = [];
     maker = await Maker.create('http', {
         plugins: [McdPlugin],
         url: 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a',
-        privateKey: ''
+        privateKey: privateKey
     });
 
     web3 = await maker.service('web3')._web3;
