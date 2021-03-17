@@ -2,7 +2,7 @@ import Config from '../singleton/config';
 import network from '../singleton/network';
 import { ethers, BigNumber } from 'ethers';
 import uniswapRouter from '../../abi/UniswapV2Router02.json';
-import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
+// import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
 
 export default class UniswapAdaptor {
     _book=[]
@@ -11,7 +11,7 @@ export default class UniswapAdaptor {
     constructor(asset, callee) {
         this._provider = network.provider;
         this._asset = asset;
-        this._callee = new ethers.Contract(callee, uniswapCalleeAbi, this._provider);
+        // this._callee = new ethers.Contract(callee, uniswapCalleeAbi, this._provider);
         this._uniswap = new ethers.Contract(Config.vars.UniswapV2Router, uniswapRouter, this._provider);
     }
 

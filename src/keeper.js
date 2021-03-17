@@ -77,6 +77,7 @@ export default class keeper {
           //TODO: Determine if we already have a pending bid for this auction
 
           // Check if there's a Dai profit from Uniswap by selling the entire auction
+
           if (
             uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
           ) {
@@ -85,11 +86,9 @@ export default class keeper {
             // If there's not a profit from Uniswap, use Oasis to sell a portion of
             // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
-            oasis.execute(
-              auction.id,
-              Math.min(oasisSize, auction.lot),
-              auction.price
-            );
+            //check the collateral clipper and call execute function with the right auction id
+            oasis.execute( auction.id, Math.min(oasisSize, auction.lot), auction.price );
+
           }
         });
       });
@@ -145,6 +144,7 @@ export default class keeper {
         });
       }
     }
+    console.log('This _clippers Array: ', this._clippers);
   }
 
   stop() {
