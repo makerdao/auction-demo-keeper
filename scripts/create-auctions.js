@@ -11,7 +11,7 @@ let urns = [];
     maker = await Maker.create('http', {
         plugins: [McdPlugin],
         url: 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a',
-        privateKey: ''
+        privateKey: '771b81a8691ae7e06142970beda4bb79b896fdd7ddc0d3442423771c32098fb5'
     });
 
     const address = maker.currentAddress();
