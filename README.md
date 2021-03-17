@@ -34,6 +34,24 @@ The configuration of the Keeper is being done by puttong all the necessary param
 - rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
 - dai - This is the address of the dai contract on the kovan network
+
+- MakerOTCSupportMethods - This is the address of the helper contract for oasisDex
+
+- OasisDex - This is the address of the oasis exchange contract
+
+- UniswapV2Router - This is the address of uniswap v2 router contract
+
+- collateral - This takes in an object for the collateral path "LINK-A" and "ETH-A"
+
+- txnReplaceTimeout - Timeout in seconds for the transaction replacement 
+
+- delay - Delay period in seconds
+
+- dynamicGasCoefficient - 
+
+- maxGasPrice - 
+
+- minProfitPercentage - 
 ## How to Run:
 
 ```bash
