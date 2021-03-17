@@ -2,9 +2,13 @@ import Maker from '@makerdao/dai';
 import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
 
 let maker;
+let web3;
+let kprAddress = '';
+const dogAddress = ''; // setup dog contract address
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];
+
 
 (async () => {
     console.log('Initiating Maker Service from Dai.js')
@@ -14,9 +18,12 @@ let urns = [];
         privateKey: ''
     });
 
-    const address = maker.currentAddress();
+    web3 = await maker.service('web3')._web3;
+    console.log('web3 ', await web3.eth.net.getNetworkType());
+
+    const kprAddress = maker.currentAddress();
     linkBalance = await maker.getToken(LINK).balance();
-    console.log('Current Wallet Address: ', address);
+    console.log('Current Wallet Address: ', kprAddress);
     console.log('Link balance ', linkBalance._amount);
 
     if (Number(linkBalance._amount) < 16.49) throw 'NOT ENOUGHT LINK-A BALANCE';
@@ -32,10 +39,20 @@ let urns = [];
     //Barking on all urns
     console.log(' ');
     console.log('Risky Urns');
-    urns.forEach(urn => {
-        console.log(urn);
-        //dog.bark(ilk, urn, kpr)
-    });
+
+    const dogContract = new web3.eth.Contract(dogAbi, dogAddress);
+
+    const bark = async (urn) => {
+        dogContract.methods.bark(ilk, urn, kprAddress).send({from: kprAddress})
+        .on('error', error => console.log(error))
+        .on('receipt', receipt => console.log(receipt.events));
+    };
+    
+
+    for (let i = 0; i < urns.length; i++) {
+        console.log(urns[i]);
+        // await bark(urns[i]);
+    }
 
     process.kill(process.pid, 'SIGTERM');
 })();
@@ -124,3 +141,37 @@ const createVaults = async () => {
     console.log('Liquidation Price ', managedVault.liquidationPrice._amount);
     console.log('Is Vault safe? ', managedVault.isSafe);
 };
+
+
+
+const dogAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "ilk",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "urn",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "kpr",
+                "type": "address"
+            }
+        ],
+        "name": "bark",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+];
