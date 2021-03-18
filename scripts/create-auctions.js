@@ -50,7 +50,8 @@ let urns = [];
     console.log('web3 ', await web3.eth.net.getNetworkType());
 
     const kprAddress = maker.currentAddress();
-    linkBalance = await maker.getToken(LINK).balance();
+    const linkToken = await maker.getToken(LINK);
+    linkBalance = await linkToken.balance();
     console.log('Current Wallet Address: ', kprAddress);
     console.log('Link balance ', linkBalance._amount);
 
@@ -58,7 +59,15 @@ let urns = [];
 
     console.log('Ensure there is proxy address');
     await maker.service('proxy').ensureProxy();
-    console.log('Proxy Address: ', await maker.service('proxy').getProxyAddress());
+    const proxyAddress = await maker.service('proxy').getProxyAddress();
+    console.log('Proxy Address: ', proxyAddress);
+
+    //Check for token allowance
+    const linkAllowance = await linkToken.allowance(kprAddress, proxyAddress);
+    if(Number(linkAllowance._amount) === 0) {
+        console.log('Approving Proxy to use LINK');
+        await linkToken.approveUnlimited(proxyAddress);
+    }
 
     while (Number(linkBalance._amount) > 16.49) {
         await createVaults();
