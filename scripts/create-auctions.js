@@ -32,7 +32,7 @@ let maker;
 let web3;
 let kprAddress = '';
 const dogAddress = ''; // setup dog contract address
-const privateKey = ''; // insert wallet private key
+const privateKey = 'fe85ccc0f2d39869bda4ae998600bea99eedb57c45aabc4718a1f80ef0a53655'; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];
