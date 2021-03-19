@@ -27,7 +27,39 @@ When paired with an [exchange-callee](https://github.com/makerdao/exchange-calle
 
 The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
 
+## Configuring Keeper
+
+The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
+## Parameters
+- rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
+
+- dai - This is the address of the dai contract on the kovan network
+
+- MakerOTCSupportMethods - This is the address of the helper contract for oasisDex
+
+- OasisDex - This is the address of the oasis exchange contract
+
+- UniswapV2Router - This is the address of uniswap v2 router contract
+
+- collateral - This takes in an object for the collateral path "LINK-A" and "ETH-A"
+
+- txnReplaceTimeout - Timeout in seconds for the transaction replacement 
+
+- delay - Delay period in seconds
+
+- dynamicGasCoefficient - This is a value that is needed to get a geometric gas price. It's defaults value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
+
+- maxGasPrice - Max gas price that the geometric gas price calculator uses in wei
+
+- minProfitPercentage - 
 ## How to Run:
+
+```bash
+cd auction-demo-keeper
+node keeper.js
+```
+
+- running the node keeper.js will initialise everything in the keeper.js
 
 ### Install
 
