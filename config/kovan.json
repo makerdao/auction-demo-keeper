@@ -7,19 +7,19 @@
     "collateral": {
       "LINK-A": {
         "name": "LINK-A",
-        "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
-        "clipper": "",
-        "abacus": "",
-        "oasisCallee": "",
-        "uniswapCallee": ""
+        "erc20addr": "0xb492772f18FBA204a6184e6C1742FB223CC147ed",
+        "clipper": "0x0C2762C7795f9bF8ea6d485a94f98644f316a89a",
+        "abacus": "0x8274fe91FA8b72A8dF61114c8cB7758921917050",
+        "oasisCallee": "0xa73D65a16b62E4dC487e3897c9a309Db25017136",
+        "uniswapCallee": "0x154271fB66c9D1d16a7b06F342Def9120F377D45"
       },
       "ETH-A": {
         "name": "ETH-A",
-        "erc20addr": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-        "clipper": "",
-        "abacus": "",
-        "oasisCallee": "",
-        "uniswapCallee": ""
+        "erc20addr": "0x8013846e944339366FA34D60b56Cc675449DF0f0",
+        "clipper": "0x7Ca4abf287FAE0d9601F006FD68F43a32aec404d",
+        "abacus": "0xEbA57319017b6159DBb5d22bc4941EB3099df137",
+        "oasisCallee": "0x3a9c874fE2E307d06075CDe0b3856e6C9413514b",
+        "uniswapCallee": "0xFA2552fF0bD01daD0B60707a61a9Ee64eAE9501F"
       }
     },
     "txnReplaceTimeout": "9",
