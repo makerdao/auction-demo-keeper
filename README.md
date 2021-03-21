@@ -27,14 +27,40 @@ When paired with an [exchange-callee](https://github.com/makerdao/exchange-calle
 
 The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
 
-## Functions
-### Keeper.js
+## Core Modules
+### keeper.js
 
 > **Check If There's an opportunity**
 
 `_opportunityCheck(collateral, oasis, uniswap, clip)`
 
-Checks if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
+Checks if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan - based on the opportunity, it fetches the orderbook from OasisDex & all the active auctions
+
+> **Initialize Cliiper**
+
+`_clipperInit(collateral)`
+
+Initializes the clipper by passing in the collateral
+
+### clipper.js
+
+> **Initialize Clipper**
+
+`init()`
+
+Initializes the clipper module
+
+> **Active Auctions**
+
+`activeAuctions()`
+
+Gets all the details of an active auction
+
+> **Execute an Auction**
+
+`execute(_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer)`
+
+executes an auction by passing in the amount, max price, minimum profit, profit address, collateral type and signer
 
 ## Configuring Keeper
 
