@@ -27,6 +27,15 @@ When paired with an [exchange-callee](https://github.com/makerdao/exchange-calle
 
 The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
 
+## Functions
+### Keeper.js
+
+> **Check If There's an opportunity**
+
+`_opportunityCheck(collateral, oasis, uniswap, clip)`
+
+Checks if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
+
 ## Configuring Keeper
 
 The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
