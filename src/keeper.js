@@ -77,6 +77,7 @@ export default class keeper {
           //TODO: Determine if we already have a pending bid for this auction
 
           // Check if there's a Dai profit from Uniswap by selling the entire auction
+          //Clipper.execute(auction.id, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer)
 
           if (
             uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
