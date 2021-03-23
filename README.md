@@ -3,7 +3,7 @@
 *Integration example of a LIQ2.0 Keeper with flash loan functionality*
 
 The Auction-Demo-Keeper is an integration example that demonstrates most ways to interact with the [LIQ-2.0]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) auction system in the Maker Protocol.
-This "demo" keeper works out of the box, is simple in design, leverages LIQ-2.0's flash loan feature, and therefore operates with minimal capital requirements.
+This "demo" keeper works out of the box, it is simple in design, leverages LIQ-2.0's flash loan feature, and therefore operates with minimal capital requirements.
 
 When paired with an [exchange-callee](https://github.com/makerdao/exchange-callees) contract, `auction-demo-keeper` utilizes the native flash loan feature within LIQ2.0, allowing it to borrow the collateral out for auction, swap it for DAI within an arbitrary DEX, return DAI to the auction, and collect a DAI profit from the spread - all in a single transaction. The keeper needs only ETH for gas to participate in LIQ2.0 auctions.
 
@@ -28,14 +28,14 @@ When paired with an [exchange-callee](https://github.com/makerdao/exchange-calle
 ## Core Modules
 ### keeper.js
 
-The Keeper module is the entry point for the Auction Demo Keeper. It is responsible for initializing th clipper, constructing the different exchange contracts e.g. Uniswap, Oasis
+The Keeper module is the entry point for the Auction Demo Keeper. It is responsible for initializing the clipper and constructing the different exchange contracts e.g. Uniswap, Oasis
 ### clipper.js
 
-The Clipper module is responsible for auctioin inititation. It listens for active auctions and gets the details of all active auctions . Based on the details of active auctions like collaterals remaining and auction state, the clipper executes the auction using the `Transact` Module.
+The Clipper module is responsible for auction inititation. It listens for active auctions and gets the details of all active auctions. Based on the details of active auctions like collaterals remaining and auction state, the clipper executes the auction using the `Transact` Module.
 
 ### transact.js
 
-The Transact module hsndles calculation of gas costs and the signing and sending of transactions. It also has a major class called `GemoetricGasPrice` which is used to get a geometric gas price that increases geometrically with respect to time and the fixed coefficient
+The Transact module handles calculation of gas costs, signing and sending of transactions. It also has a major class called `GemoetricGasPrice` which is used to get a geometric gas price that increases geometrically with respect to time and the fixed coefficient
 
 ## Installation
 
@@ -47,7 +47,7 @@ yarn install
 
 ## Configuring Keeper
 
-The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
+The configuration of the Keeper is being done by putting all the necessary parameters in config/kovan.json
 ## Parameters
 - `rpcUrl` - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
@@ -65,7 +65,7 @@ The configuration of the Keeper is being done by puttong all the necessary param
 
 - `delay` - Delay period in seconds
 
-- `dynamicGasCoefficient` - This is a value that is needed to get a geometric gas price. It's defaults value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
+- `dynamicGasCoefficient` - This is a value that is needed to get a geometric gas price. It's default value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
 
 - `maxGasPrice` - Max gas price that the geometric gas price calculator uses in wei
 
