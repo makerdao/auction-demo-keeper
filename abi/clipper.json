@@ -1,26 +1,10 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "vat_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spot_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "dog_",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "ilk_",
-        "type": "bytes32"
-      }
+      { "internalType": "address", "name": "vat_", "type": "address" },
+      { "internalType": "address", "name": "spotter_", "type": "address" },
+      { "internalType": "address", "name": "dog_", "type": "address" },
+      { "internalType": "bytes32", "name": "ilk_", "type": "bytes32" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -49,12 +33,12 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "data",
-        "type": "address"
+        "type": "uint256"
       }
     ],
-    "name": "FileAddress",
+    "name": "File",
     "type": "event"
   },
   {
@@ -68,12 +52,12 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "data",
-        "type": "uint256"
+        "type": "address"
       }
     ],
-    "name": "FileUint256",
+    "name": "File",
     "type": "event"
   },
   {
@@ -108,6 +92,18 @@
         "internalType": "address",
         "name": "usr",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "kpr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "coin",
+        "type": "uint256"
       }
     ],
     "name": "Kick",
@@ -145,6 +141,18 @@
         "internalType": "address",
         "name": "usr",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "kpr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "coin",
+        "type": "uint256"
       }
     ],
     "name": "Redo",
@@ -161,19 +169,6 @@
       }
     ],
     "name": "Rely",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
-      }
-    ],
-    "name": "SetBreaker",
     "type": "event"
   },
   {
@@ -227,39 +222,28 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
     "name": "Yank",
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "active",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "buf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -267,49 +251,34 @@
     "inputs": [],
     "name": "calc",
     "outputs": [
-      {
-        "internalType": "contract AbacusLike",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract AbacusLike", "name": "", "type": "address" }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "chip",
+    "outputs": [{ "internalType": "uint64", "name": "", "type": "uint64" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "count",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "cusp",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "usr",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "usr", "type": "address" }],
     "name": "deny",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -319,27 +288,15 @@
     "inputs": [],
     "name": "dog",
     "outputs": [
-      {
-        "internalType": "contract DogLike",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract DogLike", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "what",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "data",
-        "type": "uint256"
-      }
+      { "internalType": "bytes32", "name": "what", "type": "bytes32" },
+      { "internalType": "uint256", "name": "data", "type": "uint256" }
     ],
     "name": "file",
     "outputs": [],
@@ -348,16 +305,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "what",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "data",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "what", "type": "bytes32" },
+      { "internalType": "address", "name": "data", "type": "address" }
     ],
     "name": "file",
     "outputs": [],
@@ -365,20 +314,18 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "idx",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "pos", "type": "uint256" }],
     "name": "getId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "getStatus",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "bool", "name": "needsRedo", "type": "bool" },
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -386,78 +333,33 @@
   {
     "inputs": [],
     "name": "ilk",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tab",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lot",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "usr",
-        "type": "address"
-      }
+      { "internalType": "uint256", "name": "tab", "type": "uint256" },
+      { "internalType": "uint256", "name": "lot", "type": "uint256" },
+      { "internalType": "address", "name": "usr", "type": "address" },
+      { "internalType": "address", "name": "kpr", "type": "address" }
     ],
     "name": "kick",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "kicks",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "list",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "address", "name": "kpr", "type": "address" }
     ],
     "name": "redo",
     "outputs": [],
@@ -465,84 +367,31 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "usr",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "usr", "type": "address" }],
     "name": "rely",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "sales",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "pos",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tab",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lot",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "usr",
-        "type": "address"
-      },
-      {
-        "internalType": "uint96",
-        "name": "tic",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint256",
-        "name": "top",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "pos", "type": "uint256" },
+      { "internalType": "uint256", "name": "tab", "type": "uint256" },
+      { "internalType": "uint256", "name": "lot", "type": "uint256" },
+      { "internalType": "address", "name": "usr", "type": "address" },
+      { "internalType": "uint96", "name": "tic", "type": "uint96" },
+      { "internalType": "uint256", "name": "top", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
-      }
-    ],
-    "name": "setBreaker",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "spot",
+    "name": "spotter",
     "outputs": [
-      {
-        "internalType": "contract SpotLike",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract SpotterLike", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -550,56 +399,24 @@
   {
     "inputs": [],
     "name": "stopped",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "tail",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "max",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "who",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "uint256", "name": "amt", "type": "uint256" },
+      { "internalType": "uint256", "name": "max", "type": "uint256" },
+      { "internalType": "address", "name": "who", "type": "address" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "take",
     "outputs": [],
@@ -608,13 +425,16 @@
   },
   {
     "inputs": [],
+    "name": "tip",
+    "outputs": [{ "internalType": "uint192", "name": "", "type": "uint192" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "vat",
     "outputs": [
-      {
-        "internalType": "contract VatLike",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract VatLike", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -622,37 +442,19 @@
   {
     "inputs": [],
     "name": "vow",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "wards",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
     "name": "yank",
     "outputs": [],
     "stateMutability": "nonpayable",
