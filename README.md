@@ -35,7 +35,7 @@ The Clipper module is responsible for auctioin inititation. It listens for activ
 
 ### transact.js
 
-The Transact module hsndles calculation of gas costs and the signing and sending of transactions. It also has a major class called `GemoetricGasPrice` which is used to get a geometric gas price that increases geometrically.
+The Transact module hsndles calculation of gas costs and the signing and sending of transactions. It also has a major class called `GemoetricGasPrice` which is used to get a geometric gas price that increases geometrically with respect to time and the fixed coefficient
 
 ## Installation
 
