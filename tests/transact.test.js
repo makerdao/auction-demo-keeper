@@ -9,7 +9,7 @@ import config from '../config/testchain.json';
 import { Transact, GeometricGasPrice } from "../src/transact"
 import daiAbi from '../abi/Dai.json';
 
-network.rpcURL = 'http://localhost:2000';
+network.rpcURL = 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a';
 Config.vars = config;
 
 // Testchain Deployer Address

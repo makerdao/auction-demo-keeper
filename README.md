@@ -30,37 +30,14 @@ The current version of the keeper is work in progress. As a step to run the keep
 ## Core Modules
 ### keeper.js
 
-> **Check If There's an opportunity**
-
-`_opportunityCheck(collateral, oasis, uniswap, clip)`
-
-Checks if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan - based on the opportunity, it fetches the orderbook from OasisDex & all the active auctions
-
-> **Initialize Cliiper**
-
-`_clipperInit(collateral)`
-
-Initializes the clipper by passing in the collateral
-
+The Keeper module is the entry point for the Auction Demo Keeper. It is responsible for initializing th clipper, constructing the different exchange contracts e.g. Uniswap, Oasis
 ### clipper.js
 
-> **Initialize Clipper**
+The Clipper module is responsible for auctioin inititation. It listens for active auctions and gets the details of all active auctions . Based on the details of active auctions like collaterals remaining and auction state, the clipper executes the auction using the `Transact` Module.
 
-`init()`
+### transact.js
 
-Initializes the clipper module
-
-> **Active Auctions**
-
-`activeAuctions()`
-
-Gets all the details of an active auction
-
-> **Execute an Auction**
-
-`execute(_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer)`
-
-executes an auction by passing in the amount, max price, minimum profit, profit address, collateral type and signer
+The Transact module hsndles calculation of gas costs and the signing and sending of transactions. It also has a major class called `GemoetricGasPrice` which is used to get a geometric gas price that increases geometrically.
 
 ## Configuring Keeper
 
