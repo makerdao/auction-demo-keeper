@@ -32,7 +32,7 @@ import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
 let maker;
 let web3;
 let kprAddress = '';
-const dogAddress = '0x5f23786C20a8c6Fced4Aa9Eabd36C5D91bc2d144'; // setup dog contract address
+const dogAddress = '0x3Bc32F97979BDBD893b3b30642c04e590AF94Cc2'; // setup dog contract address
 const privateKey = ''; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
@@ -170,9 +170,9 @@ const kovanAddresses = {
         await linkToken.approveUnlimited(proxyAddress);
     }
 
-    while (Number(linkBalance._amount) > 16.49) {
+    // while (Number(linkBalance._amount) > 16.49) {
         await createVaults();
-    }
+    // }
 
 
     //Barking on all urns
@@ -189,19 +189,17 @@ const kovanAddresses = {
                 gasPrice: '20000000000'
             })
             .on('error', error => console.log(error))
-            .on('receipt', receipt => console.log(receipt.events));
+            .on('receipt', receipt => console.log('Tx Hash: ',receipt.transactionHash));
     };
-    // try {
-    //     console.log('Barking 0xe73F83BaD0D26D6f27F16943684430937DD71eAA');
-    //     await bark('0xe73F83BaD0D26D6f27F16943684430937DD71eAA');
-    // } catch (error) {
-    //     console.error(error);
-    // }
-
 
     for (let i = 0; i < urns.length; i++) {
         console.log('Barking ', urns[i]);
         await bark(urns[i]);
+    }
+
+    console.log('Barked Urns: ');
+    for (let i = 0; i < urns.length; i++) {
+        console.log(urns[i]);
     }
 
     process.kill(process.pid, 'SIGTERM');
