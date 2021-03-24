@@ -30,7 +30,9 @@ The current version of the keeper is work in progress. As a step to run the keep
 ## Configuring Keeper
 
 The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
+
 ## Parameters
+
 - rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
 - dai - This is the address of the dai contract on the kovan network
@@ -52,6 +54,15 @@ The configuration of the Keeper is being done by puttong all the necessary param
 - maxGasPrice - Max gas price that the geometric gas price calculator uses in wei
 
 - minProfitPercentage - 
+
+## Generate Auctions
+
+To generate auctions you need to get LINK-A tokens from the FAUCET contract defined in  `scripts/create-auctions.js`
+
+To run the script make sure to add `"type": "module"` pair in the `package.json` file.
+
+And then run: `node /scripts/create-auctions.js`
+
 ## How to Run:
 
 ```bash

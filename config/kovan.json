@@ -22,7 +22,7 @@
         "uniswapCallee": ""
       }
     },
-    "txnReplaceTimeout": "9",
+    "txnReplaceTimeout": "15",
     "delay": "5",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "500",

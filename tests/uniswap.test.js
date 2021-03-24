@@ -11,8 +11,7 @@ network.rpcURL = 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a';
 Config.vars = config;
 
 test('Uniswap Adaptor Opportunity', async () => {
-    const uniswap = new UniswapAdaptor(Config.vars.collateral.erc20addr, Config.vars.collateral.uniswapCallee);
-    console.log('Uniswap fetch: ', await uniswap.fetch('1000000000000000000'));
+    const uniswap = new UniswapAdaptor(Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].uniswapCallee);
     await uniswap.fetch('1000000000000000000');
     const book = uniswap.opportunity();
     console.log('BOOK: ', book);
