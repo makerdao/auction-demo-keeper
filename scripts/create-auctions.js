@@ -32,6 +32,7 @@ import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
 let maker;
 let web3;
 let kprAddress = '';
+
 const dogAddress = '0x3Bc32F97979BDBD893b3b30642c04e590AF94Cc2'; // setup dog contract address
 const privateKey = ''; // insert wallet private key
 let linkBalance;

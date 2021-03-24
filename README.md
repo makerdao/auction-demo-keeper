@@ -1,31 +1,49 @@
-# auction-demo-keeper
+# Auction-Demo-Keeper
 
-## Intro & Goal
+*Integration example of a LIQ2.0 Keeper with flash loan functionality*
 
-*tl;dr - Integration example of a LIQ2.0 Keeper & its flash loan functionality*
-
-Our goal is to make a Keeper that demonstrates most ways to interact with [LIQ2.0.]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) This "demo" keeper works out of the box, is simple in design, leverages LIQ2.0's flash loan feature, and therefore operates with minimal capital.
+The Auction-Demo-Keeper is an integration example that demonstrates most ways to interact with the [LIQ-2.0]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) auction system in the Maker Protocol.
+This "demo" keeper works out of the box, it is simple in design, leverages LIQ-2.0's flash loan feature, and therefore operates with minimal capital requirements.
 
 When paired with an [exchange-callee](https://github.com/makerdao/exchange-callees) contract, `auction-demo-keeper` utilizes the native flash loan feature within LIQ2.0, allowing it to borrow the collateral out for auction, swap it for DAI within an arbitrary DEX, return DAI to the auction, and collect a DAI profit from the spread - all in a single transaction. The keeper needs only ETH for gas to participate in LIQ2.0 auctions.
 
-## Operation Diagram
+## Scope
 
-![Operation Diagram](./diagram.jpeg)
+- It's an educational resource that'll help keeper operators transition their systems from LIQ1.2 to LIQ2.0
+- Demonstrate novel, more capital efficient methods of LIQ2.0 participation
+- An open source LIQ-2.0 Keeper that works out of the box
 
 ## Who's it for
 
 - Beginner Keepers - Looking for lightweight tool to begin participating in liquidations
 - Experienced Keepers - Interested in incorporating LIQ2.0 in their proprietary infrastructure
 
-## Why build it
-
-- It's an educational resource that'll help keeper operators transition their systems from LIQ1.x to LIQ2.0
-- Demonstrate novel, more capital efficient methods of LIQ2.0 participation
-- Open source a LIQ2.0 Keeper that works out of the box
-
 ## Status
+- As of March 23, the Auction Demo Keeper is still in active development, and is not yet fully functional.
 
-The current version of the keeper is work in progress. As a step to run the keeper, first there needs to be a testchain environment where the keeper could listen to new auctions being kicked by the liquidation system and at the same time look for oppportunities on the market to easily swap collateral for Dai.
+## Operation Diagram
+
+![Operation Diagram](./diagram.jpeg)
+
+## Core Modules
+### keeper.js
+
+The Keeper module is the entry point for the Auction Demo Keeper. It is responsible for initializing the clipper and constructing the different exchange contracts e.g. Uniswap, Oasis
+### clipper.js
+
+The Clipper module is responsible for auction inititation. It listens for active auctions and gets the details of all active auctions. Based on the details of active auctions like collaterals remaining and auction state, the clipper executes the auction using the `Transact` Module.
+
+### transact.js
+
+The Transact module handles calculation of gas costs, signing and sending of transactions. It also has a major class called `GeometricGasPrice` which is used to get a geometric gas price that increases geometrically with respect to time and the fixed coefficient
+
+## Installation
+
+```bash
+git clone https://github.com/makerdao/auction-demo-keeper.git
+cd auction-demo-keeper
+yarn install
+```
 
 ## Configuring Keeper
 
@@ -35,52 +53,37 @@ The configuration of the Keeper is being done by puttong all the necessary param
 
 - rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
-- dai - This is the address of the dai contract on the kovan network
+- `MakerOTCSupportMethods` - This is the address of the helper contract for oasisDex
 
-- MakerOTCSupportMethods - This is the address of the helper contract for oasisDex
+- `OasisDex` - This is the address of the oasis exchange contract
 
-- OasisDex - This is the address of the oasis exchange contract
+- `UniswapV2Router` - This is the address of uniswap v2 router contract
 
-- UniswapV2Router - This is the address of uniswap v2 router contract
+- `collateral` - This takes in an object for the collateral path "LINK-A" and "ETH-A"
 
-- collateral - This takes in an object for the collateral path "LINK-A" and "ETH-A"
+- `txnReplaceTimeout` - Timeout in seconds for the transaction replacement 
 
-- txnReplaceTimeout - Timeout in seconds for the transaction replacement 
+- `delay` - Delay period in seconds
 
-- delay - Delay period in seconds
+- `dynamicGasCoefficient` - This is a value that is needed to get a geometric gas price. It's default value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
 
-- dynamicGasCoefficient - This is a value that is needed to get a geometric gas price. It's defaults value is 1.125 (12.5%) which is the minimum increase for Parity to replace a transaction
+- `maxGasPrice` - Max gas price that the geometric gas price calculator uses in wei
 
-- maxGasPrice - Max gas price that the geometric gas price calculator uses in wei
+- `minProfitPercentage` - Minimum percentage arbitrage profits the Keeper should execute
 
-- minProfitPercentage - 
-
-## Generate Auctions
-
-To generate auctions you need to get LINK-A tokens from the FAUCET contract defined in  `scripts/create-auctions.js`
-
-To run the script make sure to add `"type": "module"` pair in the `package.json` file.
-
-And then run: `node /scripts/create-auctions.js`
-
-## How to Run:
+## How To Run
 
 ```bash
 cd auction-demo-keeper
 node keeper.js
 ```
 
-- running the node keeper.js will initialise everything in the keeper.js
-
-### Install
-
-```bash
-git clone https://github.com/makerdao/auction-demo-keeper.git
-cd auction-demo-keeper
-yarn install
-```
+- Running the `node keeper.js` command will initialise everything in the keeper.js file.
 
 ## Local Testing
 
 1 - Run testchain script: `yarn testchain`  
 2 - In a separate shell, run JS unit tests: `yarn test`
+
+## Disclaimer
+YOU (MEANING ANY INDIVIDUAL OR ENTITY ACCESSING, USING OR BOTH THE SOFTWARE INCLUDED IN THIS GITHUB REPOSITORY) EXPRESSLY UNDERSTAND AND AGREE THAT YOUR USE OF THE SOFTWARE IS AT YOUR SOLE RISK. THE SOFTWARE IN THIS GITHUB REPOSITORY IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. YOU RELEASE AUTHORS OR COPYRIGHT HOLDERS FROM ALL LIABILITY FOR YOU HAVING ACQUIRED OR NOT ACQUIRED CONTENT IN THIS GITHUB REPOSITORY. THE AUTHORS OR COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS CONCERNING ANY CONTENT CONTAINED IN OR ACCESSED THROUGH THE SERVICE, AND THE AUTHORS OR COPYRIGHT HOLDERS WILL NOT BE RESPONSIBLE OR LIABLE FOR THE ACCURACY, COPYRIGHT COMPLIANCE, LEGALITY OR DECENCY OF MATERIAL CONTAINED IN OR ACCESSED THROUGH THIS GITHUB REPOSITORY.
