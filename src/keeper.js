@@ -7,15 +7,25 @@ import network from './singleton/network';
 import Clipper from './clipper';
 import { ethers } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
+import Wallet from './wallet';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
  * all configurations and intitalisation of the demo keeper is being handled here
  */
 
+const setupWallet = async (network) => {
+  const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
+  const jsonWallet = await wallet.getWallet();
+  console.log('wallet', jsonWallet);
+  const signer = new ethers.Wallet(jsonWallet, network.provider);
+  return signer;
+};
+
 let _this;
 export default class keeper {
   _clippers = [];
+  _wallet = null;
 
   constructor(rpcUrl, net) {
     let config;
@@ -67,28 +77,28 @@ export default class keeper {
           console.log(`Auction # ${auction.id} \n
             Current price: ${auction.price}, \n
             Dai Proceeds from a full sell on Uniswap: ${ethers.utils.formatUnits(
-              uniswapProceeds.receiveAmount
-            )}
+            uniswapProceeds.receiveAmount
+          )}
             Profitable collateral in OasisDex:${ethers.utils.formatUnits(
-              oasisSize
-            )}
+            oasisSize
+          )}
             `);
 
           //TODO: Determine if we already have a pending bid for this auction
 
           // Check if there's a Dai profit from Uniswap by selling the entire auction
-          //Clipper.execute(auction.id, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer)
+          //Clipper.execute(auction.id, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer, exchangeCalleeAddress)
 
           if (
             uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
           ) {
-            uniswap.execute(auction.id, auction.lot, auction.price);
+            clip.execute(auction.id, auction.lot, _maxPrice, _minProfit, _profitAddr, _gemA, this._wallet, exchangeCalleeAddress);
 
             // If there's not a profit from Uniswap, use Oasis to sell a portion of
             // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
             //check the collateral clipper and call execute function with the right auction id
-            oasis.execute( auction.id, Math.min(oasisSize, auction.lot), auction.price );
+            oasis.execute(auction.id, Math.min(oasisSize, auction.lot), auction.price);
 
           }
         });
@@ -111,7 +121,7 @@ export default class keeper {
     );
 
     // construct the clipper contract method
-    const clip = new Clipper(collateral.name, oasis);
+    const clip = new Clipper(collateral.name);
 
     //get the oasis
     await oasis.fetch();
@@ -126,7 +136,9 @@ export default class keeper {
     return { oasis, uniswap, clip, timer };
   }
 
-  run() {
+  async run() {
+    this._wallet = await setupWallet(network);
+    console.log('Wallet in Keeper.js', this._wallet);
     for (const name in Config.vars.collateral) {
       if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
         const collateral = Config.vars.collateral[name];

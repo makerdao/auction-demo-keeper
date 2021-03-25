@@ -22,63 +22,63 @@ Config.vars = config;
 const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
 
 // Testchain Deployer Address
-const privateKey = '0x474BEB999FED1B3AF2EA048F963833C686A0FBA05F5724CB6417CF3B8EE9697E';
-// console.log('Network Provider: ', network.provider);
-const signer = new ethers.Wallet(privateKey, network.provider);
-// console.log('Address: ' + signer.address);
+// const privateKey = '0x474BEB999FED1B3AF2EA048F963833C686A0FBA05F5724CB6417CF3B8EE9697E';
+// // console.log('Network Provider: ', network.provider);
+// const signer = new ethers.Wallet(privateKey, network.provider);
+// // console.log('Address: ' + signer.address);
 
 
-// test('keeper initialization, and one opportunity check loop', async () => {
-//   const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
-//   keepr.run();
-//   await sleep(8);
-//   keepr.stop();
-// }, 10000);
+test('keeper initialization, and one opportunity check loop', async () => {
+  const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
+  keepr.run();
+  await sleep(8);
+  keepr.stop();
+}, 10000);
 
-test('basic connectivity', async () => {
-  let id = await network.provider.getNetwork();
-  expect(typeof id.chainId).toBe('number');
-});
-
-test('read active auctions', async () => {
-  const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
-  await clip.init();
-  const auctions = await clip.activeAuctions();
-  console.log('Active Auctions ', auctions[0]);
-  console.log('Active Auctions ', auctions[1]);
-  expect(auctions.length).toBeGreaterThan(0);
-},10000);
-
-test('active auction has a price', async () => {
-  const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
-  await clip.init();
-  const auctions = await clip.activeAuctions();
-  expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
-},10000);
-
-// test('kick an auction and check that it is listed', async () => {
-// }, 50000);
-
-// test('kick an auction and check that it is listed', () => {
-//   //generate an auction, check that clipper saw it, take it, check that clipper removed it from
-//   // its active auction list
+// test('basic connectivity', async () => {
+//   let id = await network.provider.getNetwork();
+//   expect(typeof id.chainId).toBe('number');
 // });
 
-// test('kick an auction and check its starting price', () => {
-
-// });
-
-
-// test('kick an auction check that its price decreases', () => {
-//   //make sure that clipper is able to calculate the price correctly using abacus
-// });
-
-
-// test('check order book', async () => {
-//   const oasis = new oasisDexAdaptor( Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].oasisCallee );
-//   await oasis.fetch();
-//   expect(ethers.utils.formatUnits(await oasis.opportunity(ethers.utils.parseUnits('0.9')))).toBe('0.5');
+// test('read active auctions', async () => {
+//   const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
+//   await clip.init();
+//   const auctions = await clip.activeAuctions();
+//   console.log('Active Auctions ', auctions[0]);
+//   console.log('Active Auctions ', auctions[1]);
+//   expect(auctions.length).toBeGreaterThan(0);
 // },10000);
+
+// test('active auction has a price', async () => {
+//   const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
+//   await clip.init();
+//   const auctions = await clip.activeAuctions();
+//   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
+// },10000);
+
+// // test('kick an auction and check that it is listed', async () => {
+// // }, 50000);
+
+// // test('kick an auction and check that it is listed', () => {
+// //   //generate an auction, check that clipper saw it, take it, check that clipper removed it from
+// //   // its active auction list
+// // });
+
+// // test('kick an auction and check its starting price', () => {
+
+// // });
+
+
+// // test('kick an auction check that its price decreases', () => {
+// //   //make sure that clipper is able to calculate the price correctly using abacus
+// // });
+
+
+// // test('check order book', async () => {
+// //   const oasis = new oasisDexAdaptor( Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].oasisCallee );
+// //   await oasis.fetch();
+// //   expect(ethers.utils.formatUnits(await oasis.opportunity(ethers.utils.parseUnits('0.9')))).toBe('0.5');
+// // },10000);
 
 
 // test('kay facility: test wallet', async () => {

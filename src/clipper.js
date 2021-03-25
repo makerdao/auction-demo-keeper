@@ -8,7 +8,6 @@ import { Transact } from './transact';
 
 
 export default class Clipper {
-  _exchangeCallee;
   _collateral;
   _collateralName;
   _clipper;
@@ -20,10 +19,8 @@ export default class Clipper {
   _takeListener;
   _redoListener;
 
-  constructor(ilkType, exchangeCallee) {
+  constructor(ilkType) {
     const collInfo = Config.vars.collateral[ilkType];
-
-    this._exchangeCallee = exchangeCallee;
     this._collateralName = ilkType;
     this._clipperAddr = collInfo.clipper;
     this._collateral = collInfo.erc20addr;
@@ -113,7 +110,7 @@ export default class Clipper {
 
 
   // execute an auction
-  execute = async (_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer) => {
+  execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer, exchangeCalleeAddress) => {
 
     let minProfit = ethers.utils.parseEther(`${_minProfit}`);
 
@@ -122,12 +119,12 @@ export default class Clipper {
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemA, minProfit]);
 
-    let id = abiCoder.encode(['uint256'], [1]);
+    let id = abiCoder.encode(['uint256'], [auctionId]);
     let amt = ethers.utils.parseEther(`${_amt}`);
     let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
 
     const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, this._exchangeCallee, flashData);
+    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, exchangeCalleeAddress, flashData);
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
     await txn.transact_async();
