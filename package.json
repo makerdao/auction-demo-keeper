@@ -10,6 +10,7 @@
     "lint": "eslint src",
     "test": "jest ./tests"
   },
+  "type": "module",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
