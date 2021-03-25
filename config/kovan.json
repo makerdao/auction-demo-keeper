@@ -8,6 +8,7 @@
       "LINK-A": {
         "name": "LINK-A",
         "erc20addr": "0x3903B96596C9CCB8DcADaDa9Dd7853B4E1D1a855",
+        "joinAdapter": "0x63f9f6E224d3A62264BeBcbC871F8FaA09a4fc77",
         "clipper": "0x2B6626bE628EBFB2BAC1959b209D04b38eE9507f",
         "abacus": "0xFFf23C2561d7F9557672812a93e2B815CE1DED9d",
         "oasisCallee": "0xE32Aa2050981717E79ea267a9c708bC1685cCE71",
@@ -16,6 +17,7 @@
       "ETH-A": {
         "name": "ETH-A",
         "erc20addr": "0xc3F245DC8859E0fd6591fB9d12E485C15b8a11CE",
+        "joinAdapter": "0x4db73C6D1fA3d011313b5B4EdA1764C9044d847e",
         "clipper": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
         "abacus": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
         "oasisCallee": "",

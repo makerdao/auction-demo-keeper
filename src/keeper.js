@@ -26,6 +26,9 @@ let _this;
 export default class keeper {
   _clippers = [];
   _wallet = null;
+  _uniswapCalleeAdr = null;
+  _oasisCalleeAdr = null;
+  _gemJoinAdapter = null;
 
   constructor(rpcUrl, net) {
     let config;
@@ -92,14 +95,15 @@ export default class keeper {
           if (
             uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
           ) {
-            clip.execute(auction.id, auction.lot, _maxPrice, _minProfit, _profitAddr, _gemA, this._wallet, exchangeCalleeAddress);
+            //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
+            // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
+            clip.execute(auction.id, auction.lot, auction.price, priceWithProfit.mul(auction.lot), this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
 
             // If there's not a profit from Uniswap, use Oasis to sell a portion of
             // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
             //check the collateral clipper and call execute function with the right auction id
-            oasis.execute(auction.id, Math.min(oasisSize, auction.lot), auction.price);
-
+            clip.execute(auction.id, auction.lot, auction.price, priceWithProfit.mul(auction.lot), this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
           }
         });
       });
@@ -108,6 +112,10 @@ export default class keeper {
 
   // Initialize the Clipper, OasisDex, and Uniswap JS wrappers
   async _clipperInit(collateral) {
+    this._uniswapCalleeAdr = collateral.uniswapCallee;
+    this._oasisCalleeAdr = collateral.oasisCallee;
+    this._gemJoinAdapter = collateral.joinAdapter;
+    console.log('this._gemJoinAdapter',this._gemJoinAdapter);
     // construct the oasis contract method
     const oasis = new oasisDexAdaptor(
       collateral.erc20addr,
@@ -138,7 +146,6 @@ export default class keeper {
 
   async run() {
     this._wallet = await setupWallet(network);
-    console.log('Wallet in Keeper.js', this._wallet);
     for (const name in Config.vars.collateral) {
       if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
         const collateral = Config.vars.collateral[name];

@@ -28,29 +28,29 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 // // console.log('Address: ' + signer.address);
 
 
-test('keeper initialization, and one opportunity check loop', async () => {
-  const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
-  keepr.run();
-  await sleep(8);
-  keepr.stop();
-}, 10000);
+// test('keeper initialization, and one opportunity check loop', async () => {
+//   const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
+//   keepr.run();
+//   await sleep(8);
+//   keepr.stop();
+// }, 10000);
 
 // test('basic connectivity', async () => {
 //   let id = await network.provider.getNetwork();
 //   expect(typeof id.chainId).toBe('number');
 // });
 
-// test('read active auctions', async () => {
-//   const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
-//   await clip.init();
-//   const auctions = await clip.activeAuctions();
-//   console.log('Active Auctions ', auctions[0]);
-//   console.log('Active Auctions ', auctions[1]);
-//   expect(auctions.length).toBeGreaterThan(0);
-// },10000);
+test('read active auctions', async () => {
+  const clip = new Clipper('LINK-A');
+  await clip.init();
+  const auctions = await clip.activeAuctions();
+  console.log('Active Auctions ', auctions[0]);
+  console.log('Active Auctions ', auctions[1]);
+  expect(auctions.length).toBeGreaterThan(0);
+},10000);
 
 // test('active auction has a price', async () => {
-//   const clip = new Clipper('LINK-A', Config.vars.collateral['LINK-A'].uniswapCallee);
+//   const clip = new Clipper('LINK-A');
 //   await clip.init();
 //   const auctions = await clip.activeAuctions();
 //   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
