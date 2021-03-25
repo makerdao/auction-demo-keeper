@@ -294,6 +294,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "dust",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "bytes32", "name": "what", "type": "bytes32" },
       { "internalType": "uint256", "name": "data", "type": "uint256" }
@@ -314,18 +321,13 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "pos", "type": "uint256" }],
-    "name": "getId",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
     "name": "getStatus",
     "outputs": [
       { "internalType": "bool", "name": "needsRedo", "type": "bool" },
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      { "internalType": "uint256", "name": "price", "type": "uint256" },
+      { "internalType": "uint256", "name": "lot", "type": "uint256" },
+      { "internalType": "uint256", "name": "tab", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -353,6 +355,15 @@
     "inputs": [],
     "name": "kicks",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "list",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -428,6 +439,13 @@
     "name": "tip",
     "outputs": [{ "internalType": "uint192", "name": "", "type": "uint192" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updust",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

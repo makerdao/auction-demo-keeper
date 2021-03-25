@@ -4,11 +4,10 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
-import Transact from './transact';
+import { Transact } from './transact';
 
 
 export default class Clipper {
-  _exhcange;
   _collateral;
   _collateralName;
   _clipper;
@@ -20,10 +19,8 @@ export default class Clipper {
   _takeListener;
   _redoListener;
 
-  constructor(ilkType, exchange) {
+  constructor(ilkType) {
     const collInfo = Config.vars.collateral[ilkType];
-
-    this._exchange = exchange;
     this._collateralName = ilkType;
     this._clipperAddr = collInfo.clipper;
     this._collateral = collInfo.erc20addr;
@@ -39,7 +36,7 @@ export default class Clipper {
 
     // _clipper.calc() returns the abacus address of the collateral
     this._abacusAddr = await this._clipper.calc();
-    
+
     // initialize the abacus contract obbject
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
 
@@ -107,27 +104,27 @@ export default class Clipper {
   // eslint-disable-next-line no-unused-vars
   // execute () {
   //TODO use this._exchange.callee.address to get exchange callee address
-  
+
   // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
   // await transacttion.transac_async();
 
 
   // execute an auction
-  execute = async (_amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer) => {
+  execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
     let minProfit = ethers.utils.parseEther(`${_minProfit}`);
 
     //encoding calldata
     let typesArray = ['address', 'address', 'uint256'];
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemA, minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
 
-    let id = abiCoder.encode(['uint256'], [1]);
+    let id = abiCoder.encode(['uint256'], [auctionId]);
     let amt = ethers.utils.parseEther(`${_amt}`);
     let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
 
     const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, this._exchange.callee.address, flashData);
+    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, exchangeCalleeAddress, flashData);
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
     await txn.transact_async();
