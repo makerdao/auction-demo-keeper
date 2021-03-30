@@ -33,17 +33,37 @@ test("Initializes the clipper and listen for active auctions", async () => {
   await clipper.init();
 }, 100000)
 
-test("reads an active auction and responds correctly if someone takes an auction", async () => {
+test("Read active auctions", async () => {
   const clipper = new Clipper("LINK-A");
 
   await clipper.init();
 
- await clipper._takeListener;
-
   const auctions = await clipper.activeAuctions();
 
-  console.log(`${BigInt(auctions[1].top)}`, 'Active auctions')
+  console.log(ethers.utils.formatEther(auctions[1].top, {commify: true}), 'Starting Price');
 
-  console.log(`${BigInt(auctions[1].tab)}`, 'total dai to be raised')
+  console.log(`${BigInt(auctions[1].tab)}`, 'Total dai to be raised')
 
+  console.log(`${BigInt(auctions[1].tic)}`, 'Auction start time')
+
+  console.log(auctions[1].usr, 'Liquidated CDP')
+
+  console.log(`${BigInt(auctions[1].lot)}`, 'Collateral to sell')
+  
 }, 100000)
+
+test('Get signer from wallet and Execute an auction ', () => {
+
+    const  clipper = new Clipper("LINK-A");
+
+    const wallet = new Wallet('./jsonpassword.txt', './testwallet.json');
+
+    const jsonWallet = await wallet.getWallet();
+
+    // get signer from json wallet
+    const signer = new ethers.Wallet(jsonWallet, network.provider);
+    
+    const auctions = await clipper.activeAuctions();
+
+
+})
