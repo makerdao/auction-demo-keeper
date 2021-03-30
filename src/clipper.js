@@ -73,10 +73,10 @@ export default class Clipper {
     //Load the active auctions
     const auctionsIds = await this._clipper.list();
     const readPromises = [];
-    for (const id in auctionsIds) {
+    for (let id = 0; id <= auctionsIds.length - 1; id++) {
       if (Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
-        readPromises.push(this._clipper.sales(id).then(sale => {
-          return ({ id, sale });
+        readPromises.push(await this._clipper.sales(auctionsIds[id].toNumber()).then(sale => {
+          return ({ id:auctionsIds[id].toNumber(), sale });
         }));
       }
     }

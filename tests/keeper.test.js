@@ -44,10 +44,9 @@ test('read active auctions', async () => {
   const clip = new Clipper('LINK-A');
   await clip.init();
   const auctions = await clip.activeAuctions();
-  console.log('Active Auctions ', auctions[0]);
-  console.log('Active Auctions ', auctions[1]);
+  console.log('All Auctions : ', auctions);
   expect(auctions.length).toBeGreaterThan(0);
-},10000);
+},20000);
 
 // test('active auction has a price', async () => {
 //   const clip = new Clipper('LINK-A');
