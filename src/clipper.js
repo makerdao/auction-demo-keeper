@@ -114,8 +114,10 @@ export default class Clipper {
 
     let minProfit = ethers.utils.parseEther(`${_minProfit}`);
 
-    //encoding calldata
+    ///Create calldata for the exchangeCallee contract
     let typesArray = ['address', 'address', 'uint256'];
+
+    //encodes data using ethers
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
 

@@ -56,14 +56,31 @@ test('Get signer from wallet and Execute an auction ', () => {
 
     const  clipper = new Clipper("LINK-A");
 
+    const auctions = await clipper.activeAuctions();
+
+    const auction = auctions[1]
+
     const wallet = new Wallet('./jsonpassword.txt', './testwallet.json');
 
     const jsonWallet = await wallet.getWallet();
 
     // get signer from json wallet
     const signer = new ethers.Wallet(jsonWallet, network.provider);
+
+    const _gemJoinAdapter = clipper._collateral.joinAdapter
+
+    const priceWithProfit = (auction.price) * Config.vars.minProfitPercentage
+
+    const _minProfit = priceWithProfit * auction.lot
+
+    const exhangeCallee = clipper._collateral.uniswapCallee
+
+    let account = jsonWallet.address;
+
+    let result = await clipper.execute(auction.id, auction.lot, auction.price, _minProfit, account, _gemJoinAdapter, signer, exhangeCallee)
+
+    console.log(result, 'execution result')
     
-    const auctions = await clipper.activeAuctions();
 
 
-})
+}, 10000)
