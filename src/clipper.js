@@ -73,10 +73,10 @@ export default class Clipper {
     //Load the active auctions
     const auctionsIds = await this._clipper.list();
     const readPromises = [];
-    for (const id in auctionsIds) {
+    for (let id = 0; id <= auctionsIds.length - 1; id++) {
       if (Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
-        readPromises.push(this._clipper.sales(id).then(sale => {
-          return ({ id, sale });
+        readPromises.push(await this._clipper.sales(auctionsIds[id].toNumber()).then(sale => {
+          return ({ id:auctionsIds[id].toNumber(), sale });
         }));
       }
     }
@@ -119,14 +119,14 @@ export default class Clipper {
 
     //encodes data using ethers
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit]);
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-    let amt = ethers.utils.parseEther(`${_amt}`);
-    let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
+    // let amt = ethers.utils.parseEther(`${_amt}`);
+    // let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
 
     const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, exchangeCalleeAddress, flashData);
+    const take_transaction = await clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
     await txn.transact_async();

@@ -5,7 +5,10 @@ import uniswapRouter from '../../abi/UniswapV2Router02.json';
 import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
 
 export default class UniswapAdaptor {
-    _book=[]
+    _book={
+        sellAmount: '',
+        receiveAmount: ''
+    };
     _lastBlock = 0;
 
     constructor(asset, callee) {
@@ -22,8 +25,8 @@ export default class UniswapAdaptor {
         this._lastBlock = blockNumber;
 
         const offer = await this._uniswap.getAmountsOut(ilkAmount, [this._asset, Config.vars.dai]);
-        this._book.push({sellAmount: ethers.utils.formatUnits(offer[0])});
-        this._book.push({receiveAmount: ethers.utils.formatUnits(offer[1])});
+        this._book.sellAmount = ethers.utils.formatUnits(offer[0]);
+        this._book.receiveAmount = ethers.utils.formatUnits(offer[1]);
     }
 
     opportunity = () => {

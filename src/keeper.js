@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
 import oasisDexAdaptor from './dex/oasisdex';
 import kovanConfig from '../config/kovan.json';
-import testchainConfig from '../config/testchain.json';
 import Config from './singleton/config';
 import network from './singleton/network';
 import Clipper from './clipper';
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet';
 
@@ -37,7 +36,7 @@ export default class keeper {
         config = kovanConfig;
         break;
       default:
-        config = testchainConfig;
+        config = kovanConfig;
     }
 
     config.rpcURL = rpcUrl;
@@ -57,20 +56,33 @@ export default class keeper {
       console.log('Active auctions qty: ' + activeAuctions.length);
 
       // Look through the list of active auctions
-      activeAuctions.forEach((auction) => {
+      activeAuctions.forEach(async (auction) => {
+        console.log('Each auction price ', auction.price);
+        const lot = (auction.lot.toString());
+        console.log('Auction lot value: ', lot);
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        Promise.all([uniswap.fetch(auction.lot)]).then(() => {
+        Promise.all([uniswap.fetch(lot)]).then(() => {
           // Find the minimum effective exchange rate between collateral/Dai
           // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-          const priceWithProfit = auction.price.mul(
-            Config.vars.minProfitPercentage
-          );
+          console.log('auction: ', auction.price.toString());
+          let priceWithProfit;
+          if(auction.price.lt(1)) {
+            priceWithProfit = BigNumber.from(0);
+          }else {
+            priceWithProfit = auction.price.mul(
+              BigNumber.from(Config.vars.minProfitPercentage)
+            );
+          }
+          
+          console.log('Price with profit ', priceWithProfit);
 
           // Find the amount of collateral that maximizes the amount of profit captured
-          const oasisDexAvailability = oasis.opportunity(priceWithProfit);
+          let oasisDexAvailability = oasis.opportunity(priceWithProfit);
+          console.log('OasisDEXAvailability: ', oasisDexAvailability);
 
           // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
-          const uniswapProceeds = uniswap.opportunity();
+          let uniswapProceeds = uniswap.opportunity();
+          console.log('Uniswap Proceeds: ', uniswapProceeds.receiveAmount );
 
           // Determine how much collateral we can trade on OasisDex
           const oasisSize = oasisDexAvailability.gt(auction.lot)
@@ -79,13 +91,8 @@ export default class keeper {
 
           console.log(`Auction # ${auction.id} \n
             Current price: ${auction.price}, \n
-            Dai Proceeds from a full sell on Uniswap: ${ethers.utils.formatUnits(
-            uniswapProceeds.receiveAmount
-          )}
-            Profitable collateral in OasisDex:${ethers.utils.formatUnits(
-            oasisSize
-          )}
-            `);
+            Dai Proceeds from a full sell on Uniswap: ${uniswapProceeds.receiveAmount}
+            Profitable collateral in OasisDex: ${ethers.utils.formatUnits(oasisSize)}`);
 
           //TODO: Determine if we already have a pending bid for this auction
 
@@ -95,6 +102,14 @@ export default class keeper {
           if (
             uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
           ) {
+            console.log(`Auction id: # ${auction.id} \n
+            amt - lot: ${auction.lot}, \n
+            maxPrice - price: ${auction.price}, \n
+            minProfit: ${priceWithProfit.mul(auction.lot)} \n
+            _profitAddr: ${this._wallet.address} \n
+            _gemJoinAdapter: ${this._gemJoinAdapter} \n
+            _signer ${this._wallet._isSigner} \n
+            exchangeCalleeAddress: ${this._uniswapCalleeAdr}`);
             //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
             // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
             clip.execute(auction.id, auction.lot, auction.price, priceWithProfit.mul(auction.lot), this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
@@ -149,6 +164,7 @@ export default class keeper {
     for (const name in Config.vars.collateral) {
       if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
         const collateral = Config.vars.collateral[name];
+        console.log('Collateral: ', collateral);
 
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
@@ -160,7 +176,7 @@ export default class keeper {
         this._clipperInit(collateral).then((pair) => {
           // add the pair to the array of clippers
           this._clippers.push(pair);
-          console.log('Collateral' + collateral.name + 'initialized');
+          console.log('Collateral ' + collateral.name + ' initialized');
         });
       }
     }

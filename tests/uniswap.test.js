@@ -12,8 +12,8 @@
 
 // test('Uniswap Adaptor Opportunity', async () => {
 //     const uniswap = new UniswapAdaptor(Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].uniswapCallee);
-//     await uniswap.fetch('1000000000000000000');
+//     await uniswap.fetch('16490000000000000000');
 //     const book = uniswap.opportunity();
 //     console.log('BOOK: ', book);
-//     expect(book.length > 0);
+//     expect(book.receiveAmount > 0);
 // }, 20000);
