@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import Config from '../src/singleton/config';
 import network from '../src/singleton/network';
 import { expect } from '@jest/globals';
@@ -27,13 +27,18 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 // const signer = new ethers.Wallet(privateKey, network.provider);
 // // console.log('Address: ' + signer.address);
 
+// test('Test BigNumber calculations', async () => {
+//   const number = BigNumber.from(0);
+//   const result = number.toString();
+//   console.log('BignNumber ', result);
+// },10000);
 
 // test('keeper initialization, and one opportunity check loop', async () => {
 //   const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
 //   keepr.run();
-//   await sleep(8);
+//   await sleep(60);
 //   keepr.stop();
-// }, 10000);
+// }, 60000);
 
 // test('basic connectivity', async () => {
 //   let id = await network.provider.getNetwork();
@@ -48,11 +53,11 @@ test('read active auctions', async () => {
   expect(auctions.length).toBeGreaterThan(0);
 },20000);
 
-// test('active auction has a price', async () => {
+// test('last active auction has a price', async () => {
 //   const clip = new Clipper('LINK-A');
 //   await clip.init();
 //   const auctions = await clip.activeAuctions();
-//   expect(auctions[0].price.toNumber()).toBeGreaterThanOrEqual(0);
+//   expect(auctions[auctions.length-1].price.toNumber()).toBeGreaterThanOrEqual(0);
 // },10000);
 
 // // test('kick an auction and check that it is listed', async () => {

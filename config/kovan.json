@@ -13,15 +13,6 @@
         "abacus": "0xFFf23C2561d7F9557672812a93e2B815CE1DED9d",
         "oasisCallee": "0xE32Aa2050981717E79ea267a9c708bC1685cCE71",
         "uniswapCallee": "0x8cf12A427818Dcc9ca37026aFe844959c1954EdC"
-      },
-      "ETH-A": {
-        "name": "ETH-A",
-        "erc20addr": "0xc3F245DC8859E0fd6591fB9d12E485C15b8a11CE",
-        "joinAdapter": "0x4db73C6D1fA3d011313b5B4EdA1764C9044d847e",
-        "clipper": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
-        "abacus": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
-        "oasisCallee": "",
-        "uniswapCallee": ""
       }
     },
     "txnReplaceTimeout": "15",

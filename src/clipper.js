@@ -117,14 +117,14 @@ export default class Clipper {
     //encoding calldata
     let typesArray = ['address', 'address', 'uint256'];
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit]);
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-    let amt = ethers.utils.parseEther(`${_amt}`);
-    let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
+    // let amt = ethers.utils.parseEther(`${_amt}`);
+    // let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
 
     const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, amt, maxPrice, exchangeCalleeAddress, flashData);
+    const take_transaction = await clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
     await txn.transact_async();
