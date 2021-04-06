@@ -18,6 +18,6 @@
     "txnReplaceTimeout": "15",
     "delay": "5",
     "dynamicGasCoefficient": "1.125",
-    "maxGasPrice": "500",
+    "maxGasPrice": "5",
     "minProfitPercentage": "1.01"
 }

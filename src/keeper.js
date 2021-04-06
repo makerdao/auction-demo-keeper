@@ -61,20 +61,23 @@ export default class keeper {
         const lot = (auction.lot.toString());
         console.log('Auction lot value: ', lot);
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        Promise.all([uniswap.fetch(lot)]).then(() => {
+        Promise.all([uniswap.fetch(lot)]).then(async () => {
           // Find the minimum effective exchange rate between collateral/Dai
           // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
           console.log('auction: ', auction.price.toString());
+          let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+          const decimal18 = ethers.utils.parseEther('1');
+          const decimals27 = ethers.utils.parseEther('1000000000');
+
           let priceWithProfit;
           if(auction.price.lt(1)) {
             priceWithProfit = BigNumber.from(0);
           }else {
-            priceWithProfit = auction.price.mul(
-              BigNumber.from(Config.vars.minProfitPercentage)
-            );
+            let calc = auction.price.mul(minProfitPercentage);
+            priceWithProfit = calc.div(decimal18);
           }
           
-          console.log('Price with profit ', priceWithProfit);
+          console.log('Price with profit ', priceWithProfit.toString());
 
           // Find the amount of collateral that maximizes the amount of profit captured
           let oasisDexAvailability = oasis.opportunity(priceWithProfit);
@@ -89,6 +92,8 @@ export default class keeper {
             ? auction.lot
             : oasisDexAvailability;
 
+          const minProfit = priceWithProfit.mul(auction.lot).div(decimals27);
+
           console.log(`Auction # ${auction.id} \n
             Current price: ${auction.price}, \n
             Dai Proceeds from a full sell on Uniswap: ${uniswapProceeds.receiveAmount}
@@ -100,25 +105,25 @@ export default class keeper {
           //Clipper.execute(auction.id, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer, exchangeCalleeAddress)
 
           if (
-            uniswapProceeds.receiveAmount > priceWithProfit.mul(auction.lot)
+            uniswapProceeds.receiveAmount > ethers.utils.formatUnits(minProfit)
           ) {
             console.log(`Auction id: # ${auction.id} \n
             amt - lot: ${auction.lot}, \n
             maxPrice - price: ${auction.price}, \n
-            minProfit: ${priceWithProfit.mul(auction.lot)} \n
+            minProfit: ${minProfit} \n
             _profitAddr: ${this._wallet.address} \n
             _gemJoinAdapter: ${this._gemJoinAdapter} \n
             _signer ${this._wallet._isSigner} \n
             exchangeCalleeAddress: ${this._uniswapCalleeAdr}`);
             //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
             // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
-            clip.execute(auction.id, auction.lot, auction.price, priceWithProfit.mul(auction.lot), this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
 
             // If there's not a profit from Uniswap, use Oasis to sell a portion of
             // the collateral that maximizes the Dai profit
           } else if (oasisSize > 0) {
             //check the collateral clipper and call execute function with the right auction id
-            clip.execute(auction.id, auction.lot, auction.price, priceWithProfit.mul(auction.lot), this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
           }
         });
       });

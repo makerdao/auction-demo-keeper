@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
-import { Transact } from './transact';
+import { Transact, GeometricGasPrice } from './transact';
 
 
 export default class Clipper {
@@ -123,11 +123,17 @@ export default class Clipper {
     // let amt = ethers.utils.parseEther(`${_amt}`);
     // let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
 
-    const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
+    const initial_price = await _signer.getGasPrice();
+    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+
+    let take_transaction;
+    try {
+      take_transaction = await this._clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
+    }catch (error) {
+      console.log(error);
+    }
     console.log('Take_Transaction ', take_transaction);
-    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
+    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
     await txn.transact_async();
   }
-
 }

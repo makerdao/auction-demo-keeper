@@ -6,7 +6,7 @@
 * transactions
 */
 
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 
 // if NonceManager.sendTransaction begins to work, consider refactoring
 // https://github.com/ethers-io/ethers.js/blob/master/packages/experimental/src.ts/nonce-manager.ts#L68
@@ -81,12 +81,13 @@ export class Transact {
 
     // Take into account transactions done with other wallets (i.e. MetaMask): https://github.com/makerdao/pymaker/pull/201#issuecomment-731382038
     const pendingNonce = this._signer.getTransactionCount('pending');
-    const gasLimit = this._signer.estimateGas(this._unsiged_tx);
+    const gasLimit = 5000000;
     const network = this._signer.provider.getNetwork();
 
     await Promise.all([pendingNonce, gasLimit, network]).then(values => {
       this._unsigned_tx.nonce = Math.max(values[0], _previousNonce);
-      this._unsigned_tx.gasLimit = values[1];
+      // this._unsigned_tx.gasLimit = values[1];
+      this._unsigned_tx.gasLimit = BigNumber.from(gasLimit);
       this._unsigned_tx.chainId = values[2].chainId;
     });
 
