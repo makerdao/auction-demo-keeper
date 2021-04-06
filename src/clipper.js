@@ -65,8 +65,14 @@ export default class Clipper {
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        this._activeAuctions[id].top = top;
-        this._activeAuctions[id].tic = tic;
+        // this._activeAuctions[id].top = top;
+        // this._activeAuctions[id].tic = tic;
+        const arr = this._activeAuctions.map(obj => ({
+          ...obj
+        }));
+        arr[id].top = top;
+        arr[id].tic = tic;
+        this._activeAuctions = arr;
       });
     });
 
@@ -76,7 +82,7 @@ export default class Clipper {
     for (let id = 0; id <= auctionsIds.length - 1; id++) {
       if (Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
         readPromises.push(await this._clipper.sales(auctionsIds[id].toNumber()).then(sale => {
-          return ({ id:auctionsIds[id].toNumber(), sale });
+          return ({ id: auctionsIds[id].toNumber(), sale });
         }));
       }
     }
@@ -129,11 +135,29 @@ export default class Clipper {
     let take_transaction;
     try {
       take_transaction = await this._clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
-    }catch (error) {
+    } catch (error) {
       console.log(error);
     }
     console.log('Take_Transaction ', take_transaction);
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
     await txn.transact_async();
   }
+
+  // Check if auction needs redo and redo auction
+  auctionStatus = async (auctionId, kprAddress, _signer) => {
+    const initial_price = await _signer.getGasPrice();
+    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+    try {
+      const auctionStatus = await this._clipper.getStatus(auctionId);
+      if (auctionStatus.needsRedo == true) {
+        console.log(`Redoing auction ${auctionId}`);
+        const redo_transaction = await this._clipper.populateTransaction.redo(auctionId, kprAddress);
+        const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
+        await txn.transact_async();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 }
+
