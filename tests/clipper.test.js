@@ -62,11 +62,10 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   const auction = auctions[1];
 
-  const wallet = new Wallet("../wallet/jsonpassword.txt", "../wallet/testwallet.json");
+  const wallet = new Wallet("./jsonpassword.txt", "./testwallet.json");
 
-  console.log(wallet,'wallet')
 
-  const jsonWallet = await wallet.getWallet();
+  const jsonWallet = await wallet.getWallet()
 
   console.log(jsonWallet, "json wallet")
 
