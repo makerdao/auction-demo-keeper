@@ -118,16 +118,13 @@ export default class Clipper {
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
-    let minProfit = ethers.utils.parseEther(`${_minProfit}`);
-
     //encoding calldata
-    let typesArray = ['address', 'address', 'uint256'];
+    let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-    // let amt = ethers.utils.parseEther(`${_amt}`);
-    // let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
+   
 
     const initial_price = await _signer.getGasPrice();
     const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
