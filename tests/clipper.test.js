@@ -58,9 +58,13 @@ test("Read active auctions", async () => {
 test("Get signer from wallet and Execute an auction ", async () => {
   const clipper = new Clipper("LINK-A");
 
+  await clipper.init();
+
   const auctions = await clipper.activeAuctions();
 
-  const auction = auctions[1];
+  const auction = BigInt(auctions[1])
+
+  console.log(auction, "auction")
 
   const wallet = new Wallet("./jsonpassword.txt", "./testwallet.json");
 
@@ -94,4 +98,4 @@ test("Get signer from wallet and Execute an auction ", async () => {
   );
 
   console.log(result, "execution result");
-}, 10000);
+}, 100000);

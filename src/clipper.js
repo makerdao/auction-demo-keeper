@@ -111,15 +111,15 @@ export default class Clipper {
 
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
-
+    console.log(_minProfit, "minimum profit")
     let minProfit = ethers.utils.parseEther(`${_minProfit}`);
-
+    console.log(minProfit, "converted")
     ///Create calldata for the exchangeCallee contract
     let typesArray = ['address', 'address', 'uint256'];
 
     //encodes data using ethers
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
     // let amt = ethers.utils.parseEther(`${_amt}`);
