@@ -43,7 +43,7 @@ export default class Wallet {
 
             const JSONWalletPassword = this._getPassword();
             const wallet = await new ethers.Wallet.fromEncryptedJson(JSON.stringify(JSONWallet), JSONWalletPassword);
-
+            
             const signer = new ethers.Wallet(wallet, this._provider);
             return signer;
         } catch (error) {

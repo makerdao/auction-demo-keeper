@@ -1,30 +1,23 @@
 {
     "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
-    "dai": "0x8EA5FC7aB9E3b628bebdFc37D87A17885af989F2",
+    "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
-    "OasisDex": "0xe325acB9765b02b8b418199bf9650972299235F4",
+    "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "collateral": {
       "LINK-A": {
         "name": "LINK-A",
-        "erc20addr": "0x3903B96596C9CCB8DcADaDa9Dd7853B4E1D1a855",
-        "clipper": "0x2B6626bE628EBFB2BAC1959b209D04b38eE9507f",
-        "abacus": "0xFFf23C2561d7F9557672812a93e2B815CE1DED9d",
-        "oasisCallee": "0xE32Aa2050981717E79ea267a9c708bC1685cCE71",
-        "uniswapCallee": "0x8cf12A427818Dcc9ca37026aFe844959c1954EdC"
-      },
-      "ETH-A": {
-        "name": "ETH-A",
-        "erc20addr": "0xc3F245DC8859E0fd6591fB9d12E485C15b8a11CE",
-        "clipper": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
-        "abacus": "0xFFEeC8d778b3DAf71A66D2E4Cb91522e78ccA013",
-        "oasisCallee": "",
-        "uniswapCallee": ""
+        "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
+        "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
+        "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
+        "abacus": "0xbd586d6352Fcf0C45f77FC9348F4Ee7539F6e2bD",
+        "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+        "uniswapCallee": "0x8fc35825172b484D21db2fd5160Cb3aeCf3729FB"
       }
     },
     "txnReplaceTimeout": "15",
     "delay": "5",
     "dynamicGasCoefficient": "1.125",
-    "maxGasPrice": "500",
+    "maxGasPrice": "5",
     "minProfitPercentage": "1.01"
 }
