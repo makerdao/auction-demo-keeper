@@ -37,12 +37,14 @@ export default class oasisDexAdaptor {
         id: entry.id.toNumber(),
         payAmt: ethers.utils.formatUnits(entry.payAmt),
         buyAmt: ethers.utils.formatUnits(entry.buyAmt)
-      }
+      };
     });
   };
 
   opportunity = (price) => {
+    //Price is in WEI/collateral
     //Total amount of collateral available for sale for a certain price
+    //Oasis can purchase this amount of collateral with given price
     return this._book
       .filter(v => v.payAmt.div(v.buyAmt).gte(price.div(ethers.constants.WeiPerEther)))
       .reduce((previous, current) => previous.add(current.buyAmt), BigNumber.from(0));

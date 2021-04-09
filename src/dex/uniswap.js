@@ -1,6 +1,6 @@
 import Config from '../singleton/config';
 import network from '../singleton/network';
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import uniswapRouter from '../../abi/UniswapV2Router02.json';
 import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
 

@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
-import oasisDexAdaptor from './dex/oasisdex';
+import oasisDexAdaptor from './dex/oasisdex.js';
 import kovanConfig from '../config/kovan.json';
-import Config from './singleton/config';
-import network from './singleton/network';
-import Clipper from './clipper';
+import Config from './singleton/config.js';
+import network from './singleton/network.js';
+import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
-import Wallet from './wallet';
+import Wallet from './wallet.js';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
@@ -66,7 +66,8 @@ export default class keeper {
       auction = this._activeAuctions[i];
 
       try {
-        console.log('Each auction price ', auction.price);
+        console.log('Auction Gem Price ', auction.price.toString());
+        console.log('Auction Tab:', auction.tab.toString());
         const lot = (auction.lot.toString());
         console.log('Auction lot value: ', lot);
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
@@ -86,14 +87,17 @@ export default class keeper {
   
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
+        let auctionPrice = priceWithProfit.mul(auction.lot).div(decimals27);
         
 
         console.log('Price with profit ', priceWithProfit.toString());
-        console.log('MinProfit :', minProfit.toString());
+        console.log('Total auction price: ',auctionPrice.toString());
+        console.log('MinProfit earning :', minProfit.toString());
 
         // Find the amount of collateral that maximizes the amount of profit captured
-        let oasisDexAvailability = oasis.opportunity(priceWithProfit);
-        console.log('OasisDEXAvailability: ', oasisDexAvailability);
+        console.log('collateral price with profit% for oasis: ',calc.div(decimals27).toString() );
+        let oasisDexAvailability = oasis.opportunity(calc.div(decimals27));
+        console.log('OasisDEXAvailability: amt of collateral avl to buy ', ethers.utils.formatEther(oasisDexAvailability));
 
         // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
         let uniswapProceeds = uniswap.opportunity();
@@ -134,13 +138,13 @@ export default class keeper {
             exchangeCalleeAddress: ${this._uniswapCalleeAdr}`);
           //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
           // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
-          await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+          // await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
 
           // If there's not a profit from Uniswap, use Oasis to sell a portion of
           // the collateral that maximizes the Dai profit
         // } else if (oasisSize > 0) {
         //   //check the collateral clipper and call execute function with the right auction id
-        //   await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+        await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
         // }
       } catch (error) {
         console.error(error);

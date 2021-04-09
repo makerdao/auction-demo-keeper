@@ -57,16 +57,18 @@ export default class Clipper {
         delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
-        this._activeAuctions[id].lot = lot;
-        this._activeAuctions[id].tab = tab;
+        const arr = this._activeAuctions.map(obj => ({
+          ...obj
+        }));
+        arr[id].lot = lot;
+        arr[id].tab = tab;
+        this._activeAuctions = arr;
       }
     });
     // recall the listener to check for active auctions
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        // this._activeAuctions[id].top = top;
-        // this._activeAuctions[id].tic = tic;
         const arr = this._activeAuctions.map(obj => ({
           ...obj
         }));

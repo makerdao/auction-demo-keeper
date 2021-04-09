@@ -31,12 +31,10 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 //   const T18 = ethers.utils.parseEther('1');
 //   const T27 = ethers.utils.parseEther('1000000000');
 //   const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
-//   const rawTab = BigNumber.from('269809450810124391236894308554834105775760643105');
-//   const tab = rawTab.div(T18);
-//   const calcMinProfit45 = tab.mul(minProfitPercentage);
-//   const totalMinProfit45 = calcMinProfit45.sub(rawTab);
-//   const minProfit = totalMinProfit45.div(T27);
-//   console.log('minProfit ', minProfit.toString());
+//   const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
+//   const auctionPrice = BigNumber.from('29997000000000000000000000000');
+//   const lotAmount = rawTab.div(auctionPrice);
+//   console.log('minProfit ', lotAmount.toString());
   
 // },10000);
 
