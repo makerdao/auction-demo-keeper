@@ -62,7 +62,7 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   const auctions = await clipper.activeAuctions();
 
-  const auction = BigInt(auctions[1])
+  const auction = auctions[1]
 
   console.log(auction, "auction")
 
