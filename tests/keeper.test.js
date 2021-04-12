@@ -28,30 +28,35 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 // // console.log('Address: ' + signer.address);
 
 // test('Test BigNumber calculations', async () => {
-//   const number = BigNumber.from(0);
-//   const result = number.toString();
-//   console.log('BignNumber ', result);
+//   const T18 = ethers.utils.parseEther('1');
+//   const T27 = ethers.utils.parseEther('1000000000');
+//   const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+//   const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
+//   const auctionPrice = BigNumber.from('29997000000000000000000000000');
+//   const lotAmount = rawTab.div(auctionPrice);
+//   console.log('minProfit ', lotAmount.toString());
+  
 // },10000);
 
-// test('keeper initialization, and one opportunity check loop', async () => {
-//   const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
-//   keepr.run();
-//   await sleep(60);
-//   keepr.stop();
-// }, 60000);
+test('keeper initialization, and one opportunity check loop', async () => {
+  const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
+  keepr.run();
+  await sleep(120);
+  keepr.stop();
+}, 120000);
 
 // test('basic connectivity', async () => {
 //   let id = await network.provider.getNetwork();
 //   expect(typeof id.chainId).toBe('number');
 // });
 
-test('read active auctions', async () => {
-  const clip = new Clipper('LINK-A');
-  await clip.init();
-  const auctions = await clip.activeAuctions();
-  console.log('All Auctions : ', auctions);
-  expect(auctions.length).toBeGreaterThan(0);
-},20000);
+// test('read active auctions', async () => {
+//   const clip = new Clipper('LINK-A');
+//   await clip.init();
+//   const auctions = await clip.activeAuctions();
+//   console.log('All Auctions : ', auctions);
+//   expect(auctions.length).toBeGreaterThan(0);
+// },30000);
 
 // test('last active auction has a price', async () => {
 //   const clip = new Clipper('LINK-A');

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Config from './singleton/config';
 import abacusAbi from '../abi/abacus';
 import clipperAbi from '../abi/clipper';
-import { Transact } from './transact';
+import { Transact, GeometricGasPrice } from './transact';
 
 
 export default class Clipper {
@@ -57,16 +57,24 @@ export default class Clipper {
         delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
-        this._activeAuctions[id].lot = lot;
-        this._activeAuctions[id].tab = tab;
+        const arr = this._activeAuctions.map(obj => ({
+          ...obj
+        }));
+        arr[id].lot = lot;
+        arr[id].tab = tab;
+        this._activeAuctions = arr;
       }
     });
     // recall the listener to check for active auctions
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
-        this._activeAuctions[id].top = top;
-        this._activeAuctions[id].tic = tic;
+        const arr = this._activeAuctions.map(obj => ({
+          ...obj
+        }));
+        arr[id].top = top;
+        arr[id].tic = tic;
+        this._activeAuctions = arr;
       });
     });
 
@@ -76,7 +84,7 @@ export default class Clipper {
     for (let id = 0; id <= auctionsIds.length - 1; id++) {
       if (Object.prototype.hasOwnProperty.call(auctionsIds, id)) {
         readPromises.push(await this._clipper.sales(auctionsIds[id].toNumber()).then(sale => {
-          return ({ id:auctionsIds[id].toNumber(), sale });
+          return ({ id: auctionsIds[id].toNumber(), sale });
         }));
       }
     }
@@ -111,25 +119,44 @@ export default class Clipper {
 
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
-    console.log(_minProfit, "minimum profit")
-    let minProfit = ethers.utils.parseEther(`${_minProfit}`);
-    console.log(minProfit, "converted")
-    ///Create calldata for the exchangeCallee contract
-    let typesArray = ['address', 'address', 'uint256'];
 
-    //encodes data using ethers
+    //encoding calldata
+    let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, minProfit]);
+    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-    // let amt = ethers.utils.parseEther(`${_amt}`);
-    // let maxPrice = ethers.utils.parseUnits(`${_maxPrice}`, 27);
+   
 
-    const clipper = new ethers.Contract(Config.vars.clipper, clipperAbi, _signer.provider);
-    const take_transaction = await clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
+    const initial_price = await _signer.getGasPrice();
+    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+
+    let take_transaction;
+    try {
+      take_transaction = await this._clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
+    } catch (error) {
+      console.log(error);
+    }
     console.log('Take_Transaction ', take_transaction);
-    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout);
+    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
     await txn.transact_async();
   }
 
+  // Check if auction needs redo and redo auction
+  auctionStatus = async (auctionId, kprAddress, _signer) => {
+    const initial_price = await _signer.getGasPrice();
+    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+    try {
+      const auctionStatus = await this._clipper.getStatus(auctionId);
+      if (auctionStatus.needsRedo == true) {
+        console.log(`Redoing auction ${auctionId}`);
+        const redo_transaction = await this._clipper.populateTransaction.redo(auctionId, kprAddress);
+        const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
+        await txn.transact_async();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 }
+
