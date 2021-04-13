@@ -7,6 +7,7 @@ import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet.js';
+import clipperAllowance from './vat.js';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
@@ -84,18 +85,18 @@ export default class keeper {
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
-  
+
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
         let auctionPrice = priceWithProfit.mul(auction.lot).div(decimals27);
-        
+
 
         console.log('Price with profit ', priceWithProfit.toString());
-        console.log('Total auction price: ',auctionPrice.toString());
+        console.log('Total auction price: ', auctionPrice.toString());
         console.log('MinProfit earning :', minProfit.toString());
 
         // Find the amount of collateral that maximizes the amount of profit captured
-        console.log('collateral price with profit% for oasis: ',calc.div(decimals27).toString() );
+        console.log('collateral price with profit% for oasis: ', calc.div(decimals27).toString());
         let oasisDexAvailability = oasis.opportunity(calc.div(decimals27));
         console.log('OasisDEXAvailability: amt of collateral avl to buy ', ethers.utils.formatEther(oasisDexAvailability));
 
@@ -128,7 +129,7 @@ export default class keeper {
         // if (
         //   uniswapProceeds.receiveAmount > ethers.utils.formatUnits(totalMinProfit)
         // ) {
-          console.log(`Auction id: # ${auction.id} \n
+        console.log(`Auction id: # ${auction.id} \n
             amt - lot: ${auction.lot}, \n
             maxPrice - price: ${auction.price}, \n
             minProfit: ${minProfit} \n
@@ -136,12 +137,12 @@ export default class keeper {
             _gemJoinAdapter: ${this._gemJoinAdapter} \n
             _signer ${this._wallet._isSigner} \n
             exchangeCalleeAddress: ${this._uniswapCalleeAdr}`);
-          //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
-          // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
-          // await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+        //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
+        // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
+        // await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
 
-          // If there's not a profit from Uniswap, use Oasis to sell a portion of
-          // the collateral that maximizes the Dai profit
+        // If there's not a profit from Uniswap, use Oasis to sell a portion of
+        // the collateral that maximizes the Dai profit
         // } else if (oasisSize > 0) {
         //   //check the collateral clipper and call execute function with the right auction id
         await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
@@ -195,6 +196,9 @@ export default class keeper {
         const collateral = Config.vars.collateral[name];
         console.log('Collateral: ', collateral);
 
+        //Check for clipper allowance
+        await clipperAllowance(collateral.clipper, this._wallet);
+        
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
          * oasis : oasisDexAdaptor
