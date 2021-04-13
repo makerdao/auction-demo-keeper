@@ -5,6 +5,7 @@
     "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
+    "liquidityProvider":"uniswap",
     "collateral": {
       "LINK-A": {
         "name": "LINK-A",
@@ -17,7 +18,7 @@
       }
     },
     "txnReplaceTimeout": "15",
-    "delay": "5",
+    "delay": "20",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "5",
     "minProfitPercentage": "1.01"
