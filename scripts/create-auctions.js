@@ -293,11 +293,11 @@ const createVaults = async () => {
     let vaultId = vault.id;
     console.log('Vault ID', vaultId);
 
-    console.log('Locking 16.49 LINK-A');
+    console.log('Locking 5.7 LINK-A');
     await manager.lock(
         vault.id,
         'LINK-A',
-        LINK(16.49)
+        LINK(5.7)
     );
 
     linkBalance = await maker.getToken(LINK).balance();

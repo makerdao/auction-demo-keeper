@@ -4,6 +4,8 @@
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
     "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
+    "liquidityProvider":"oasisdex",
     "collateral": {
       "LINK-A": {
         "name": "LINK-A",
@@ -15,8 +17,8 @@
         "uniswapCallee": "0x8fc35825172b484D21db2fd5160Cb3aeCf3729FB"
       }
     },
-    "txnReplaceTimeout": "15",
-    "delay": "5",
+    "txnReplaceTimeout": "20",
+    "delay": "40",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "5",
     "minProfitPercentage": "1.01"

@@ -35,7 +35,6 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 //   const auctionPrice = BigNumber.from('29997000000000000000000000000');
 //   const lotAmount = rawTab.div(auctionPrice);
 //   console.log('minProfit ', lotAmount.toString());
-  
 // },10000);
 
 test('keeper initialization, and one opportunity check loop', async () => {
