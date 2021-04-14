@@ -29,7 +29,7 @@ const sleep = async function (delay) {
 test("Initializes the clipper and listen for active auctions", async () => {
   const clipper = new Clipper("LINK-A");
 
-  // expect(clipper._collateral).toHaveLength();
+  expect(clipper._collateral).toBeDefined();
 
   await clipper.init();
 }, 100000);
@@ -41,18 +41,20 @@ test("Read active auctions", async () => {
 
   const auctions = await clipper.activeAuctions();
 
-  console.log(
+  console.log(auctions, 'auctions')
+
+  expect(
     ethers.utils.formatEther(auctions[1].top, { commify: true }),
     "Starting Price"
-  );
+  ).toBeGreaterThan(0)
 
-  console.log(`${BigInt(auctions[1].tab)}`, "Total dai to be raised");
+  expect(`${BigInt(auctions[1].tab).toFixed(17)}`, "Total dai to be raised").toBeGreaterThan(0)
 
-  console.log(`${BigInt(auctions[1].tic)}`, "Auction start time");
+  expect(`${BigInt(auctions[1].tic)}`, "Auction start time").toBeDefined();
 
-  console.log(auctions[1].usr, "Liquidated CDP");
+  expect(auctions[1].usr, "Liquidated CDP").toBeDefined()
 
-  console.log(`${BigInt(auctions[1].lot)}`, "Collateral to sell");
+  expect(`${BigInt(auctions[1].lot).toFixed(17)}`, "Collateral to sell").toBeGreaterThan(0)
 }, 100000);
 
 test("Get signer from wallet and Execute an auction ", async () => {
@@ -64,14 +66,10 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   const auction = auctions[1]
 
-  console.log(auction, "auction")
-
   const wallet = new Wallet("./jsonpassword.txt", "./testwallet.json");
 
 
   const jsonWallet = await wallet.getWallet()
-
-  console.log(jsonWallet, "json wallet")
 
   // get signer from json wallet
   const signer = new ethers.Wallet(jsonWallet, network.provider);
@@ -86,6 +84,8 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   let account = jsonWallet.address;
 
+  console.log(exhangeCallee, _gemJoinAdapter, account)
+
   let result = await clipper.execute(
     auction.id,
     auction.lot,
@@ -98,4 +98,6 @@ test("Get signer from wallet and Execute an auction ", async () => {
   );
 
   console.log(result, "execution result");
+
+  expect(result).toBeDefined();
 }, 100000);
