@@ -293,11 +293,11 @@ const createVaults = async () => {
     let vaultId = vault.id;
     console.log('Vault ID', vaultId);
 
-    console.log('Locking 5.7 LINK-A');
+    console.log('Locking 4.6899 LINK-A');
     await manager.lock(
         vault.id,
         'LINK-A',
-        LINK(5.7)
+        LINK(4.6899)
     );
 
     linkBalance = await maker.getToken(LINK).balance();
@@ -313,6 +313,8 @@ const createVaults = async () => {
     // Refreshing vault data
     vault.reset();
     await vault.prefetch();
+
+    // let vaultId = 3571;
 
     // Reading Vault Information
     let managedVault = await manager.getCdp(vaultId);
@@ -332,13 +334,15 @@ const createVaults = async () => {
     console.log('Is Vault safe? ', managedVault.isSafe);
 
     console.log(' ');
-    console.log(`Drawing ${DAI(amtDai.toFixed(17))} from Vault #${vaultId}`);
+    const dart = DAI(amtDai.toFixed(16));
+    console.log(`Drawing ${dart} from Vault #${vaultId}`);
+    
 
     try {
         let drawDai = await manager.draw(
             vaultId,
             'LINK-A',
-            DAI(amtDai.toFixed(17))
+            DAI('122.51984232605')
         );
         drawDai;
     } catch (error) {
