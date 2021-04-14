@@ -6,8 +6,6 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-json-modules src/npmstart.js",
-    "testchain": "./testchain/run-testchain",
-    "buildtestchain": "./testchain/build-testchain -s mychain",
     "lint": "eslint src",
     "test": "jest ./tests"
   },
