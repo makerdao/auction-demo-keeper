@@ -1,5 +1,5 @@
-import Config from '../singleton/config';
-import network from '../singleton/network';
+import Config from '../singleton/config.js';
+import network from '../singleton/network.js';
 import { ethers, BigNumber } from 'ethers';
 import supportMethodsAbi from '../../abi/MakerOtcSupportMethods.json';
 import matchingMarketAbi from '../../abi/MatchingMarket.json';

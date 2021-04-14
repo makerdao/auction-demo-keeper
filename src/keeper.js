@@ -56,6 +56,8 @@ export default class keeper {
     // Fetch the orderbook from OasisDex & all the active auctions
     console.log('Active auctions qty: ' + this._activeAuctions.length);
 
+    if (this._activeAuctions.length === 0) console.log('NO ACTIVE AUCTIONS');
+
 
     // Look through the list of active auctions
     for (let i = 0; i < this._activeAuctions.length; i++) {
@@ -75,7 +77,6 @@ export default class keeper {
         await uniswap.fetch(lot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        console.log('auction: ', auction.price.toString());
         let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
         const decimal18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
@@ -91,7 +92,7 @@ export default class keeper {
         let auctionPrice = priceWithProfit.mul(auction.lot).div(decimals27);
 
 
-        console.log('Price with profit ', priceWithProfit.toString());
+        console.log('Gem Price with profit ', priceWithProfit.toString());
         console.log('Total auction price: ', auctionPrice.toString());
         console.log('MinProfit earning :', minProfit.toString());
 
@@ -136,6 +137,7 @@ export default class keeper {
             console.log('Using Uniswap as default auction liquidity provider');
             await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
         }
+        this._activeAuctions = await clip.activeAuctions();
       } catch (error) {
         console.error(error);
       }
@@ -147,7 +149,6 @@ export default class keeper {
     this._uniswapCalleeAdr = collateral.uniswapCallee;
     this._oasisCalleeAdr = collateral.oasisCallee;
     this._gemJoinAdapter = collateral.joinAdapter;
-    console.log('this._gemJoinAdapter', this._gemJoinAdapter);
     // construct the oasis contract method
     const oasis = new oasisDexAdaptor(
       collateral.erc20addr,
@@ -169,8 +170,14 @@ export default class keeper {
     // inititalize Clip
     await clip.init();
 
-    await this._opportunityCheck(collateral, oasis, uniswap, clip);
-    return { oasis, uniswap, clip };
+    // await this._opportunityCheck(collateral, oasis, uniswap, clip);
+    // return { oasis, uniswap, clip };
+
+    // Initialize the loop where an opportunity is checked at a perscribed cadence (Config.delay)
+    const timer = setInterval(() => {
+      this._opportunityCheck(collateral, oasis, uniswap, clip);
+    }, Config.vars.delay * 1000);
+    return { oasis, uniswap, clip, timer };
 
   }
 
@@ -198,7 +205,6 @@ export default class keeper {
         });
       }
     }
-    console.log('This _clippers Array: ', this._clippers);
   }
 
   stop() {

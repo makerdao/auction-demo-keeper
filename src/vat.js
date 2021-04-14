@@ -1,7 +1,7 @@
-import network from './singleton/network';
+import network from './singleton/network.js';
 import { ethers } from 'ethers';
-import Config from './singleton/config';
-import { Transact, GeometricGasPrice } from './transact';
+import Config from './singleton/config.js';
+import { Transact, GeometricGasPrice } from './transact.js';
 
 
 const vatAbi = [
