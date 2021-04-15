@@ -53,7 +53,6 @@ export default class Clipper {
 
     // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      console.log('TAKEN AUCTION TAB: ', tab.toNumber());
       if (tab.toNumber() == 0) {
         // Auction is over
         console.log(`Deleting Auction ID: ${id.toString()} with tab ${tab.toNumber()}`);
@@ -134,9 +133,10 @@ export default class Clipper {
     } catch (error) {
       console.log(error);
     }
-    console.log('Take_Transaction ', take_transaction);
+    console.log('\nExecuting Take_Transaction \n');
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
-    await txn.transact_async();
+    const response = await txn.transact_async();
+    console.log(`Auction ${auctionId} Take Tx Hash ${response.hash}`);
   }
 
   // Check if auction needs redo and redo auction
@@ -146,10 +146,11 @@ export default class Clipper {
     try {
       const auctionStatus = await this._clipper.getStatus(auctionId);
       if (auctionStatus.needsRedo == true) {
-        console.log(`Redoing auction ${auctionId}`);
+        console.log(`\nRedoing auction ${auctionId}`);
         const redo_transaction = await this._clipper.populateTransaction.redo(auctionId, kprAddress);
         const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
-        await txn.transact_async();
+        const response = await txn.transact_async();
+        console.log(`Redone auction ${auctionId} Tx hash: ${response.hash}`);
       }
     } catch (error) {
       console.error(error);

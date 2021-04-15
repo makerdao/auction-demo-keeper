@@ -100,12 +100,13 @@ export class Transact {
         ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
       ));
 
-    console.log(`Sending a transaction \n
-      from ${this._signer.address} \n
-      to ${this._unsigned_tx.to} \n
-      nonce ${this._unsigned_tx.nonce} \n
-      gasLimit ${this._unsigned_tx.gasLimit.toNumber()} \n
-      gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),'gwei')} Gwei`);
+    console.log(`
+    Sending a transaction
+    from ${this._signer.address}
+    to ${this._unsigned_tx.to}
+    nonce ${this._unsigned_tx.nonce}
+    gasLimit ${this._unsigned_tx.gasLimit.toNumber()}
+    gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),'gwei')} Gwei\n`);
 
     const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
     return await this._signer.provider.sendTransaction(signed_tx);
