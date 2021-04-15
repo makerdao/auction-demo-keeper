@@ -47,7 +47,7 @@ yarn install
 
 ## Configuring Keeper
 
-The configuration of the Keeper is being done by puttong all the necessary parameters in config/kovan.json
+The configuration of the Keeper is being done by putting all the necessary parameters in config/kovan.json
 
 ## Parameters
 
@@ -81,6 +81,10 @@ To generate auctions you need to run `scripts/create-auctions.js` file. Before y
 Then run `node /scripts/create-auctions.js`
 
 ## How To Run
+
+### Setup wallet
+
+This keeper needs a json wallet and a password.txt file located at `/wallet` folder. It has a test wallet already setup for testing pusposes. To generate json wallet key use tools such as [MyCrypto.com](https://mycrypto.com/).  Change wallet to your personal one for running keeper with your own wallet.  
 
 ```bash
 cd auction-demo-keeper
