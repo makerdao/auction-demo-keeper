@@ -7,6 +7,7 @@ import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet.js';
+import clipperAllowance from './vat.js';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
@@ -16,7 +17,7 @@ import Wallet from './wallet.js';
 const setupWallet = async (network) => {
   const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
   const jsonWallet = await wallet.getWallet();
-  console.log('wallet', jsonWallet);
+  console.log('Initializing ', jsonWallet);
   const signer = new ethers.Wallet(jsonWallet, network.provider);
   return signer;
 };
@@ -48,12 +49,14 @@ export default class keeper {
 
   // Check if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
   async _opportunityCheck(collateral, oasis, uniswap, clip) {
-    console.log('Check auction opportunities for ' + collateral.name);
+    console.log('Checking auction opportunities for ' + collateral.name);
 
     await oasis.fetch();
     this._activeAuctions = await clip.activeAuctions();
     // Fetch the orderbook from OasisDex & all the active auctions
-    console.log('Active auctions qty: ' + this._activeAuctions.length);
+    console.log(`Active auctions qty: ${this._activeAuctions.length}`);
+
+    if (this._activeAuctions.length === 0) console.log('NO ACTIVE AUCTIONS');
 
 
     // Look through the list of active auctions
@@ -66,16 +69,13 @@ export default class keeper {
       auction = this._activeAuctions[i];
 
       try {
-        console.log('Auction Gem Price ', auction.price.toString());
-        console.log('Auction Tab:', auction.tab.toString());
         const lot = (auction.lot.toString());
-        console.log('Auction lot value: ', lot);
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
         await uniswap.fetch(lot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        console.log('auction: ', auction.price.toString());
         let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+        const decimals9 = BigNumber.from('1000000000');
         const decimal18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
 
@@ -84,68 +84,54 @@ export default class keeper {
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
-  
+
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
         let auctionPrice = priceWithProfit.mul(auction.lot).div(decimals27);
-        
-
-        console.log('Price with profit ', priceWithProfit.toString());
-        console.log('Total auction price: ',auctionPrice.toString());
-        console.log('MinProfit earning :', minProfit.toString());
 
         // Find the amount of collateral that maximizes the amount of profit captured
-        console.log('collateral price with profit% for oasis: ',calc.div(decimals27).toString() );
         let oasisDexAvailability = oasis.opportunity(calc.div(decimals27));
-        console.log('OasisDEXAvailability: amt of collateral avl to buy ', ethers.utils.formatEther(oasisDexAvailability));
 
         // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
         let uniswapProceeds = uniswap.opportunity();
-        console.log('Uniswap Proceeds: ', uniswapProceeds.receiveAmount);
 
         // Determine how much collateral we can trade on OasisDex
         const oasisSize = oasisDexAvailability.gt(auction.lot)
           ? auction.lot
           : oasisDexAvailability;
 
-        // const auctionSale = auction.price.mul(auction.lot).div(decimals27);
-        // console.log('auctionSale: ', auctionSale.toString());
-        // const totalMinProfit = priceWithProfit.mul(auction.lot).div(decimals27);
-        // console.log('totalMinProfit: ', totalMinProfit.toString());
-        // const minProfit = totalMinProfit.sub(auctionSale);
-        // console.log('minProfit:  ', minProfit.toString());
-
-        console.log(`Auction # ${auction.id} \n
-            Current price: ${auction.price}, \n
-            Dai Proceeds from a full sell on Uniswap: ${uniswapProceeds.receiveAmount}
-            Profitable collateral in OasisDex: ${ethers.utils.formatUnits(oasisSize)}`);
-
         //TODO: Determine if we already have a pending bid for this auction
 
-        // Check if there's a Dai profit from Uniswap by selling the entire auction
-        //Clipper.execute(auction.id, _amt, _maxPrice, _minProfit, _profitAddr, _gemA, _signer, exchangeCalleeAddress)
+        console.log(`\n
+            Auction id: # ${auction.id}
 
-        // if (
-        //   uniswapProceeds.receiveAmount > ethers.utils.formatUnits(totalMinProfit)
-        // ) {
-          console.log(`Auction id: # ${auction.id} \n
-            amt - lot: ${auction.lot}, \n
-            maxPrice - price: ${auction.price}, \n
-            minProfit: ${minProfit} \n
-            _profitAddr: ${this._wallet.address} \n
-            _gemJoinAdapter: ${this._gemJoinAdapter} \n
-            _signer ${this._wallet._isSigner} \n
-            exchangeCalleeAddress: ${this._uniswapCalleeAdr}`);
-          //clip.execute(auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress)
-          // _minProfit - priceWithProfit.mul(auction.lot) - minimum amount of total Dai to receive from exchange. 
-          // await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+            Auction Tab: ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
+            Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
 
-          // If there's not a profit from Uniswap, use Oasis to sell a portion of
-          // the collateral that maximizes the Dai profit
-        // } else if (oasisSize > 0) {
-        //   //check the collateral clipper and call execute function with the right auction id
-        await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
-        // }
+            Dai Proceeds from a full sell on Uniswap: ${uniswapProceeds.receiveAmount} Dai
+
+            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatEther(oasisDexAvailability)}
+            OasisDEX auction buy amt: ${ethers.utils.formatUnits(oasisSize)}
+
+            amt - lot: ${ethers.utils.formatUnits(auction.lot)}
+            maxPrice - auction gem price: ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
+            minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
+            profitAddr: ${this._wallet.address}
+            gemJoinAdapter: ${this._gemJoinAdapter}
+            signer ${this._wallet._isSigner}\n`);
+
+        switch (Config.vars.liquidityProvider) {
+          case 'uniswap':
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+            break;
+          case 'oasisdex':
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+            break;
+          default:
+            console.log('Using Uniswap as default auction liquidity provider');
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+        }
+        this._activeAuctions = await clip.activeAuctions();
       } catch (error) {
         console.error(error);
       }
@@ -157,7 +143,6 @@ export default class keeper {
     this._uniswapCalleeAdr = collateral.uniswapCallee;
     this._oasisCalleeAdr = collateral.oasisCallee;
     this._gemJoinAdapter = collateral.joinAdapter;
-    console.log('this._gemJoinAdapter', this._gemJoinAdapter);
     // construct the oasis contract method
     const oasis = new oasisDexAdaptor(
       collateral.erc20addr,
@@ -179,13 +164,15 @@ export default class keeper {
     // inititalize Clip
     await clip.init();
 
+    // await this._opportunityCheck(collateral, oasis, uniswap, clip);
+    // return { oasis, uniswap, clip };
+
     // Initialize the loop where an opportunity is checked at a perscribed cadence (Config.delay)
-    // const timer = setInterval(() => {
-    //   this._opportunityCheck(collateral, oasis, uniswap, clip);
-    // }, Config.vars.delay * 1000);
-    await this._opportunityCheck(collateral, oasis, uniswap, clip);
-    return { oasis, uniswap, clip };
-    // return { oasis, uniswap, clip, timer };
+    const timer = setInterval(() => {
+      this._opportunityCheck(collateral, oasis, uniswap, clip);
+    }, Config.vars.delay * 1000);
+    return { oasis, uniswap, clip, timer };
+
   }
 
   async run() {
@@ -193,7 +180,9 @@ export default class keeper {
     for (const name in Config.vars.collateral) {
       if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
         const collateral = Config.vars.collateral[name];
-        console.log('Collateral: ', collateral);
+
+        //Check for clipper allowance
+        await clipperAllowance(collateral.clipper, this._wallet);
 
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
@@ -205,11 +194,10 @@ export default class keeper {
         this._clipperInit(collateral).then((pair) => {
           // add the pair to the array of clippers
           this._clippers.push(pair);
-          console.log('Collateral ' + collateral.name + ' initialized');
+          console.log(`\n------------------ COLLATERAL ${collateral.name} INITIALIZED ------------------\n`);
         });
       }
     }
-    console.log('This _clippers Array: ', this._clippers);
   }
 
   stop() {

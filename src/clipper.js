@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import network from './singleton/network';
+import network from './singleton/network.js';
 import { ethers } from 'ethers';
-import Config from './singleton/config';
-import abacusAbi from '../abi/abacus';
-import clipperAbi from '../abi/clipper';
-import { Transact, GeometricGasPrice } from './transact';
+import Config from './singleton/config.js';
+import abacusAbi from '../abi/abacus.json';
+import clipperAbi from '../abi/clipper.json';
+import { Transact, GeometricGasPrice } from './transact.js';
 
 
 export default class Clipper {
@@ -42,6 +42,7 @@ export default class Clipper {
 
     // Listen for active auctions
     this._kickListener = this._clipper.on('Kick', (id, top, tab, lot, usr, kpr, coin, event) => {
+      console.log(`Vault ${usr} has been kicked`);
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
         this._activeAuctions[id] = { top, tab, lot, id, usr, tic, kpr, coin };
@@ -52,11 +53,13 @@ export default class Clipper {
 
     // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      if (lot === 0 || tab === 0) {
+      if (tab.toNumber() == 0) {
         // Auction is over
+        console.log(`Deleting Auction ID: ${id.toString()} with tab ${tab.toNumber()}`);
         delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
+        console.log('Updating taken auction data: ', id.toString());
         const arr = this._activeAuctions.map(obj => ({
           ...obj
         }));
@@ -67,6 +70,7 @@ export default class Clipper {
     });
     // recall the listener to check for active auctions
     this._redoListener = this._clipper.on('Redo', (id, top, tab, lot, usr, event) => {
+      console.log('Updating redone auction ', id.toString());
       network.provider.getBlock(event.blockNumber).then(block => {
         const tic = block.timestamp;
         const arr = this._activeAuctions.map(obj => ({
@@ -109,14 +113,6 @@ export default class Clipper {
     return Promise.all(readPromises);
   }
 
-  // eslint-disable-next-line no-unused-vars
-  // execute () {
-  //TODO use this._exchange.callee.address to get exchange callee address
-
-  // const transaction = new Transact( network.provider, clipperAbi, this._clipper.address, );
-  // await transacttion.transac_async();
-
-
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
@@ -137,9 +133,10 @@ export default class Clipper {
     } catch (error) {
       console.log(error);
     }
-    console.log('Take_Transaction ', take_transaction);
+    console.log('\nExecuting Take_Transaction \n');
     const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
-    await txn.transact_async();
+    const response = await txn.transact_async();
+    console.log(`Auction ${auctionId} Take Tx Hash ${response.hash}`);
   }
 
   // Check if auction needs redo and redo auction
@@ -149,10 +146,11 @@ export default class Clipper {
     try {
       const auctionStatus = await this._clipper.getStatus(auctionId);
       if (auctionStatus.needsRedo == true) {
-        console.log(`Redoing auction ${auctionId}`);
+        console.log(`\nRedoing auction ${auctionId}`);
         const redo_transaction = await this._clipper.populateTransaction.redo(auctionId, kprAddress);
         const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
-        await txn.transact_async();
+        const response = await txn.transact_async();
+        console.log(`Redone auction ${auctionId} Tx hash: ${response.hash}`);
       }
     } catch (error) {
       console.error(error);

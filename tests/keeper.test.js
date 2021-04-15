@@ -28,22 +28,25 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 // // console.log('Address: ' + signer.address);
 
 // test('Test BigNumber calculations', async () => {
-//   const T18 = ethers.utils.parseEther('1');
-//   const T27 = ethers.utils.parseEther('1000000000');
-//   const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
-//   const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
-//   const auctionPrice = BigNumber.from('29997000000000000000000000000');
-//   const lotAmount = rawTab.div(auctionPrice);
-//   console.log('minProfit ', lotAmount.toString());
-  
+  // const T18 = ethers.utils.parseEther('1');
+  // const T9 = BigNumber.from('1000000000');
+  // const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+  // const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
+  // const auctionPrice = BigNumber.from('29997000000000000000000000000');
+  // const lotAmount = rawTab.div(auctionPrice);
+  // console.log('minProfit ', lotAmount.toString());
+//   console.log('T27', T9.toString());
+//   const maxPrice = BigNumber.from('50126355766269257008019621850');
+//   const format = maxPrice.div(T9);
+//   console.log('format', ethers.utils.formatUnits(format.toString()));
 // },10000);
 
-test('keeper initialization, and one opportunity check loop', async () => {
-  const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
-  keepr.run();
-  await sleep(120);
-  keepr.stop();
-}, 120000);
+// test('keeper initialization, and one opportunity check loop', async () => {
+//   const keepr = new Keeper('https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a', 'kovan');
+//   keepr.run();
+//   await sleep(120);
+//   keepr.stop();
+// }, 120000);
 
 // test('basic connectivity', async () => {
 //   let id = await network.provider.getNetwork();
