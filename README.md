@@ -75,7 +75,6 @@ The configuration of the Keeper is being done by puttong all the necessary param
 
 To generate auctions you need to run `scripts/create-auctions.js` file. Before you do that howver, add:
 
-- `"type": "module"` in `package.json`.
 - Private key in the script file
 - Acquire tokens from the FAUCET contract
 
@@ -85,10 +84,8 @@ Then run `node /scripts/create-auctions.js`
 
 ```bash
 cd auction-demo-keeper
-node keeper.js
+yarn run start
 ```
-
-- Running the `node keeper.js` command will initialise everything in the keeper.js file.
 
 ## Local Testing
 
