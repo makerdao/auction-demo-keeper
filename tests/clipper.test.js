@@ -29,9 +29,9 @@ const sleep = async function (delay) {
 test("Initializes the clipper and listen for active auctions", async () => {
   const clipper = new Clipper("LINK-A");
 
-  expect(clipper._collateral).toBeDefined();
-
   await clipper.init();
+
+  expect(clipper).toBeDefined();
 }, 100000);
 
 test("Read active auctions", async () => {
@@ -41,20 +41,19 @@ test("Read active auctions", async () => {
 
   const auctions = await clipper.activeAuctions();
 
-  console.log(auctions, 'auctions')
+  expect(auctions.length).toBeGreaterThan(0);
 
-  expect(
-    ethers.utils.formatEther(auctions[1].top, { commify: true }),
-    "Starting Price"
-  ).toBeGreaterThan(0)
+  console.log(auctions, "auctions");
 
-  expect(`${BigInt(auctions[1].tab).toFixed(17)}`, "Total dai to be raised").toBeGreaterThan(0)
+  console.log(`${BigInt(auctions[0].top)}`, "Starting Price");
 
-  expect(`${BigInt(auctions[1].tic)}`, "Auction start time").toBeDefined();
+  console.log(`${BigInt(auctions[0].tab)}`, "Total dai to be raised");
 
-  expect(auctions[1].usr, "Liquidated CDP").toBeDefined()
+  console.log(`${BigInt(auctions[0].tic)}`, "Auction start time");
 
-  expect(`${BigInt(auctions[1].lot).toFixed(17)}`, "Collateral to sell").toBeGreaterThan(0)
+  console.log(auctions[0].usr, "Liquidated CDP");
+
+  console.log(`${BigInt(auctions[0].lot)}`, "Collateral to sell");
 }, 100000);
 
 test("Get signer from wallet and Execute an auction ", async () => {
@@ -64,33 +63,34 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   const auctions = await clipper.activeAuctions();
 
-  const auction = auctions[1]
+  const auction = auctions[0];
 
   const wallet = new Wallet("./jsonpassword.txt", "./testwallet.json");
 
-
-  const jsonWallet = await wallet.getWallet()
+  const jsonWallet = await wallet.getWallet();
 
   // get signer from json wallet
   const signer = new ethers.Wallet(jsonWallet, network.provider);
 
-  const _gemJoinAdapter = clipper._collateral.joinAdapter;
+  console.log(Config.vars.collateral["LINK-A"], "COLLATERAL");
+
+  const _gemJoinAdapter = Config.vars.collateral["LINK-A"].joinAdapter;
 
   const priceWithProfit = auction.price * Config.vars.minProfitPercentage;
 
   const _minProfit = priceWithProfit * auction.lot;
 
-  const exhangeCallee = clipper._collateral.uniswapCallee;
+  const exhangeCallee = Config.vars.collateral["LINK-A"].uniswapCallee;
 
   let account = jsonWallet.address;
 
-  console.log(exhangeCallee, _gemJoinAdapter, account)
+  console.log(exhangeCallee, _gemJoinAdapter, account);
 
   let result = await clipper.execute(
-    auction.id,
-    auction.lot,
-    auction.price,
-    _minProfit,
+    BigInt(auction.id),
+    BigInt(auction.lot),
+    BigInt(auction.price),
+    BigInt(_minProfit),
     account,
     _gemJoinAdapter,
     signer,
