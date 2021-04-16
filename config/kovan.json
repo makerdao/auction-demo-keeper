@@ -1,6 +1,7 @@
 {
     "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
     "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
+    "daiJoin": "0x5AA71a3ae1C0bd6ac27A1f28e1415fFFB6F15B8c",
     "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
     "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",

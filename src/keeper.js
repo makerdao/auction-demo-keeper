@@ -7,7 +7,7 @@ import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet.js';
-import clipperAllowance from './vat.js';
+import { clipperAllowance, checkVatBalance } from './vat.js';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
@@ -136,6 +136,8 @@ export default class keeper {
         console.error(error);
       }
     }
+    //Check for any received tips from redoing auctions
+    await checkVatBalance(this._wallet);
   }
 
   // Initialize the Clipper, OasisDex, and Uniswap JS wrappers
