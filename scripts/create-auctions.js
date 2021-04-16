@@ -34,7 +34,7 @@ let web3;
 let kprAddress = '';
 
 const dogAddress = '0x121D0953683F74e9a338D40d9b4659C0EBb539a0'; // setup dog contract address
-const privateKey = 'fe85ccc0f2d39869bda4ae998600bea99eedb57c45aabc4718a1f80ef0a53655'; // insert wallet private key
+const privateKey = ''; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];

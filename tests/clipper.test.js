@@ -86,7 +86,7 @@ test("Get signer from wallet and Execute an auction ", async () => {
 
   console.log(exhangeCallee, _gemJoinAdapter, account);
 
-  let result = await clipper.execute(
+  await clipper.execute(
     BigInt(auction.id),
     BigInt(auction.lot),
     BigInt(auction.price),
@@ -97,7 +97,4 @@ test("Get signer from wallet and Execute an auction ", async () => {
     exhangeCallee
   );
 
-  console.log(result, "execution result");
-
-  expect(result).toBeDefined();
 }, 100000);
