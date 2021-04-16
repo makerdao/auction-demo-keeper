@@ -4,32 +4,6 @@ import Config from './singleton/config.js';
 import vatAbi from '../abi/vat.json';
 import { Transact, GeometricGasPrice } from './transact.js';
 
-
-// const vatAbi = [
-//     {
-//         "constant": true,
-//         "inputs": [
-//             { "internalType": "address", "name": "", "type": "address" },
-//             { "internalType": "address", "name": "", "type": "address" }
-//         ],
-//         "name": "can",
-//         "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-//         "payable": false,
-//         "stateMutability": "view",
-//         "type": "function"
-//     },
-//     {
-//         "constant": false,
-//         "inputs": [{ "internalType": "address", "name": "usr", "type": "address" }],
-//         "name": "hope",
-//         "outputs": [],
-//         "payable": false,
-//         "stateMutability": "nonpayable",
-//         "type": "function"
-//     }
-// ];
-
-
 const clipperAllowance = async (clipperAddress, _signer) => {
     const vatContract = new ethers.Contract(Config.vars.vat, vatAbi, network.provider);
     const initial_price = await _signer.getGasPrice();
