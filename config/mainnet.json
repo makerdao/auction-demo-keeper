@@ -1,22 +1,26 @@
 {
-  "rpcURL": "http://localhost:2000",
-  "dai": "",
-  "MakerOTCSupportMethods": "",
-  "OasisDex": "",
-  "UniswapV2Router": "",
+  "rpcURL": "https://mainnet.infura.io/v3/11465e3f27b247eb8b785c23047b29fd",
+  "dai": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  "daiJoin": "0x9759A6Ac90977b93B58547b4A71c78317f391A28",
+  "MakerOTCSupportMethods": "0x9b3f075b12513afe56ca2ed838613b7395f57839",
+  "OasisDex": "0x5e3e0548935a83aD29fb2A9153d331dc6d49020f",
+  "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
+  "liquidityProvider":"uniswap",
   "collateral": {
-    "ETH-A": {
-      "name": "ETH-A",
-      "erc20addr": "",
-      "clipper": "",
-      "abacus": "",
-      "oasisCallee": "",
-      "uniswapCallee": ""
+    "LINK-A": {
+      "name": "LINK-A",
+      "erc20addr": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+      "joinAdapter": "0xdFccAf8fDbD2F4805C174f856a317765B49E4a50",
+      "clipper": "0x832Dd5f17B30078a5E46Fdb8130A68cBc4a74dC0",
+      "abacus": "0x7B1696677107E48B152e9Bf400293e98B7D86Eb1",
+      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0x05d4f7ad1c3e77ee24d83b05b0413f8a2da92127"
     }
   },
-  "txnReplaceTimeout": "4",
-  "delay": "5",
+  "txnReplaceTimeout": "40",
+  "delay": "40",
   "dynamicGasCoefficient": "1.125",
-  "maxGasPrice": "500",
+  "maxGasPrice": "200",
   "minProfitPercentage": "1.01"
 }
