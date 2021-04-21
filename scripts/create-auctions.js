@@ -23,6 +23,8 @@
 * - paste dog contract address in dogAddress 
 * - Get free Kovan LINK from https://kovan.chain.link/
 * - Make sure to have enought Kovan ETH
+* - Define how much LINK you want in 'lockAmount' to lock up 
+* - and it'll borrow all available Dai. Minimum is 100 DAI worth of collateral on Kovan
 */
 
 import Maker from '@makerdao/dai';
@@ -32,6 +34,7 @@ import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
 let maker;
 let web3;
 let kprAddress = '';
+const lockAmount = 5;
 
 const dogAddress = '0x121D0953683F74e9a338D40d9b4659C0EBb539a0'; // setup dog contract address
 const privateKey = ''; // insert wallet private key
@@ -221,7 +224,12 @@ const kovanAddresses = {
             addressOverrides
         },
         url: 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a',
-        privateKey: privateKey
+        privateKey: privateKey,
+        web3: {
+            transactionSettings: {
+              gasLimit: 7000000
+            }
+          }
     });
 
     web3 = await maker.service('web3')._web3;
@@ -233,7 +241,7 @@ const kovanAddresses = {
     console.log('Current Wallet Address: ', kprAddress);
     console.log('Link balance ', linkBalance._amount);
 
-    if (Number(linkBalance._amount) < 16.49) throw 'NOT ENOUGHT LINK-A BALANCE';
+    if (Number(linkBalance._amount) < 5) throw 'NOT ENOUGHT LINK-A BALANCE';
 
     console.log('Ensure there is proxy address');
     await maker.service('proxy').ensureProxy();
@@ -247,7 +255,7 @@ const kovanAddresses = {
         await linkToken.approveUnlimited(proxyAddress);
     }
 
-    // while (Number(linkBalance._amount) > 16.49) {
+    // while (Number(linkBalance._amount) > 5) {
         await createVaults();
     // }
 
@@ -263,7 +271,8 @@ const kovanAddresses = {
         await dogContract.methods.bark(ilk, urn, kprAddress)
             .send({
                 from: kprAddress,
-                gasPrice: '20000000000'
+                gasPrice: '20000000000',
+                gasLimit: '7000000'
             })
             .on('error', error => console.log(error))
             .on('receipt', receipt => console.log('Tx Hash: ',receipt.transactionHash));
@@ -293,11 +302,11 @@ const createVaults = async () => {
     let vaultId = vault.id;
     console.log('Vault ID', vaultId);
 
-    console.log('Locking 16.49 LINK-A');
+    console.log(`Lockig ${lockAmount} LINK-A`);
     await manager.lock(
         vault.id,
         'LINK-A',
-        LINK(16.49)
+        LINK(lockAmount)
     );
 
     linkBalance = await maker.getToken(LINK).balance();
@@ -322,7 +331,7 @@ const createVaults = async () => {
     console.log('Vault: Urn Address', vaultUrnAddr);
     urns.push(vaultUrnAddr);
 
-    const amtDai = await managedVault.daiAvailable._amount;
+    const amtDai = managedVault.daiAvailable._amount;
 
     console.log('Collateral Value: ', managedVault.collateralValue._amount);
     console.log('DAI Available to Generate', managedVault.daiAvailable._amount);
@@ -332,17 +341,17 @@ const createVaults = async () => {
     console.log('Is Vault safe? ', managedVault.isSafe);
 
     console.log(' ');
-    console.log(`Drawing ${DAI(amtDai.toFixed(17))} from Vault #${vaultId}`);
+    console.log(`Drawing ${amtDai} from Vault #${vaultId}`);
 
     try {
         let drawDai = await manager.draw(
             vaultId,
             'LINK-A',
-            DAI(amtDai.toFixed(17))
+            managedVault.daiAvailable
         );
         drawDai;
     } catch (error) {
-        console.error(error);
+        throw `FAILED TO DRAW ${amtDai} DAI`;
     }
 
     console.log(' ');
