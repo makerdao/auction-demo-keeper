@@ -39,7 +39,7 @@ let kprAddress = '';
 const lockAmount = 5;
 
 const dogAddress = '0x121D0953683F74e9a338D40d9b4659C0EBb539a0'; // setup dog contract address
-const privateKey = '771b81a8691ae7e06142970beda4bb79b896fdd7ddc0d3442423771c32098fb5'; // insert wallet private key
+const privateKey = ''; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];
