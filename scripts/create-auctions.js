@@ -261,14 +261,12 @@ const kovanAddresses = {
     await createVaults();
     // }
 
-
     //Barking on all urns
     console.log(' ');
     console.log('Risky Urns');
 
     const dogContract = new web3.eth.Contract(dogAbi, dogAddress);
-
-
+    
     const bark = async (urn) => {
         await dogContract.methods.bark(ilk, urn, kprAddress)
             .send({
