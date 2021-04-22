@@ -29,6 +29,8 @@
 
 import Maker from '@makerdao/dai';
 import { McdPlugin, ETH, DAI, LINK } from '@makerdao/dai-plugin-mcd';
+import BigNumber from 'bignumber.js';
+BigNumber.config = { ROUNDING_MODE: BigNumber.ROUND_DOWN };
 
 
 let maker;
@@ -37,7 +39,7 @@ let kprAddress = '';
 const lockAmount = 5;
 
 const dogAddress = '0x121D0953683F74e9a338D40d9b4659C0EBb539a0'; // setup dog contract address
-const privateKey = ''; // insert wallet private key
+const privateKey = '771b81a8691ae7e06142970beda4bb79b896fdd7ddc0d3442423771c32098fb5'; // insert wallet private key
 let linkBalance;
 const ilk = '0x4c494e4b2d410000000000000000000000000000000000000000000000000000';
 let urns = [];
@@ -182,7 +184,7 @@ const kovanAddresses = {
     "CLIPPER_MOM": "0x96E9a19Be6EA91d1C0908e5E207f944dc2E7B878",
     "MCD_CLIP_LINK_A": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
     "MCD_CLIP_CALC_LINK_A": "0xbd586d6352Fcf0C45f77FC9348F4Ee7539F6e2bD"
-  };
+};
 
 
 (async () => {
@@ -227,9 +229,9 @@ const kovanAddresses = {
         privateKey: privateKey,
         web3: {
             transactionSettings: {
-              gasLimit: 7000000
+                gasLimit: 7000000
             }
-          }
+        }
     });
 
     web3 = await maker.service('web3')._web3;
@@ -256,7 +258,7 @@ const kovanAddresses = {
     }
 
     // while (Number(linkBalance._amount) > 5) {
-        await createVaults();
+    await createVaults();
     // }
 
 
@@ -275,7 +277,7 @@ const kovanAddresses = {
                 gasLimit: '7000000'
             })
             .on('error', error => console.log(error))
-            .on('receipt', receipt => console.log('Tx Hash: ',receipt.transactionHash));
+            .on('receipt', receipt => console.log('Tx Hash: ', receipt.transactionHash));
     };
 
     for (let i = 0; i < urns.length; i++) {
@@ -341,17 +343,24 @@ const createVaults = async () => {
     console.log('Is Vault safe? ', managedVault.isSafe);
 
     console.log(' ');
-    console.log(`Drawing ${amtDai} from Vault #${vaultId}`);
+
+    const dai = new BigNumber(amtDai);
+    const m = dai.multipliedBy(0.0000000001);
+    const dart = dai.minus(m);
+    console.log(`Drawing ${dart} from Vault #${vaultId}`);
 
     try {
         let drawDai = await manager.draw(
             vaultId,
             'LINK-A',
-            managedVault.daiAvailable
+            DAI(dart.toString())
         );
         drawDai;
     } catch (error) {
-        throw `FAILED TO DRAW ${amtDai} DAI`;
+        if (error) {
+            console.error(error);
+            process.kill(process.pid, 'SIGTERM');
+        }
     }
 
     console.log(' ');
