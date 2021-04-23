@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import oasisDexAdaptor from './dex/oasisdex.js';
 import kovanConfig from '../config/kovan.json';
+import mainnetConfig from '../config/mainnet.json';
 import Config from './singleton/config.js';
 import network from './singleton/network.js';
 import Clipper from './clipper.js';
@@ -31,19 +32,21 @@ export default class keeper {
   _gemJoinAdapter = null;
   _activeAuctions = null;
 
-  constructor(rpcUrl, net) {
+  constructor(net) {
     let config;
     switch (net) {
       case 'kovan':
         config = kovanConfig;
         break;
+      case 'mainnet':
+        config = mainnetConfig;
+        break;
       default:
         config = kovanConfig;
     }
 
-    config.rpcURL = rpcUrl;
     Config.vars = config;
-    network.rpcURL = rpcUrl;
+    network.rpcURL = config.rpcURL;
     _this = this;
   }
 

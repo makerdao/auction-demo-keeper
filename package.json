@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-json-modules src/npmstart.js",
+    "kovan": "node --experimental-json-modules src/startKovan.js",
+    "mainnet": "node --experimental-json-modules src/startMainnet.js",
     "lint": "eslint src",
     "test": "jest ./tests"
   },
@@ -24,10 +25,8 @@
     "@makerdao/dai": "^0.32.11",
     "@makerdao/dai-plugin-mcd": "^1.6.21",
     "bignumber.js": "^9.0.1",
-    "dotenv": "^8.2.0",
     "ethers": "^5.0.19",
-    "web3": "^1.3.0",
-    "yargs": "^16.1.0"
+    "web3": "^1.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

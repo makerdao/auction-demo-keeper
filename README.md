@@ -51,7 +51,7 @@ The configuration of the Keeper is being done by putting all the necessary param
 
 ## Parameters
 
-- rpcUrl - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
+- `rpcUrl` - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
 - `MakerOTCSupportMethods` - This is the address of the helper contract for oasisDex
 
@@ -88,7 +88,12 @@ This keeper needs a json wallet and a password.txt file located at `/wallet` fol
 
 ```bash
 cd auction-demo-keeper
-yarn run start
+
+yarn install
+
+yarn run kovan
+or
+yarn run mainnet
 ```
 
 ## Local Testing
