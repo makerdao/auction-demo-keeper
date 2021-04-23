@@ -26,7 +26,6 @@ export default class Wallet {
             const workingDirPath = path.resolve();
             const fullpath = path.join(workingDirPath, this._passwordPath);
             const data = fs.readFileSync(fullpath, 'utf8').toString();
-            console.log(data, "data")
             return data;
     
         } catch (error) {
@@ -38,11 +37,8 @@ export default class Wallet {
         try {
             const workingPath = path.resolve();
             const fullPath = path.join(workingPath, this._JSONKeystorePath);
-
-            console.log(fullPath, 'wallet path')
             const readJSON = fs.readFileSync(fullPath, 'utf8');
             const JSONWallet = JSON.parse(readJSON);
-            console.log(JSONWallet, "json wallet")
             if (!JSONWallet) console.log('Error with reading JSON Wallet');
 
             const JSONWalletPassword = this._getPassword();
