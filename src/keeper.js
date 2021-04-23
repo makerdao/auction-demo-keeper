@@ -8,7 +8,7 @@ import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet.js';
-import { clipperAllowance, checkVatBalance } from './vat.js';
+import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
@@ -188,6 +188,7 @@ export default class keeper {
 
         //Check for clipper allowance
         await clipperAllowance(collateral.clipper, this._wallet);
+        await daiJoinAllowance(Config.vars.daiJoin, this._wallet);
 
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
