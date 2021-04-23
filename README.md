@@ -86,10 +86,14 @@ Then run `node /scripts/create-auctions.js`
 
 This keeper needs a json wallet and a password.txt file located at `/wallet` folder. It has a test wallet already setup for testing pusposes. To generate json wallet key use tools such as [MyCrypto.com](https://mycrypto.com/).  Change wallet to your personal one for running keeper with your own wallet.  
 
+After adding your new wallet in the `/wallet` folder. Change wallet path in `keeper.js` where:
+
+```javascript
+const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
+```
+
 ```bash
 cd auction-demo-keeper
-
-yarn install
 
 yarn run kovan
 or
