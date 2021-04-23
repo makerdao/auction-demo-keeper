@@ -78,7 +78,7 @@ To generate auctions you need to run `scripts/create-auctions.js` file. Before y
 - Private key in the script file
 - Acquire tokens from the FAUCET contract
 
-Then run `node /scripts/create-auctions.js`
+Then run `node scripts/create-auctions.js`
 
 ## How To Run
 
