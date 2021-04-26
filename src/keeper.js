@@ -122,6 +122,8 @@ export default class keeper {
             profitAddr: ${this._wallet.address}
             gemJoinAdapter: ${this._gemJoinAdapter}
             signer ${this._wallet._isSigner}\n`);
+            
+        if (uniswapProceeds.receiveAmount < ethers.utils.formatUnits(auction.tab.div(decimals27))) break;
 
         switch (Config.vars.liquidityProvider) {
           case 'uniswap':
