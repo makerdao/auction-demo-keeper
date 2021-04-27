@@ -90,7 +90,6 @@ export default class keeper {
 
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
-        let auctionPrice = priceWithProfit.mul(auction.lot).div(decimals27);
 
         // Find the amount of collateral that maximizes the amount of profit captured
         let oasisDexAvailability = oasis.opportunity(calc.div(decimals27));
@@ -122,15 +121,22 @@ export default class keeper {
             profitAddr: ${this._wallet.address}
             gemJoinAdapter: ${this._gemJoinAdapter}
             signer ${this._wallet._isSigner}\n`);
-            
-        // if (uniswapProceeds.receiveAmount < ethers.utils.formatUnits(auction.tab.div(decimals27))) break;
+
 
         switch (Config.vars.liquidityProvider) {
           case 'uniswap':
-            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+            if (uniswapProceeds.receiveAmount < ethers.utils.formatUnits(auction.tab.div(decimals27))) {
+              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
+            } else {
+              console.log('Not enough liquidity on Uniswap\n');
+            }
             break;
           case 'oasisdex':
-            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+            if (oasisDexAvailability.gt(auction.lot)) {
+              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+            } else {
+              console.log('Not enough liquidity on OasisDEX\n');
+            }
             break;
           default:
             console.log('Using Uniswap as default auction liquidity provider');
@@ -159,7 +165,8 @@ export default class keeper {
     // construct the uniswap contract method
     const uniswap = new UniswapAdaptor(
       collateral.erc20addr,
-      collateral.uniswapCallee
+      collateral.uniswapCallee,
+      collateral.name
     );
 
     // construct the clipper contract method

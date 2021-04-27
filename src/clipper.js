@@ -119,7 +119,13 @@ export default class Clipper {
     //encoding calldata
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
-    let flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
+    let flashData = null;
+    if(exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
+      flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, Config.vars.collateral[this._collateralName].uniswapRoute]);
+    } else if(exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
+      flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
+    }
+     
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
    

@@ -6,6 +6,7 @@
     "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
     "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
+    "eth":"0xd0A1E359811322d97991E03f863a0C30C2cF029C",
     "liquidityProvider":"oasisdex",
     "collateral": {
       "LINK-A": {
@@ -15,12 +16,13 @@
         "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
         "abacus": "0xbd586d6352Fcf0C45f77FC9348F4Ee7539F6e2bD",
         "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
-        "uniswapCallee": "0x8fc35825172b484D21db2fd5160Cb3aeCf3729FB"
+        "uniswapCallee": "0x8fc35825172b484D21db2fd5160Cb3aeCf3729FB",
+        "uniswapRoute": ["0xa36085F69e2889c224210F603D836748e7dC0088","0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"]
       }
     },
     "txnReplaceTimeout": "20",
     "delay": "40",
     "dynamicGasCoefficient": "1.125",
     "maxGasPrice": "10",
-    "minProfitPercentage": "1.025"
+    "minProfitPercentage": "1"
 }

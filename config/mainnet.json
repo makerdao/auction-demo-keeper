@@ -6,6 +6,7 @@
   "OasisDex": "0x5e3e0548935a83aD29fb2A9153d331dc6d49020f",
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
+  "eth":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "liquidityProvider":"uniswap",
   "collateral": {
     "LINK-A": {
@@ -15,10 +16,11 @@
       "clipper": "0x832Dd5f17B30078a5E46Fdb8130A68cBc4a74dC0",
       "abacus": "0x7B1696677107E48B152e9Bf400293e98B7D86Eb1",
       "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
-      "uniswapCallee": "0x05d4f7ad1c3e77ee24d83b05b0413f8a2da92127"
+      "uniswapCallee": "0x05d4f7ad1c3e77ee24d83b05b0413f8a2da92127",
+      "uniswapRoute": ["0x514910771AF9Ca656af840dff83E8264EcF986CA","0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","0x6B175474E89094C44Da98b954EedeAC495271d0F"]
     }
   },
-  "txnReplaceTimeout": "40",
+  "txnReplaceTimeout": "60",
   "delay": "40",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "200",
