@@ -49,7 +49,7 @@ const checkVatBalance = async (_signer) => {
     const balance = await vatContract.dai(_signer.address);
     const daiToWithdraw = balance.div(decimals27);
 
-    if (ethers.utils.formatUnits(daiToWithdraw) > 0) {
+    if (ethers.utils.formatUnits(daiToWithdraw) > 50) {
         await withdrawExtraDai(_signer, daiToWithdraw);
     }
 };
