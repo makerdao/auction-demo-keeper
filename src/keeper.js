@@ -123,9 +123,12 @@ export default class keeper {
             signer ${this._wallet._isSigner}\n`);
 
 
+            console.log('uniswap receive amount, ',Number(uniswapProceeds.receiveAmount));
+            console.log('tab: ',Number(ethers.utils.formatUnits(auction.tab.div(decimals27))));
+
         switch (Config.vars.liquidityProvider) {
           case 'uniswap':
-            if (uniswapProceeds.receiveAmount > ethers.utils.formatUnits(auction.tab.div(decimals27))) {
+            if (Number(uniswapProceeds.receiveAmount) > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
               await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
             } else {
               console.log('Not enough liquidity on Uniswap\n');
