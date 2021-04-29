@@ -1,38 +1,42 @@
 {
-    "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
-    "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
-    "daiJoin": "0x5AA71a3ae1C0bd6ac27A1f28e1415fFFB6F15B8c",
-    "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
-    "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
-    "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-    "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
-    "eth":"0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-    "liquidityProvider":"uniswap",
-    "collateral": {
-      "LINK-A": {
-        "name": "LINK-A",
-        "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
-        "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
-        "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
-        "abacus": "0xbd586d6352Fcf0C45f77FC9348F4Ee7539F6e2bD",
-        "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
-        "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
-        "uniswapRoute": ["0xa36085F69e2889c224210F603D836748e7dC0088","0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"]
-      },
-      "YFI-A": {
-        "name": "YFI-A",
-        "erc20addr": "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
-        "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
-        "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
-        "abacus": "0x54A18C6ceEBDf42D8532EBf5e0a67C430a51b2f6",
-        "oasisCallee": "",
-        "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
-        "uniswapRoute": ["0x251F1c3077FEd1770cB248fB897100aaE1269FFC","0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"]
-      }
+  "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
+  "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
+  "daiJoin": "0x5AA71a3ae1C0bd6ac27A1f28e1415fFFB6F15B8c",
+  "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
+  "OasisDex": "0xfcbebe883b891ba55d231bdf5a9ffb7e63b4354b",
+  "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
+  "eth": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+  "liquidityProvider": "uniswap",
+  "collateral": {
+    "LINK-A": {
+      "name": "LINK-A",
+      "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
+      "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
+      "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+      "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
+      "uniswapRoute": [
+        "0xa36085F69e2889c224210F603D836748e7dC0088",
+        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+      ]
     },
-    "txnReplaceTimeout": "20",
-    "delay": "40",
-    "dynamicGasCoefficient": "1.125",
-    "maxGasPrice": "10",
-    "minProfitPercentage": "1.025"
+    "YFI-A": {
+      "name": "YFI-A",
+      "erc20addr": "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
+      "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
+      "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+      "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
+      "uniswapRoute": [
+        "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
+        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+      ]
+    }
+  },
+  "txnReplaceTimeout": "20",
+  "delay": "40",
+  "dynamicGasCoefficient": "1.125",
+  "maxGasPrice": "10",
+  "minProfitPercentage": "1.025"
 }
