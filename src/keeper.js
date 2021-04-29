@@ -129,6 +129,7 @@ export default class keeper {
 
         switch (Config.vars.liquidityProvider) {
           case 'uniswap':
+            //Uniswap tx executes only if the return amount also covers the minProfit %
             if (minUniProceeds > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
               await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
             } else {
@@ -136,6 +137,7 @@ export default class keeper {
             }
             break;
           case 'oasisdex':
+            //OasisDEX buys gem only with gem price + minProfit%
             if (oasisDexAvailability.gt(auction.lot)) {
               await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
             } else {
