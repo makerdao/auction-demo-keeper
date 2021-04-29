@@ -123,9 +123,6 @@ export default class keeper {
             signer ${this._wallet._isSigner}\n`);
 
 
-            console.log('uniswap receive amount, ',Number(uniswapProceeds.receiveAmount));
-            console.log('tab: ',Number(ethers.utils.formatUnits(auction.tab.div(decimals27))));
-
         switch (Config.vars.liquidityProvider) {
           case 'uniswap':
             if (Number(uniswapProceeds.receiveAmount) > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
