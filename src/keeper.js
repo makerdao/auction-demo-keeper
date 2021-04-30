@@ -71,42 +71,42 @@ export default class keeper {
       this._activeAuctions = await clip.activeAuctions();
       auction = this._activeAuctions[i];
 
-      try {
-        const lot = (auction.lot.toString());
-        // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        await uniswap.fetch(lot);
-        // Find the minimum effective exchange rate between collateral/Dai
-        // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
-        const decimals9 = BigNumber.from('1000000000');
-        const decimal18 = ethers.utils.parseEther('1');
-        const decimals27 = ethers.utils.parseEther('1000000000');
+
+      const lot = (auction.lot.toString());
+      // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
+      await uniswap.fetch(lot);
+      // Find the minimum effective exchange rate between collateral/Dai
+      // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
+      let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+      const decimals9 = BigNumber.from('1000000000');
+      const decimal18 = ethers.utils.parseEther('1');
+      const decimals27 = ethers.utils.parseEther('1000000000');
 
 
-        const tab = auction.tab.div(decimal18);
-        const calcMinProfit45 = tab.mul(minProfitPercentage);
-        const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
-        const minProfit = totalMinProfit45.div(decimals27);
+      const tab = auction.tab.div(decimal18);
+      const calcMinProfit45 = tab.mul(minProfitPercentage);
+      const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
+      const minProfit = totalMinProfit45.div(decimals27);
 
-        let calc = auction.price.mul(minProfitPercentage);
-        let priceWithProfit = calc.div(decimal18);
+      let calc = auction.price.mul(minProfitPercentage);
+      let priceWithProfit = calc.div(decimal18);
 
-        // Find the amount of collateral that maximizes the amount of profit captured
-        let oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
+      // Find the amount of collateral that maximizes the amount of profit captured
+      let oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
 
-        // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
-        let uniswapProceeds = uniswap.opportunity();
+      // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
+      let uniswapProceeds = uniswap.opportunity();
 
-        // Determine how much collateral we can trade on OasisDex
-        const oasisSize = oasisDexAvailability.gt(auction.lot)
-          ? auction.lot
-          : oasisDexAvailability;
+      // Determine how much collateral we can trade on OasisDex
+      const oasisSize = oasisDexAvailability.gt(auction.lot)
+        ? auction.lot
+        : oasisDexAvailability;
 
-        const minUniProceeds = (Number(ethers.utils.formatUnits(minProfit)) + Number(uniswapProceeds.receiveAmount));
+      const minUniProceeds = (Number(ethers.utils.formatUnits(minProfit)) + Number(uniswapProceeds.receiveAmount));
 
-        //TODO: Determine if we already have a pending bid for this auction
+      //TODO: Determine if we already have a pending bid for this auction
 
-        console.log(`\n
+      console.log(`\n
             Auction id: # ${auction.id}
 
             Auction Tab: ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
@@ -127,31 +127,29 @@ export default class keeper {
             profitAddr: ${this._wallet.address}\n`);
 
 
-        switch (Config.vars.liquidityProvider) {
-          case 'uniswap':
-            //Uniswap tx executes only if the return amount also covers the minProfit %
-            if (minUniProceeds > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
-              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
-            } else {
-              console.log('Not enough liquidity on Uniswap\n');
-            }
-            break;
-          case 'oasisdex':
-            //OasisDEX buys gem only with gem price + minProfit%
-            if (oasisDexAvailability.gt(auction.lot)) {
-              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
-            } else {
-              console.log('Not enough liquidity on OasisDEX\n');
-            }
-            break;
-          default:
-            console.log('Using Uniswap as default auction liquidity provider');
+      switch (Config.vars.liquidityProvider) {
+        case 'uniswap':
+          //Uniswap tx executes only if the return amount also covers the minProfit %
+          if (minUniProceeds > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
             await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
-        }
-        this._activeAuctions = await clip.activeAuctions();
-      } catch (error) {
-        console.error(error);
+          } else {
+            console.log('Not enough liquidity on Uniswap\n');
+          }
+          break;
+        case 'oasisdex':
+          //OasisDEX buys gem only with gem price + minProfit%
+          if (oasisDexAvailability.gt(auction.lot)) {
+            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._oasisCalleeAdr);
+          } else {
+            console.log('Not enough liquidity on OasisDEX\n');
+          }
+          break;
+        default:
+          console.log('Using Uniswap as default auction liquidity provider');
+          await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapter, this._wallet, this._uniswapCalleeAdr);
       }
+      this._activeAuctions = await clip.activeAuctions();
+
     }
     //Check for any received tips from redoing auctions
     await checkVatBalance(this._wallet);

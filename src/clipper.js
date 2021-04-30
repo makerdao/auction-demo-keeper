@@ -120,15 +120,15 @@ export default class Clipper {
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
-    if(exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
+    if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
       flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, Config.vars.collateral[this._collateralName].uniswapRoute]);
-    } else if(exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
       flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
     }
-     
+
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-   
+
 
     const initial_price = await _signer.getGasPrice();
     const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
@@ -137,12 +137,19 @@ export default class Clipper {
     try {
       take_transaction = await this._clipper.populateTransaction.take(id, _amt, _maxPrice, exchangeCalleeAddress, flashData);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
     console.log('\nExecuting Take_Transaction \n');
-    const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
-    const response = await txn.transact_async();
-    console.log(`Auction ${auctionId} Take Tx Hash ${response.hash}`);
+    try {
+      const txn = new Transact(take_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
+      const response = await txn.transact_async();
+      if (response != undefined) {
+        console.log(`Auction ${auctionId} Take Tx Hash ${response.hash}`);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Check if auction needs redo and redo auction

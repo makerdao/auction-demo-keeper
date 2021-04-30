@@ -14,7 +14,7 @@ import { ethers, BigNumber } from 'ethers';
 import { NonceManager } from '@ethersproject/experimental';
 
 
-const sleep = async function(delay) {await new Promise((r) => setTimeout(r, delay*1000));};
+const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
 
 
 // Geometrically increasing gas price.
@@ -31,7 +31,7 @@ export class GeometricGasPrice {
   _coefficient;   // unitless
   _max_price;     // wei
 
-  constructor(initial_price, every_secs, coefficient=1.125, max_price = null) {
+  constructor(initial_price, every_secs, coefficient = 1.125, max_price = null) {
     this._initial_price = initial_price;
     this._every_secs = every_secs;
     this._coefficient = coefficient;
@@ -43,7 +43,7 @@ export class GeometricGasPrice {
     let result = this._initial_price;
 
     if (time_elapsed >= this._every_secs) {
-      const cycles = [...Array(Math.floor(time_elapsed/this._every_secs))];
+      const cycles = [...Array(Math.floor(time_elapsed / this._every_secs))];
 
       cycles.forEach(() => {
         result *= this._coefficient;
@@ -73,7 +73,6 @@ export class Transact {
     this._signer = signer;
     this._timeout = timeout * 1000; // convert to miliseconds
     this._gasStrategy = gasStrategy;
-
   }
 
   // Does not handle transaction locking: https://github.com/makerdao/pymaker/blob/master/pymaker/__init__.py#L715
@@ -91,14 +90,14 @@ export class Transact {
       this._unsigned_tx.chainId = values[2].chainId;
     });
 
-    const seconds_elapsed = Math.round((new Date() - this._initial_time)/1000);
+    const seconds_elapsed = Math.round((new Date() - this._initial_time) / 1000);
     // console.log(seconds_elapsed)
     // Defaults to the node's suggested gas price if gasStrategy is not supplied
-    this._unsigned_tx.gasPrice = await ( (this._gasStrategy === null) ? (
-        this._signer.getGasPrice()
-      ) : (
-        ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
-      ));
+    this._unsigned_tx.gasPrice = await ((this._gasStrategy === null) ? (
+      this._signer.getGasPrice()
+    ) : (
+      ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
+    ));
 
     console.log(`
     Sending a transaction
@@ -106,7 +105,7 @@ export class Transact {
     to ${this._unsigned_tx.to}
     nonce ${this._unsigned_tx.nonce}
     gasLimit ${this._unsigned_tx.gasLimit.toNumber()}
-    gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(),'gwei')} Gwei\n`);
+    gasPrice ${ethers.utils.formatUnits(this._unsigned_tx.gasPrice.toNumber(), 'gwei')} Gwei\n`);
 
     const signed_tx = await this._signer.signTransaction(this._unsigned_tx);
     return await this._signer.provider.sendTransaction(signed_tx);
@@ -117,9 +116,18 @@ export class Transact {
     this._initial_time = new Date();
     let minConfirmations = 1;
 
-    let response = await this.sign_and_send();
+    let response;
 
-    while(true) {
+    while (true) {
+      try {
+        await this._signer.estimateGas(this._unsigned_tx);
+      }catch(error){
+        console.error('\nTX WILL REVERT, CANCELLING\n', error.message + '\n');
+        break;
+      }
+
+
+      response = await this.sign_and_send();
 
       let receipt = undefined;
       // This promise resolves once the transaction has been mined (confirmed by a minConfirmation size)
@@ -129,14 +137,14 @@ export class Transact {
           receipt = result;
         });
 
-      // Wait until the timeout is reached to either confirm publishing or replace transaction
+      // Wait until the timeout is reached to either confirm publishing or replace transsaction
       await sleep(this._timeout / 1000);
 
       // Check if transaction was published
       if (receipt != undefined) {
         break;
 
-      // Replace Transaction if it wasn't mined within the allotted timeout
+        // Replace Transaction if it wasn't mined within the allotted timeout
       } else {
         // Sign and send the same transaction, but with a higher gas price
         console.log('Transaction still pending. Will send a replacement transaction');
@@ -148,6 +156,4 @@ export class Transact {
     //return receipt; // TODO figure out how to return the receipt once it's resolved
     return response;
   }
-
-
 }
