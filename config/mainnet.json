@@ -38,6 +38,7 @@
   },
   "txnReplaceTimeout": "60",
   "delay": "40",
+  "initialGasOffsetGwei": "30",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "200",
   "minProfitPercentage": "1.025"
