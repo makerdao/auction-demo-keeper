@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import network from './singleton/network.js';
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import Config from './singleton/config.js';
 import abacusAbi from '../abi/abacus.json';
 import clipperAbi from '../abi/clipper.json';
@@ -131,7 +131,7 @@ export default class Clipper {
    
 
     const initial_price = await _signer.getGasPrice();
-    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+    const gasStrategy = new GeometricGasPrice(initial_price.add(BigNumber.from(Config.vars.initialGasOffsetGwei ?? 0).mul(1e9)).toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
 
     let take_transaction;
     try {
@@ -148,7 +148,7 @@ export default class Clipper {
   // Check if auction needs redo and redo auction
   auctionStatus = async (auctionId, kprAddress, _signer) => {
     const initial_price = await _signer.getGasPrice();
-    const gasStrategy = new GeometricGasPrice(initial_price.toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
+    const gasStrategy = new GeometricGasPrice(initial_price.add(BigNumber.from(Config.vars.initialGasOffsetGwei ?? 0).mul(1e9)).toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
     try {
       const auctionStatus = await this._clipper.getStatus(auctionId);
       if (auctionStatus.needsRedo == true) {
