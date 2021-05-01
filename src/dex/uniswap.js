@@ -26,7 +26,6 @@ export default class UniswapAdaptor {
         if (blockNumber === this._lastBlock) return;
         this._lastBlock = blockNumber;
 
-        console.log("ILK AMOUNT: " + ilkAmount);
         const offer = await this._uniswap.getAmountsOut(ilkAmount, Config.vars.collateral[this._collateralName].uniswapRoute);
         this._book.sellAmount = ethers.utils.formatUnits(offer[0]);
         this._book.receiveAmount = ethers.utils.formatUnits(offer[offer.length-1]);
