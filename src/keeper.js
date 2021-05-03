@@ -101,8 +101,6 @@ export default class keeper {
       const costOfLot = auction.price.mul(auction.lot).div(decimals27);
 
 
-      const minUniProceeds = (Number(ethers.utils.formatUnits(minProfit)) + Number(uniswapProceeds.receiveAmount));
-
       //TODO: Determine if we already have a pending bid for this auction
 
       console.log(`\n
@@ -118,7 +116,6 @@ export default class keeper {
 
             -- OasisDEX --
             OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatEther(oasisDexAvailability)}
-            OasisDEX auction buy amt: ${ethers.utils.formatUnits(oasisSize)}
 
             amt - lot: ${ethers.utils.formatUnits(auction.lot)}
             costOfLot: ${ethers.utils.formatUnits(costOfLot)}
@@ -153,10 +150,6 @@ export default class keeper {
             await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
         }
         this._activeAuctions = await clip.activeAuctions();
-      } catch (error) {
-        console.error(error);
-      }
-      this._activeAuctions = await clip.activeAuctions();
 
     }
     //Check for any received tips from redoing auctions
