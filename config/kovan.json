@@ -34,7 +34,7 @@
       ]
     }
   },
-  "txnReplaceTimeout": "20",
+  "txnReplaceTimeout": "2",
   "delay": "40",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "10",

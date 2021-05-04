@@ -36,7 +36,7 @@
       ]
     }
   },
-  "txnReplaceTimeout": "60",
+  "txnReplaceTimeout": "40",
   "delay": "40",
   "initialGasOffsetGwei": "30",
   "dynamicGasCoefficient": "1.125",
