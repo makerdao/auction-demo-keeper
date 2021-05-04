@@ -15,7 +15,7 @@
       "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
       "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
       "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
-      "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
+      "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
       "uniswapRoute": [
         "0xa36085F69e2889c224210F603D836748e7dC0088",
         "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
@@ -27,7 +27,7 @@
       "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
       "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
       "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
-      "uniswapCallee": "0x19e5B7bbCBA8E628e2D8459fA79Be2772E556fC6",
+      "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
       "uniswapRoute": [
         "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
         "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
