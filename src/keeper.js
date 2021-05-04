@@ -16,7 +16,7 @@ import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
  */
 
 const setupWallet = async (network) => {
-  const wallet = new Wallet('/wallet/password.txt', '/wallet/keystore.json');
+  const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
   const jsonWallet = await wallet.getWallet();
   console.log('Initializing ', jsonWallet);
   const signer = new ethers.Wallet(jsonWallet, network.provider);
