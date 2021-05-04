@@ -67,6 +67,7 @@ export class Transact {
   _timeout;     // seconds
   _initial_time;
   _gasStrategy;
+  _estimatedGas;
 
   constructor(unsigned_tx, signer, timeout = 15000, gasStrategy = null) {
     this._unsigned_tx = unsigned_tx;
@@ -77,27 +78,40 @@ export class Transact {
 
   // Does not handle transaction locking: https://github.com/makerdao/pymaker/blob/master/pymaker/__init__.py#L715
   async sign_and_send(_previousNonce = null) {
-
+    console.log('previousNonce: ', _previousNonce);
     // Take into account transactions done with other wallets (i.e. MetaMask): https://github.com/makerdao/pymaker/pull/201#issuecomment-731382038
     const pendingNonce = this._signer.getTransactionCount('pending');
-    const gasLimit = 5000000;
+    // const gasLimit = 5000000;
     const network = this._signer.provider.getNetwork();
 
-    await Promise.all([pendingNonce, gasLimit, network]).then(values => {
-      this._unsigned_tx.nonce = Math.max(values[0], _previousNonce);
+    await Promise.all([pendingNonce, network]).then(values => {
+      if (_previousNonce !== null) {
+        this._unsigned_tx.nonce = _previousNonce;
+      } else {
+        this._unsigned_tx.nonce = values[0];
+      }
       // this._unsigned_tx.gasLimit = values[1];
-      this._unsigned_tx.gasLimit = BigNumber.from(gasLimit);
-      this._unsigned_tx.chainId = values[2].chainId;
+      this._unsigned_tx.gasLimit = this._estimatedGas.mul(15).div(10);
+      this._unsigned_tx.chainId = values[1].chainId;
+
     });
 
     const seconds_elapsed = Math.round((new Date() - this._initial_time) / 1000);
     // console.log(seconds_elapsed)
     // Defaults to the node's suggested gas price if gasStrategy is not supplied
-    this._unsigned_tx.gasPrice = await ((this._gasStrategy === null) ? (
-      this._signer.getGasPrice()
-    ) : (
-      ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
-    ));
+
+    if (this._gasStrategy === null) {
+      this._unsigned_tx.gasPrice = await this._signer.getGasPrice();
+    } else {
+      let gasPrice = await this._gasStrategy.get_gas_price(seconds_elapsed);
+      this._unsigned_tx.gasPrice = ethers.BigNumber.from(gasPrice);
+    }
+
+    // this._unsigned_tx.gasPrice = await ((this._gasStrategy === null) ? (
+    //   await this._signer.getGasPrice()
+    // ) : (
+    //   ethers.BigNumber.from(this._gasStrategy.get_gas_price(seconds_elapsed))
+    // ));
 
     console.log(`
     Sending a transaction
@@ -120,25 +134,38 @@ export class Transact {
 
     while (true) {
       try {
-        await this._signer.estimateGas(this._unsigned_tx);
-      }catch(error){
+        this._estimatedGas = await this._signer.estimateGas(this._unsigned_tx);
+        this._estimatedGas;
+      } catch (error) {
         console.error('\nTX WILL REVERT, CANCELLING\n', error.message + '\n');
         break;
       }
 
+      if(response === undefined ) {
+        response = await this.sign_and_send();
+      } else {
+        response = await this.sign_and_send(response.nonce);
+      }
 
-      response = await this.sign_and_send();
-
-      let receipt = undefined;
       // This promise resolves once the transaction has been mined (confirmed by a minConfirmation size)
       // Set a timer on the promise, equivalent to the transaction replacement timeout
-      this._signer.provider.waitForTransaction(response.hash, minConfirmations, this._timeout)
-        .then(result => {
-          receipt = result;
-        });
+      // this._signer.provider.waitForTransaction(response.hash, minConfirmations, this._timeout)
+      //   .then(result => {
+      //     receipt = result;
+      //   });
 
+      let receipt = undefined;
+      try {
+        receipt = await this._signer.provider.waitForTransaction(response.hash, minConfirmations, this._timeout);
+      } catch (error) {
+        if (error.code === 'TIMEOUT') {
+          console.log('There was a timeout waiting for receipt');
+        } else {
+          throw error;
+        }
+      }
       // Wait until the timeout is reached to either confirm publishing or replace transsaction
-      await sleep(this._timeout / 1000);
+      // await sleep(this._timeout / 1000);
 
       // Check if transaction was published
       if (receipt != undefined) {
@@ -148,9 +175,7 @@ export class Transact {
       } else {
         // Sign and send the same transaction, but with a higher gas price
         console.log('Transaction still pending. Will send a replacement transaction');
-        response = await this.sign_and_send(response.nonce);
       }
-
     }
 
     //return receipt; // TODO figure out how to return the receipt once it's resolved
