@@ -9,6 +9,55 @@
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "liquidityProvider": "uniswap",
   "collateral": {
+    "ETH-A": {
+      "name": "ETH-A",
+      "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "joinAdapter": "0x2F0b23f53734252Bda2277357e97e1517d6B042A",
+      "clipper": "0xc67963a226eddd77B91aD8c421630A1b0AdFF270",
+      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
+      "uniswapRoute": [
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
+    "ETH-B": {
+      "name": "ETH-B",
+      "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "joinAdapter": "0x08638eF1A205bE6762A8b935F5da9b700Cf7322c",
+      "clipper": "0x71eb894330e8a4b96b8d6056962e7F116F50e06F",
+      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
+      "uniswapRoute": [
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
+    "ETH-C": {
+      "name": "ETH-C",
+      "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "joinAdapter": "0xF04a5cC80B1E94C69B48f5ee68a08CD2F09A7c3E",
+      "clipper": "0xc2b12567523e3f3CBd9931492b91fe65b240bc47",
+      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
+      "uniswapRoute": [
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
+    "WBTC-A": {
+      "name": "WBTC-A",
+      "erc20addr": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "joinAdapter": "0xBF72Da2Bd84c5170618Fbe5914B0ECA9638d5eb5",
+      "clipper": "0x0227b54AdbFAEec5f1eD1dFa11f54dcff9076e2C",
+      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
+      "uniswapRoute": [
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
     "LINK-A": {
       "name": "LINK-A",
       "erc20addr": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
@@ -30,9 +79,9 @@
       "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
       "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
       "uniswapRoute": [
-        "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
+        "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
         "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     }
   },
