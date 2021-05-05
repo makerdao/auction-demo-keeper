@@ -1,11 +1,11 @@
 # Auction-Demo-Keeper
 
-*Integration example of a LIQ2.0 Keeper with flash loan functionality*
+*Integration example of a LIQ2.0 Keeper with atomic swap functionality*
 
 The Auction-Demo-Keeper is an integration example that demonstrates most ways to interact with the [LIQ-2.0]((https://forum.makerdao.com/t/liquidations-2-0-technical-summary/4632)) auction system in the Maker Protocol.
-This "demo" keeper works out of the box, it is simple in design, leverages LIQ-2.0's flash loan feature, and therefore operates with minimal capital requirements.
+This "demo" keeper works out of the box, is simple in design, and leverages `clipper.take`'s [external call](https://github.com/makerdao/dss/blob/master/src/clip.sol#L394) feature, minimizing capital requirements.
 
-When paired with an [exchange-callee](https://github.com/makerdao/exchange-callees) contract, `auction-demo-keeper` utilizes the native flash loan feature within LIQ2.0, allowing it to borrow the collateral out for auction, swap it for DAI within an arbitrary DEX, return DAI to the auction, and collect a DAI profit from the spread - all in a single transaction. The keeper needs only ETH for gas to participate in LIQ2.0 auctions.
+By using an [exchange-callee](https://github.com/makerdao/exchange-callees) contract, `auction-demo-keeper` swaps auctioned collateral for DAI using a DEX, returning DAI to the auction to cover the bid, and collecting a DAI profit from the spread - all in a single transaction. The keeper needs only ETH for gas to participate in LIQ2.0 auctions.
 
 ## Scope
 
@@ -47,9 +47,20 @@ yarn install
 
 ## Configuring Keeper
 
-The configuration of the Keeper is being done by putting all the necessary parameters in config/kovan.json
+### Setting up wallet
 
-## Parameters
+This keeper includes a test wallet already set up for testing purposes.  You'll want to replace this with your own wallet.   
+You may use tools such as [MyCrypto.com](https://mycrypto.com/) to generate a new JSON wallet key and passphrase.
+
+### Configuring in-place
+Update `rpcUrl` in `config/mainnet.json` with the URL for your own Ethereum node. 
+Edit `wallet/jsonpassword.txt` with your wallet password, and copy your JSON keystore file to `wallet/testwallet.json`.
+
+### Configuring from environment
+From your own startup script, export `AUCTION_DEMO_KEEPER_CONFIG` with the path to your JSON configuration file.
+Export `AUCTION_DEMO_KEEPER_PASSWORD_PATH` and `AUCTION_DEMO_KEEPER_KEYSTORE_PATH` with paths to the appropriate files from your keystore.
+
+### Configuration Parameters
 
 - `rpcUrl` - rpcUrl stands for remote procedure call. This enables the keeper to connect to the  blockchain network  using the infura provider
 
@@ -73,7 +84,7 @@ The configuration of the Keeper is being done by putting all the necessary param
 
 ## Generate Auctions
 
-To generate auctions you need to run `scripts/create-auctions.js` file. Before you do that howver, add:
+To generate auctions on a testnet, you need to run `scripts/create-auctions.js`. Before you do that howver, add:
 
 - Private key in the script file
 - Acquire tokens from the FAUCET contract
@@ -82,22 +93,16 @@ Then run `node scripts/create-auctions.js`
 
 ## How To Run
 
-### Setup wallet
+First, ensure your working directory is the root of this repository.
 
-This keeper needs a json wallet and a password.txt file located at `/wallet` folder. It has a test wallet already setup for testing pusposes. To generate json wallet key use tools such as [MyCrypto.com](https://mycrypto.com/).  Change wallet to your personal one for running keeper with your own wallet.  
-
-After adding your new wallet in the `/wallet` folder. Change wallet path in `keeper.js` where:
-
-```javascript
-const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
+You may run with in-place configuration...
+```bash
+yarn run mainnet
 ```
 
+...or with configuration from the environment:
 ```bash
-cd auction-demo-keeper
-
-yarn run kovan
-or
-yarn run mainnet
+yarn run env
 ```
 
 ## Local Testing
