@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
 import oasisDexAdaptor from './dex/oasisdex.js';
-import kovanConfig from '../config/kovan.json';
-import mainnetConfig from '../config/mainnet.json';
 import Config from './singleton/config.js';
 import network from './singleton/network.js';
 import Clipper from './clipper.js';
@@ -9,14 +7,15 @@ import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
 import Wallet from './wallet.js';
 import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
+import fs from 'fs';
 
 /* The Keeper module is the entry point for the
  ** auction Demo Keeper
  * all configurations and intitalisation of the demo keeper is being handled here
  */
 
-const setupWallet = async (network) => {
-  const wallet = new Wallet('/wallet/jsonpassword.txt', '/wallet/testwallet.json');
+const setupWallet = async (network, passwordPath, JSONKeystorePath) => {
+  const wallet = new Wallet(passwordPath, JSONKeystorePath);
   const jsonWallet = await wallet.getWallet();
   console.log('Initializing ', jsonWallet);
   const signer = new ethers.Wallet(jsonWallet, network.provider);
@@ -32,21 +31,12 @@ export default class keeper {
   _gemJoinAdapters = {};
   _activeAuctions = null;
 
-  constructor(net) {
-    let config;
-    switch (net) {
-      case 'kovan':
-        config = kovanConfig;
-        break;
-      case 'mainnet':
-        config = mainnetConfig;
-        break;
-      default:
-        config = kovanConfig;
-    }
-
+  constructor(configPath, walletPasswordPath, walletKeystorePath) {
+    let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     Config.vars = config;
     network.rpcURL = config.rpcURL;
+    this.walletPasswordPath = walletPasswordPath;
+    this.walletKeystorePath = walletKeystorePath;
     _this = this;
   }
 
@@ -104,7 +94,7 @@ export default class keeper {
       //TODO: Determine if we already have a pending bid for this auction
 
       console.log(`\n
-            Auction id: # ${auction.id}
+            ${collateral.name} auction ${auction.id}
 
             Auction Tab: ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
             Auction Gem Price: ${ethers.utils.formatUnits(auction.price.div(decimals9))}
@@ -134,7 +124,7 @@ export default class keeper {
                 console.log('Not enough liquidity on Uniswap\n');
               }
             } else {
-              console.log('Proceeds - profit amount is less than cost.\n');
+              console.log('Uniswap proceeds - profit amount is less than cost.\n');
             }
             break;
           case 'oasisdex':
@@ -196,7 +186,7 @@ export default class keeper {
   }
 
   async run() {
-    this._wallet = await setupWallet(network);
+    this._wallet = await setupWallet(network, this.walletPasswordPath, this.walletKeystorePath);
     for (const name in Config.vars.collateral) {
       if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
         const collateral = Config.vars.collateral[name];
