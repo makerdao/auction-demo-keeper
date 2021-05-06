@@ -6,7 +6,6 @@
 
 import { ethers } from 'ethers';
 import fs from 'fs';
-import path from 'path';
 
 export default class Wallet {
     _passwordPath;
@@ -23,9 +22,7 @@ export default class Wallet {
 
     _getPassword() {
         try {
-            const workingDirPath = path.resolve();
-            const fullpath = path.join(workingDirPath, this._passwordPath);
-            const data = fs.readFileSync(fullpath, 'utf8').toString();
+            const data = fs.readFileSync(this._passwordPath, 'utf8').toString();
             return data;
     
         } catch (error) {
@@ -35,9 +32,7 @@ export default class Wallet {
 
     async getWallet() {
         try {
-            const workingPath = path.resolve();
-            const fullPath = path.join(workingPath, this._JSONKeystorePath);
-            const readJSON = fs.readFileSync(fullPath, 'utf8');
+            const readJSON = fs.readFileSync(this._JSONKeystorePath, 'utf8');
             const JSONWallet = JSON.parse(readJSON);
             if (!JSONWallet) console.log('Error with reading JSON Wallet');
 
