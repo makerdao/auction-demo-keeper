@@ -22,7 +22,7 @@ export default class Wallet {
 
     _getPassword() {
         try {
-            const data = fs.readFileSync(this._passwordPath, 'utf8').toString();
+            const data = fs.readFileSync(this._passwordPath, 'utf8').toString().trim();
             return data;
     
         } catch (error) {
