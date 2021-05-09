@@ -11,7 +11,7 @@ const clipperAllowance = async (clipperAddress, _signer) => {
 
     try {
         const allowance = await vatContract.can(_signer.address, clipperAddress);
-        if (allowance.toNumber() !== 1) {
+        if (allowance.neq(1)) {
             console.log('HOPING CLIPPER IN VAT');
             const hope_transaction = await vatContract.populateTransaction.hope(clipperAddress);
             const txn = new Transact(hope_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
@@ -30,7 +30,7 @@ const daiJoinAllowance = async (daiJoinAddress, _signer) => {
 
     try {
         const allowance = await vatContract.can(_signer.address, daiJoinAddress);
-        if (allowance.toNumber() !== 1) {
+        if (allowance.neq(1)) {
             console.log('HOPING DAI_JOIN IN VAT');
             const hope_transaction = await vatContract.populateTransaction.hope(daiJoinAddress);
             const txn = new Transact(hope_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
