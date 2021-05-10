@@ -53,7 +53,7 @@ export default class Clipper {
 
     // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      if (tab.toNumber() == 0) {
+      if (tab.eq(0)) {
         // Auction is over
         console.log(`Deleting Auction ID: ${id.toString()} with tab ${tab.toNumber()}`);
         delete (this._activeAuctions[id]);
@@ -158,7 +158,7 @@ export default class Clipper {
     const gasStrategy = new GeometricGasPrice(initial_price.add(BigNumber.from(Config.vars.initialGasOffsetGwei ?? 0).mul(1e9)).toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
     try {
       const auctionStatus = await this._clipper.getStatus(auctionId);
-      if (auctionStatus.needsRedo == true) {
+      if (auctionStatus.needsRedo === true) {
         console.log(`\nRedoing auction ${auctionId}`);
         const redo_transaction = await this._clipper.populateTransaction.redo(auctionId, kprAddress);
         const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
