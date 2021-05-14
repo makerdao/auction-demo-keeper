@@ -1,25 +1,25 @@
 /**
  * @jest-environment node
  */
-import { ethers, BigNumber } from 'ethers';
-import Config from '../src/singleton/config';
-import network from '../src/singleton/network';
-import { expect } from '@jest/globals';
-import oasisDexAdaptor from '../src/dex/oasisdex';
-import config from '../config/kovan.json';
-import Clipper from '../src/clipper';
-import Keeper from '../src/keeper';
-import Wallet from '../src/wallet';
-import { Transact } from '../src/transact';
-import daiAbi from '../abi/Dai.json';
+// import { ethers, BigNumber } from 'ethers';
+// import Config from '../src/singleton/config';
+// import network from '../src/singleton/network';
+// import { expect } from '@jest/globals';
+// import oasisDexAdaptor from '../src/dex/oasisdex';
+// import config from '../config/kovan.json';
+// import Clipper from '../src/clipper';
+// import Keeper from '../src/keeper';
+// import Wallet from '../src/wallet';
+// import { Transact } from '../src/transact';
+// import daiAbi from '../abi/Dai.json';
 
-network.rpcURL = 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a';
-Config.vars = config;
+// network.rpcURL = 'https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a';
+// Config.vars = config;
 // console.log('network.rpcURL', network.provider);
-// console.log('CONFIG ',Config.vars);
+// // console.log('CONFIG ',Config.vars);
 
 
-const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
+// const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
 
 // Testchain Deployer Address
 // const privateKey = '0x474BEB999FED1B3AF2EA048F963833C686A0FBA05F5724CB6417CF3B8EE9697E';
@@ -28,13 +28,13 @@ const sleep = async function (delay) { await new Promise((r) => setTimeout(r, de
 // // console.log('Address: ' + signer.address);
 
 // test('Test BigNumber calculations', async () => {
-  // const T18 = ethers.utils.parseEther('1');
-  // const T9 = BigNumber.from('1000000000');
-  // const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
-  // const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
-  // const auctionPrice = BigNumber.from('29997000000000000000000000000');
-  // const lotAmount = rawTab.div(auctionPrice);
-  // console.log('minProfit ', lotAmount.toString());
+//   const T18 = ethers.utils.parseEther('1');
+//   const T9 = BigNumber.from('1000000000');
+//   const minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+//   const rawTab = BigNumber.from('269809382023146153277328701369117752381660321410');
+//   const auctionPrice = BigNumber.from('29997000000000000000000000000');
+//   const lotAmount = rawTab.div(auctionPrice);
+//   console.log('minProfit ', lotAmount.toString());
 //   console.log('T27', T9.toString());
 //   const maxPrice = BigNumber.from('50126355766269257008019621850');
 //   const format = maxPrice.div(T9);

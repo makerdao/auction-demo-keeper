@@ -63,7 +63,7 @@ export class GeometricGasPrice {
 
 export class Transact {
   _unsigned_tx;
-  _singer;
+  _signer;
   _timeout;     // seconds
   _initial_time;
   _gasStrategy;

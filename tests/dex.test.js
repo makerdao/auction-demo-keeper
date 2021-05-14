@@ -21,9 +21,9 @@ test('Uniswap Adaptor Opportunity', async () => {
 }, 20000);
 
 test('OasisDEX Adaptor Opportunity', async () => {
-    const oasis = new oasisDexAdaptor(Config.vars.collateral['LINK-A'].erc20addr, Config.vars.collateral['LINK-A'].oasisCallee);
+    const oasis = new oasisDexAdaptor(Config.vars.collateral['WBTC-A'].erc20addr, Config.vars.collateral['WBTC-A'].oasisCallee);
     await oasis.fetch();
-    let auctionPrice = BigNumber.from('14023461595432977698');
+    let auctionPrice = BigNumber.from('50000023461595432977698');
     let oasisDexAvailability = oasis.opportunity(auctionPrice);
     console.log('Oasis Opportunity: ', ethers.utils.formatEther(oasisDexAvailability));
     expect(oasisDexAvailability > 0);

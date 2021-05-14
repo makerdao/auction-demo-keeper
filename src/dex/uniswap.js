@@ -22,16 +22,22 @@ export default class UniswapAdaptor {
 
     // ilkAmount in WEI
     fetch = async (ilkAmount) => {
-        const blockNumber = await this._provider.getBlockNumber();
-        if (blockNumber === this._lastBlock) return;
-        this._lastBlock = blockNumber;
+        try {
+            const blockNumber = await this._provider.getBlockNumber();
+            if (blockNumber === this._lastBlock) return;
+            this._lastBlock = blockNumber;
 
-        const offer = await this._uniswap.getAmountsOut(ilkAmount, Config.vars.collateral[this._collateralName].uniswapRoute);
-        this._book.sellAmount = ethers.utils.formatUnits(offer[0]);
-        this._book.receiveAmount = ethers.utils.formatUnits(offer[offer.length-1]);
+            const offer = await this._uniswap.getAmountsOut(ilkAmount, Config.vars.collateral[this._collateralName].uniswapRoute);
+            this._book.sellAmount = ethers.utils.formatUnits(offer[0]);
+            this._book.receiveAmount = ethers.utils.formatUnits(offer[offer.length - 1]);
+        } catch (e) {
+            console.log('uniswap error:', e);
+        }
+
     }
 
     opportunity = () => {
+        console.log('uniswap book:', this._book);
         return this._book;
     }
 }
