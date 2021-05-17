@@ -37,7 +37,6 @@ export default class UniswapAdaptor {
     }
 
     opportunity = () => {
-        console.log('uniswap book:', this._book);
         return this._book;
     }
 }

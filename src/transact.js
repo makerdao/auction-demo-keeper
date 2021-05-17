@@ -137,7 +137,7 @@ export class Transact {
         this._estimatedGas = await this._signer.estimateGas(this._unsigned_tx);
         this._estimatedGas;
       } catch (error) {
-        console.error('\nTX WILL REVERT, CANCELLING\n', error.message + '\n');
+        console.error('\nTX WILL REVERT, CANCELLING\n', error + '\n');
         break;
       }
 

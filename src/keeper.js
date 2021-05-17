@@ -47,9 +47,7 @@ export default class keeper {
     await oasis.fetch();
     this._activeAuctions = await clip.activeAuctions();
     // Fetch the orderbook from OasisDex & all the active auctions
-    console.log(`Active auctions qty: ${this._activeAuctions.length}`);
-
-    if (this._activeAuctions.length === 0) console.log('NO ACTIVE AUCTIONS');
+    console.log(`${collateral.name} Active auctions qty: ${this._activeAuctions.length}`);
 
     try {
       // Look through the list of active auctions

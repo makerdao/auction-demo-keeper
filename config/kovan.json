@@ -7,7 +7,7 @@
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
   "eth": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  "liquidityProvider": "oasisdex",
+  "liquidityProvider": "uniswap",
   "collateral": {
     "LINK-A": {
       "name": "LINK-A",
