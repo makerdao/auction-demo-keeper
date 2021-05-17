@@ -1,5 +1,5 @@
 {
-  "rpcURL": "https://kovan.infura.io/v3/c7c45c0e046e49feb141d72680af4f0a",
+  "rpcURL": "https://kovan.infura.io/v3/11465e3f27b247eb8b785c23047b29fd",
   "dai": "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa",
   "daiJoin": "0x5AA71a3ae1C0bd6ac27A1f28e1415fFFB6F15B8c",
   "MakerOTCSupportMethods": "0x303f2bf24d98325479932881657f45567b3e47a8",
@@ -32,9 +32,21 @@
         "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
         "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
       ]
+    },
+    "WBTC-A": {
+      "name": "WBTC-A",
+      "erc20addr": "0x7419f744bBF35956020C1687fF68911cD777f865",
+      "joinAdapter": "0xB879c7d51439F8e7AC6b2f82583746A0d336e63F",
+      "clipper": "0x5518C2f409Bed4bD5FF3542d9D5002251EEDA892",
+      "oasisCallee": "0x3DdD8d18F46A723aE7Aef72e8b84b0D3dA1088C5",
+      "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
+      "uniswapRoute": [
+        "0x7419f744bBF35956020C1687fF68911cD777f865",
+        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+      ]
     }
   },
-  "txnReplaceTimeout": "2",
+  "txnReplaceTimeout": "20",
   "delay": "40",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "10",

@@ -63,7 +63,7 @@ export class GeometricGasPrice {
 
 export class Transact {
   _unsigned_tx;
-  _singer;
+  _signer;
   _timeout;     // seconds
   _initial_time;
   _gasStrategy;
@@ -136,12 +136,15 @@ export class Transact {
       try {
         this._estimatedGas = await this._signer.estimateGas(this._unsigned_tx);
         this._estimatedGas;
-      } catch (error) {
-        console.error('\nTX WILL REVERT, CANCELLING\n', error.message + '\n');
-        break;
+      } catch {
+        console.error('\nTX WILL REVERT, CANCELLING\n', '\n');
+        const value = await this._signer.call(this._unsigned_tx);
+        return ethers.utils.hexDataLength(value) % 32 === 4 && ethers.utils.hexDataSlice(value, 0, 4) === '0x08c379a0'
+          ? ethers.utils.defaultAbiCoder.decode(['string'], ethers.utils.hexDataSlice(value, 4))
+          : undefined;
       }
 
-      if(response === undefined ) {
+      if (response === undefined) {
         response = await this.sign_and_send();
       } else {
         response = await this.sign_and_send(response.nonce);
