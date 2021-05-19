@@ -62,6 +62,7 @@ export default class keeper {
         const decimals9 = BigNumber.from('1000000000');
         const decimal18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
+        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
 
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
@@ -75,15 +76,11 @@ export default class keeper {
         await uniswap.fetch(minLot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
-
-
-
+        
         const tab = auction.tab.div(decimal18);
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
-
 
 
         // Find the amount of collateral that maximizes the amount of profit captured
