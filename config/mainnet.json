@@ -220,5 +220,6 @@
   "initialGasOffsetGwei": "30",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "200",
-  "minProfitPercentage": "1.025"
+  "minProfitPercentage": "1.025",
+  "lotDaiValue": "5000"
 }

@@ -59,16 +59,24 @@ export default class keeper {
         this._activeAuctions = await clip.activeAuctions();
         auction = this._activeAuctions[i];
 
-
-        const lot = (auction.lot.toString());
-        // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        await uniswap.fetch(lot);
-        // Find the minimum effective exchange rate between collateral/Dai
-        // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
         const decimals9 = BigNumber.from('1000000000');
         const decimal18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
+
+        let calc = auction.price.mul(minProfitPercentage);
+        let priceWithProfit = calc.div(decimal18);
+
+
+        //adjusting lot to lotDaiValue
+        let lotDaiValue = ethers.utils.parseEther(Config.vars.lotDaiValue).mul(decimal18);
+        let minLot = lotDaiValue.div(priceWithProfit.div(decimals9));
+        const lot = (auction.lot.toString());
+        // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
+        await uniswap.fetch(minLot);
+        // Find the minimum effective exchange rate between collateral/Dai
+        // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
+        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+
 
 
         const tab = auction.tab.div(decimal18);
@@ -76,8 +84,7 @@ export default class keeper {
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
 
-        let calc = auction.price.mul(minProfitPercentage);
-        let priceWithProfit = calc.div(decimal18);
+
 
         // Find the amount of collateral that maximizes the amount of profit captured
         let oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
@@ -86,7 +93,7 @@ export default class keeper {
         let uniswapProceeds = uniswap.opportunity();
 
         const minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
-        const costOfLot = auction.price.mul(auction.lot).div(decimals27);
+        const costOfLot = auction.price.mul(minLot).div(decimals27);
 
 
         //TODO: Determine if we already have a pending bid for this auction
@@ -105,7 +112,7 @@ export default class keeper {
             -- OasisDEX --
             OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}
 
-            amt - lot: ${ethers.utils.formatUnits(auction.lot)}
+            amt - lot: ${ethers.utils.formatUnits(minLot)}
             costOfLot: ${ethers.utils.formatUnits(costOfLot)}
             maxPrice ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
             minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
@@ -116,11 +123,7 @@ export default class keeper {
           case 'uniswap':
             if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
               //Uniswap tx executes only if the return amount also covers the minProfit %
-              if (minUniProceeds > Number(ethers.utils.formatUnits(auction.tab.div(decimals27)))) {
-                await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
-              } else {
-                console.log('Not enough liquidity on Uniswap\n');
-              }
+              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
             } else {
               console.log('Uniswap proceeds - profit amount is less than cost.\n');
             }
