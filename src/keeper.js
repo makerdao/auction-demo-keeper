@@ -122,7 +122,7 @@ export default class keeper {
           case 'uniswap':
             if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
               //Uniswap tx executes only if the return amount also covers the minProfit %
-              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
+              await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
             } else {
               console.log('Uniswap proceeds - profit amount is less than cost.\n');
             }
@@ -130,7 +130,7 @@ export default class keeper {
           case 'oasisdex':
             //OasisDEX buys gem only with gem price + minProfit%
             if (oasisDexAvailability.gt(auction.lot)) {
-              await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
+              await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
             } else {
               console.log('Not enough liquidity on OasisDEX\n');
             }
