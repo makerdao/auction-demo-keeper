@@ -70,8 +70,9 @@ export default class keeper {
 
         //adjusting lot to lotDaiValue
         let lotDaiValue = ethers.utils.parseEther(Config.vars.lotDaiValue).mul(decimal18);
-        let minLot = lotDaiValue.div(priceWithProfit.div(decimals9));
+        let minLot = lotDaiValue.div(auction.price.div(decimals9));
         const lot = (auction.lot.toString());
+
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
         await uniswap.fetch(minLot);
         // Find the minimum effective exchange rate between collateral/Dai
@@ -90,7 +91,7 @@ export default class keeper {
         let uniswapProceeds = uniswap.opportunity();
 
         const minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
-        const costOfLot = auction.price.mul(minLot).div(decimals27);
+        const costOfLot = priceWithProfit.mul(minLot).div(decimals27);
 
 
         //TODO: Determine if we already have a pending bid for this auction
@@ -109,7 +110,8 @@ export default class keeper {
             -- OasisDEX --
             OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}
 
-            amt - lot: ${ethers.utils.formatUnits(minLot)}
+            amt - lot: ${ethers.utils.formatUnits(lot)}
+            amt - minLot: ${ethers.utils.formatUnits(minLot)}
             costOfLot: ${ethers.utils.formatUnits(costOfLot)}
             maxPrice ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
             minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
