@@ -50,5 +50,6 @@
   "delay": "40",
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "10",
-  "minProfitPercentage": "1.025"
+  "minProfitPercentage": "1.025",
+  "lotDaiValue": "110"
 }
