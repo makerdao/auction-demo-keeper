@@ -101,6 +101,7 @@ export default class keeper {
 
             Auction Tab: ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
             Auction Gem Price: ${ethers.utils.formatUnits(auction.price.div(decimals9))}
+            Min profit: ${ethers.utils.formatUnits(minProfit)}
             Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
 
             -- Uniswap --

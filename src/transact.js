@@ -15,7 +15,7 @@ import { NonceManager } from '@ethersproject/experimental';
 
 
 const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
-
+const sendBadTxesToChain = false;  // set true to spend gas sending send bad transactions to chain for debugging
 
 // Geometrically increasing gas price.
 //
@@ -137,11 +137,14 @@ export class Transact {
         this._estimatedGas = await this._signer.estimateGas(this._unsigned_tx);
         this._estimatedGas;
       } catch {
-        console.error('\nTX WILL REVERT, CANCELLING\n', '\n');
-        const value = await this._signer.call(this._unsigned_tx);
-        return ethers.utils.hexDataLength(value) % 32 === 4 && ethers.utils.hexDataSlice(value, 0, 4) === '0x08c379a0'
-          ? ethers.utils.defaultAbiCoder.decode(['string'], ethers.utils.hexDataSlice(value, 4))
-          : undefined;
+        console.error('\nTX WILL REVERT\n', '\n');
+        this._estimatedGas = BigNumber.from(500000);
+        if (!sendBadTxesToChain) {
+          const value = await this._signer.call(this._unsigned_tx);
+          return ethers.utils.hexDataLength(value) % 32 === 4 && ethers.utils.hexDataSlice(value, 0, 4) === '0x08c379a0'
+              ? ethers.utils.defaultAbiCoder.decode(['string'], ethers.utils.hexDataSlice(value, 4))
+              : undefined;
+        }
       }
 
       if (response === undefined) {
