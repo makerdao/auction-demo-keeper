@@ -76,7 +76,7 @@ export default class keeper {
 
         //checking for partial lot condition
         let chost = clip._chost;
-        if(tab < chost) {
+        if(tab - lotDaiValue < chost) {
           lot = auction.lot;
         } else {
           lot = minLot;
