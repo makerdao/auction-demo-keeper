@@ -164,10 +164,12 @@ export default class Clipper {
         const txn = new Transact(redo_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
         const response = await txn.transact_async();
         console.log(`Redone auction ${auctionId} Tx hash: ${response.hash}`);
+        return true;
       }
     } catch (error) {
       console.error(error);
     }
+    return false;
   };
 }
 

@@ -44,7 +44,9 @@ export default class keeper {
   async _opportunityCheck(collateral, oasis, uniswap, clip) {
     console.log('Checking auction opportunities for ' + collateral.name);
 
-    await oasis.fetch();
+    if (oasis)  // Oasis liquidity check doesn't depend on auction lot size
+      await oasis.fetch();
+
     this._activeAuctions = await clip.activeAuctions();
     // Fetch the orderbook from OasisDex & all the active auctions
     console.log(`${collateral.name} Active auctions qty: ${this._activeAuctions.length}`);
@@ -54,10 +56,10 @@ export default class keeper {
       for (let i = 0; i < this._activeAuctions.length; i++) {
         let auction = this._activeAuctions[i];
 
-        //Redo auction if it's outdated
-        await clip.auctionStatus(auction.id, this._wallet.address, this._wallet);
-        this._activeAuctions = await clip.activeAuctions();
-        auction = this._activeAuctions[i];
+        // Redo auction if it ended without covering tab or lot
+        const redone = await clip.auctionStatus(auction.id, this._wallet.address, this._wallet);
+        if (redone)
+          continue;
 
         const decimals9 = BigNumber.from('1000000000');
         const decimal18 = ethers.utils.parseEther('1');
@@ -74,7 +76,8 @@ export default class keeper {
         const lot = (auction.lot.toString());
 
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        await uniswap.fetch(minLot);
+        if (uniswap)
+          await uniswap.fetch(minLot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
         
@@ -82,66 +85,65 @@ export default class keeper {
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
-
-
-        // Find the amount of collateral that maximizes the amount of profit captured
-        let oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
-
-        // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
-        let uniswapProceeds = uniswap.opportunity();
-
-        const minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
         const costOfLot = priceWithProfit.mul(minLot).div(decimals27);
 
 
+        // Find the amount of collateral that maximizes the amount of profit captured
+        let oasisDexAvailability
+        if (oasis)
+          oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
+
+        // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
+        let uniswapProceeds
+        let minUniProceeds;
+        if (uniswap) {
+          uniswapProceeds = uniswap.opportunity();
+          minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
+        }
+
         //TODO: Determine if we already have a pending bid for this auction
 
-        console.log(`\n
-            ${collateral.name} auction ${auction.id}
-
-            Auction Tab: ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
-            Auction Gem Price: ${ethers.utils.formatUnits(auction.price.div(decimals9))}
-            Min profit: ${ethers.utils.formatUnits(minProfit)}
+        const auctionSummary = `\n
+          ${collateral.name} auction ${auction.id}
+    
+            Auction Tab:           ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
+            Auction Price:         ${ethers.utils.formatUnits(auction.price.div(decimals9))}
+            Min profit:            ${ethers.utils.formatUnits(minProfit)}
             Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
-
-            -- Uniswap --
-            Dai Proceeds from a full sell on Uniswap: ${uniswapProceeds.receiveAmount} Dai
-            Proceeds - minProfit: ${minUniProceeds}
-
-            -- OasisDEX --
-            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}
-
-            amt - lot: ${ethers.utils.formatUnits(lot)}
+    
+            amt - lot:    ${ethers.utils.formatUnits(lot)}
             amt - minLot: ${ethers.utils.formatUnits(minLot)}
             costOfLot: ${ethers.utils.formatUnits(costOfLot)}
-            maxPrice ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
+            maxPrice   ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
             minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
-            profitAddr: ${this._wallet.address}\n`);
+            profitAddr: ${this._wallet.address}\n`;
+        
+        let liquidityAvailability;
+        if (uniswap) {
+          liquidityAvailability = `
+            Dai Proceeds from Uniswap sale: ${uniswapProceeds.receiveAmount} Dai
+            Proceeds - minProfit:           ${minUniProceeds}\n`
+          console.log(auctionSummary + liquidityAvailability);
+          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
+            //Uniswap tx executes only if the return amount also covers the minProfit %
+            await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
+          } else {
+            console.log('Uniswap proceeds - profit amount is less than cost.\n');
+          }
 
-
-        switch (Config.vars.liquidityProvider) {
-          case 'uniswap':
-            if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
-              //Uniswap tx executes only if the return amount also covers the minProfit %
-              await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
-            } else {
-              console.log('Uniswap proceeds - profit amount is less than cost.\n');
-            }
-            break;
-          case 'oasisdex':
-            //OasisDEX buys gem only with gem price + minProfit%
-            if (oasisDexAvailability.gt(auction.lot)) {
-              await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
-            } else {
-              console.log('Not enough liquidity on OasisDEX\n');
-            }
-            break;
-          default:
-            console.log('Using Uniswap as default auction liquidity provider');
-            await clip.execute(auction.id, auction.lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
+        } else if (oasis) {
+          liquidityAvailability = `
+            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}\n`
+          console.log(auctionSummary + liquidityAvailability);
+          //OasisDEX buys gem only with gem price + minProfit%
+          if (oasisDexAvailability.gt(auction.lot)) {
+            await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
+          } else {
+            console.log('Not enough liquidity on OasisDEX\n');
+          }
         }
+        
         this._activeAuctions = await clip.activeAuctions();
-
       }
     } catch (e) {
       console.error(e);
@@ -157,24 +159,21 @@ export default class keeper {
     this._oasisCalleeAdr = collateral.oasisCallee;
     this._gemJoinAdapters[collateral.name] = collateral.joinAdapter;
     // construct the oasis contract method
-    const oasis = new oasisDexAdaptor(
+    const oasis = collateral.oasisCallee ? new oasisDexAdaptor(
       collateral.erc20addr,
       collateral.oasisCallee,
       collateral.name
-    );
+    ) : null;
 
     // construct the uniswap contract method
-    const uniswap = new UniswapAdaptor(
+    const uniswap = collateral.uniswapCallee ? new UniswapAdaptor(
       collateral.erc20addr,
       collateral.uniswapCallee,
       collateral.name
-    );
+    ) : null;
 
     // construct the clipper contract method
     const clip = new Clipper(collateral.name);
-
-    //get the oasis
-    await oasis.fetch();
 
     // inititalize Clip
     await clip.init();
@@ -187,7 +186,6 @@ export default class keeper {
       this._opportunityCheck(collateral, oasis, uniswap, clip);
     }, Config.vars.delay * 1000);
     return { oasis, uniswap, clip, timer };
-
   }
 
   async run() {
