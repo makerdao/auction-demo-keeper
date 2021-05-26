@@ -98,12 +98,12 @@ export default class keeper {
 
 
         // Find the amount of collateral that maximizes the amount of profit captured
-        let oasisDexAvailability
+        let oasisDexAvailability;
         if (oasis)
           oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
 
         // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
-        let uniswapProceeds
+        let uniswapProceeds;
         let minUniProceeds;
         if (uniswap) {
           uniswapProceeds = uniswap.opportunity();
@@ -131,7 +131,7 @@ export default class keeper {
         if (uniswap) {
           liquidityAvailability = `
             Dai Proceeds from Uniswap sale: ${uniswapProceeds.receiveAmount} Dai
-            Proceeds - minProfit:           ${minUniProceeds}\n`
+            Proceeds - minProfit:           ${minUniProceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
           if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
             //Uniswap tx executes only if the return amount also covers the minProfit %
@@ -142,7 +142,7 @@ export default class keeper {
 
         } else if (oasis) {
           liquidityAvailability = `
-            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}\n`
+            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}\n`;
           console.log(auctionSummary + liquidityAvailability);
           //OasisDEX buys gem only with gem price + minProfit%
           if (oasisDexAvailability.gt(auction.lot)) {
