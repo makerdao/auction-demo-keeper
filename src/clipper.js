@@ -14,6 +14,7 @@ export default class Clipper {
   _abacus;
   _abacusAddr;
   _activeAuctions = [];
+  _chost;
 
   _kickListener;
   _takeListener;
@@ -36,6 +37,9 @@ export default class Clipper {
 
     // _clipper.calc() returns the abacus address of the collateral
     this._abacusAddr = await this._clipper.calc();
+
+    //chost = ilk.dust * ilk.chop(liquidation penalty)
+    this._chost = await this._clipper.chost();
 
     // initialize the abacus contract obbject
     this._abacus = new ethers.Contract(this._abacusAddr, abacusAbi, network.provider);
