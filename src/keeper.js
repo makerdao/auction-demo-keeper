@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable no-unused-vars */
 import oasisDexAdaptor from './dex/oasisdex.js';
 import Config from './singleton/config.js';
@@ -78,7 +79,7 @@ export default class keeper {
 
         //checking for partial lot condition
         let chost = clip._chost;
-        if(tab - lotDaiValue < chost) {
+        if (tab - lotDaiValue < chost) {
           lot = auction.lot;
         } else {
           lot = minLot;
@@ -89,7 +90,7 @@ export default class keeper {
           await uniswap.fetch(lot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-        
+
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
@@ -125,7 +126,7 @@ export default class keeper {
             maxPrice   ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
             minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
             profitAddr: ${this._wallet.address}\n`;
-        
+
         let liquidityAvailability;
         if (uniswap) {
           liquidityAvailability = `
@@ -150,7 +151,7 @@ export default class keeper {
             console.log('Not enough liquidity on OasisDEX\n');
           }
         }
-        
+
         this._activeAuctions = await clip.activeAuctions();
       }
     } catch (e) {

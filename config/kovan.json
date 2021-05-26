@@ -24,7 +24,7 @@
       "erc20addr": "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
       "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
       "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
-      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7"
     },
     "WBTC-A": {
       "name": "WBTC-A",
