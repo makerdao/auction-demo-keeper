@@ -3,6 +3,7 @@ node_modules/
 process.yml
 testchain/var
 yarn.lock
+.idea/
 /wallet
 !/wallet/jsonpassword.txt
 !/wallet/testwallet.json
