@@ -36,7 +36,7 @@ BigNumber.config = { ROUNDING_MODE: BigNumber.ROUND_DOWN };
 let maker;
 let web3;
 let kprAddress = '';
-const lockAmount = 10;
+const lockAmount = 12;
 
 const dogAddress = '0x121D0953683F74e9a338D40d9b4659C0EBb539a0'; // setup dog contract address
 const privateKey = ''; // insert wallet private key

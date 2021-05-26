@@ -66,6 +66,7 @@ export default class keeper {
         const decimals27 = ethers.utils.parseEther('1000000000');
         let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
 
+        const tab = auction.tab.div(decimal18);
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimal18);
 
@@ -73,19 +74,26 @@ export default class keeper {
         //adjusting lot to lotDaiValue
         let lotDaiValue = ethers.utils.parseEther(Config.vars.lotDaiValue).mul(decimal18);
         let minLot = lotDaiValue.div(auction.price.div(decimals9));
-        const lot = (auction.lot.toString());
+        let lot;
+
+        //checking for partial lot condition
+        let chost = clip._chost;
+        if(tab - lotDaiValue < chost) {
+          lot = auction.lot;
+        } else {
+          lot = minLot;
+        }
 
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
         if (uniswap)
-          await uniswap.fetch(minLot);
+          await uniswap.fetch(lot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
         
-        const tab = auction.tab.div(decimal18);
         const calcMinProfit45 = tab.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
-        const costOfLot = priceWithProfit.mul(minLot).div(decimals27);
+        const costOfLot = priceWithProfit.mul(lot).div(decimals27);
 
 
         // Find the amount of collateral that maximizes the amount of profit captured
@@ -107,12 +115,12 @@ export default class keeper {
           ${collateral.name} auction ${auction.id}
     
             Auction Tab:           ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
+            Auction Lot:           ${ethers.utils.formatUnits(auction.lot.toString())}
             Auction Price:         ${ethers.utils.formatUnits(auction.price.div(decimals9))}
             Min profit:            ${ethers.utils.formatUnits(minProfit)}
             Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
     
-            amt - lot:    ${ethers.utils.formatUnits(lot)}
-            amt - minLot: ${ethers.utils.formatUnits(minLot)}
+            Lot sale amt - lot: ${ethers.utils.formatUnits(lot)}
             costOfLot: ${ethers.utils.formatUnits(costOfLot)}
             maxPrice   ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
             minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
@@ -126,7 +134,7 @@ export default class keeper {
           console.log(auctionSummary + liquidityAvailability);
           if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
             //Uniswap tx executes only if the return amount also covers the minProfit %
-            await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
+            await clip.execute(auction.id, lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._uniswapCalleeAdr);
           } else {
             console.log('Uniswap proceeds - profit amount is less than cost.\n');
           }
@@ -137,7 +145,7 @@ export default class keeper {
           console.log(auctionSummary + liquidityAvailability);
           //OasisDEX buys gem only with gem price + minProfit%
           if (oasisDexAvailability.gt(auction.lot)) {
-            await clip.execute(auction.id, minLot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
+            await clip.execute(auction.id, lot, auction.price, minProfit, this._wallet.address, this._gemJoinAdapters[collateral.name], this._wallet, this._oasisCalleeAdr);
           } else {
             console.log('Not enough liquidity on OasisDEX\n');
           }
