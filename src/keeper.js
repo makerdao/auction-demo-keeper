@@ -31,6 +31,7 @@ export default class keeper {
   _oasisCalleeAdr = null;
   _gemJoinAdapters = {};
   _activeAuctions = null;
+  _processingFlags = {};
 
   constructor(configPath, walletPasswordPath, walletKeystorePath) {
     let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -43,7 +44,12 @@ export default class keeper {
 
   // Check if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
   async _opportunityCheck(collateral, oasis, uniswap, clip) {
-    console.log('Checking auction opportunities for ' + collateral.name);
+    if (this._processingFlags[collateral]) {
+      console.debug('Already processing opportunities for ' + collateral.name);
+    } else {
+      console.log('Checking auction opportunities for ' + collateral.name);
+      this._processingFlags[collateral] = true;
+    }
 
     if (oasis)  // Oasis liquidity check doesn't depend on auction lot size
       await oasis.fetch();
@@ -156,6 +162,8 @@ export default class keeper {
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      this._processingFlags[collateral] = false;
     }
     //Check for any received tips from redoing auctions
     // FIXME - this will fire multiple times for each collateral type
