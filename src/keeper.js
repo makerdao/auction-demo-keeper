@@ -76,7 +76,7 @@ export default class keeper {
 
         //checking for partial lot condition
         let chost = clip._chost;
-        if(tab - lotDaiValue < chost) {
+        if (tab.div(decimals9).sub(lotDaiValue.div(decimal18)).lt(chost.div(decimals27))) {
           lot = auction.lot;
         } else {
           lot = minLot;
