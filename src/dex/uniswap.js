@@ -38,7 +38,7 @@ export default class UniswapAdaptor {
             this._book.sellAmount = this._collateralName === 'WBTC-A' ? ethers.utils.formatUnits(offer[0].mul(this._decimals10)) : ethers.utils.formatUnits(offer[0]);
             this._book.receiveAmount = ethers.utils.formatUnits(offer[offer.length - 1]);
         } catch (e) {
-            console.log('uniswap error:', e);
+            console.log(`Error fetching Uniswap amounts for ${this._collateralName}:`, e);
         }
 
     }
