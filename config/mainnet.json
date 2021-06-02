@@ -37,7 +37,12 @@
       "erc20addr": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
       "joinAdapter": "0x3D0B1912B66114d4096F48A8CEe3A56C231772cA",
       "clipper": "0x3D22e6f643e2F4c563fD9db22b229Cbb0Cd570fb",
-      "oasisCallee": "0x52470b6affda2d4dc21aceda0402467bf33a4421",
+      "uniswapCallee": "0xEdf8f834347F77bC5B3958C2D90F0CE67ae12F4F",
+      "uniswapRoute": [
+        "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
     },
     "COMP-A": {
       "name": "COMP-A",
