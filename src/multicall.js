@@ -6,6 +6,8 @@ export default class Multicall {
 
     _provider;
     _multi;
+    _ilkRegistry;
+    _ilks = [];
     _clipLinkA;
     _kicks;
     _clippers = [];
@@ -40,8 +42,8 @@ export default class Multicall {
 
     init() {
         this._multi = this.build(Config.vars.multicall, 'Multicall');
+        this._ilkRegistry = this.build(Config.vars.ilkRegistry, 'IlkRegistry');
         this._clipLinkA = this.build(Config.vars.collateral['LINK-A'].clipper, 'clipper');
-        console.log('clippers', this._clippers);
     }
 
     setupClipperContracts() {
@@ -54,18 +56,50 @@ export default class Multicall {
         }
     }
 
+    setSearchPattern() {
+        for (const name in Config.vars.collateral) {
+            if (Object.prototype.hasOwnProperty.call(Config.vars.collateral, name)) {
+                const collateral = Config.vars.collateral[name];
+                let ilkbytes32 = ethers.utils.formatBytes32String(collateral.name);
+                this._ilks.push({ ilkRegistryAddr: Config.vars.ilkRegistry, ilkbytes32, ilkName: collateral.name });
+            }
+        }
+
+        let searchPattern = this._ilks.map(ilk => {
+            return [ilk.ilkRegistryAddr, this._ilkRegistry.interface.encodeFunctionData('xlip', [ilk.ilkbytes32])];
+        });
+        console.log('ilkBytes: ', this._ilks);
+        console.log('search Pattern:', searchPattern);
+        console.log('decode function data', this._ilkRegistry.interface.decodeFunctionData('xlip', '0x247c803f4c494e4b2d410000000000000000000000000000000000000000000000000000'));
+        return searchPattern;
+    }
+
     getInfo = async (blockNumber) => {
-        let linkA = this._multi.callStatic.aggregate([
-            [Config.vars.collateral['LINK-A'].clipper, this._clipLinkA.interface.encodeFunctionData('calc')],
-            [Config.vars.collateral['LINK-A'].clipper, this._clipLinkA.interface.encodeFunctionData('kicks')]
-        ], { blockTag: blockNumber });
+        let pattern = this.setSearchPattern();
+        // let linkA = this._multi.callStatic.aggregate([
+        //     [Config.vars.collateral['LINK-A'].clipper, this._clipLinkA.interface.encodeFunctionData('calc')],
+        //     [Config.vars.collateral['LINK-A'].clipper, this._clipLinkA.interface.encodeFunctionData('kicks')],
+        //     [Config.vars.ilkRegistry, this._ilkRegistry.interface.encodeFunctionData('xlip', ['0x4c494e4b2d410000000000000000000000000000000000000000000000000000'])]
+        // ], { blockTag: blockNumber });
+
+        let linkA = this._multi.callStatic.aggregate(pattern, { blockTag: blockNumber });
 
         let [block, res] = await linkA;
 
-        console.log('blockNumber: ', block.toString());
-        console.log('calc', this._clipLinkA.interface.decodeFunctionResult('calc', res[0]));
-        this._kicks = this._clipLinkA.interface.decodeFunctionResult('kicks', res[1]).toString();
-        console.log('kicks', this._kicks);
+        // console.log('blockNumber: ', block.toString());
+        // console.log('calc', this._clipLinkA.interface.decodeFunctionResult('calc', res[0]));
+        // console.log('clipperAddress', this._clipLinkA.interface.decodeFunctionResult('xlip', res[2]));
+        // this._kicks = this._clipLinkA.interface.decodeFunctionResult('kicks', res[1]).toString();
+        // console.log('kicks', this._kicks);
+        console.log('results:', res);
+
+        let arr = [];
+
+        this._ilks = this._ilks.map((ilk, i) => {
+            return { ...ilk, clipper: this._ilkRegistry.interface.decodeFunctionResult('xlip', res[i])[0] };
+        });
+
+        console.log('ilks with clippers: ', this._ilks);
 
         return this._clipLinkA.interface.decodeFunctionResult('kicks', res[1]).toString();
     }

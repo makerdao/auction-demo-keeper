@@ -8,6 +8,7 @@
   "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
   "eth": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   "multicall": "0xC6D81A2e375Eee15a20E6464b51c5FC6Bb949fdA",
+  "ilkRegistry": "0xc3F42deABc0C506e8Ae9356F2d4fc1505196DCDB",
   "liquidityProvider": "uniswap",
   "collateral": {
     "LINK-A": {
