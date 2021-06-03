@@ -7,12 +7,14 @@
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "vat": "0xbA987bDB501d131f766fEe8180Da5d81b34b69d9",
   "eth": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+  "liquidityProvider": "oasisdex",
   "collateral": {
     "LINK-A": {
       "name": "LINK-A",
       "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
       "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
       "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
       "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
       "uniswapRoute": [
         "0xa36085F69e2889c224210F603D836748e7dC0088",
@@ -24,13 +26,19 @@
       "erc20addr": "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
       "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
       "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
-      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7"
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+      "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
+      "uniswapRoute": [
+        "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
+        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+      ]
     },
     "WBTC-A": {
       "name": "WBTC-A",
       "erc20addr": "0x7419f744bBF35956020C1687fF68911cD777f865",
       "joinAdapter": "0xB879c7d51439F8e7AC6b2f82583746A0d336e63F",
       "clipper": "0x5518C2f409Bed4bD5FF3542d9D5002251EEDA892",
+      "oasisCallee": "0x3DdD8d18F46A723aE7Aef72e8b84b0D3dA1088C5",
       "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
       "uniswapRoute": [
         "0x7419f744bBF35956020C1687fF68911cD777f865",
