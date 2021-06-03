@@ -68,28 +68,50 @@ export default class keeper {
         if (redone)
           continue;
 
+        // Handle corner case where auction price is 0 (multicall may resolve this)
+        if (auction.price == BigNumber.from('0')) {
+          console.debug(`Skipping auction ${auction.id} which has 0 price`);
+          continue;
+        }
+
         const decimals9 = BigNumber.from('1000000000');
-        const decimal18 = ethers.utils.parseEther('1');
+        const decimals18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
         let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
 
-        const tab = auction.tab.div(decimal18);
         let calc = auction.price.mul(minProfitPercentage);
-        let priceWithProfit = calc.div(decimal18);
+        let priceWithProfit = calc.div(decimals18);
 
 
-        //adjusting lot to lotDaiValue
-        let lotDaiValue = ethers.utils.parseEther(Config.vars.lotDaiValue).mul(decimal18);
-        let minLot = lotDaiValue.div(auction.price.div(decimals9));
-        let lot;
+        // Determine configured lot sizes in Gem terms
+        let minLotDaiValue = ethers.utils.parseEther(Config.vars.minLotDaiValue).mul(decimals18);
+        let minLot = minLotDaiValue.div(auction.price.div(decimals9));
+        let maxLotDaiValue = ethers.utils.parseEther(Config.vars.maxLotDaiValue).mul(decimals18);
+        let maxLot = maxLotDaiValue.div(auction.price.div(decimals9));
 
-        //checking for partial lot condition
-        let chost = clip._chost;
-        if (tab.div(decimals9).sub(lotDaiValue.div(decimal18)).lt(chost.div(decimals27))) {
-          lot = auction.lot;
-        } else {
-          lot = minLot;
+        //adjust lot based upon slice taken at the current auction price
+        let slice18 = auction.lot;  // TODO: limit by maxLot
+        let owe27 = slice18.mul(auction.price).div(decimals18);
+        console.log(`owe27 starts at ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+        let tab27 = auction.tab.div(decimals18);
+        if (owe27.gt(tab27)) {
+          owe27 = tab27;
+          console.log(`owe27 adjusted to tab ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+        } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
+          let chost27 = clip._chost;
+          if (tab27.sub(owe27).lt(chost27)) {
+            owe27 = chost27;
+            console.log(`owe27 set to chost ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+          }
         }
+        slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
+        console.log(`slice18 is ${ethers.utils.formatUnits(slice18)}`);
+        let lot = slice18;
+        if (lot.lt(minLot)) {
+          console.log(`Ignoring auction ${auction.id} while slice is smaller than our minimum lot`);
+          continue;
+        }
+
 
         // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
         if (uniswap)
@@ -97,7 +119,7 @@ export default class keeper {
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
 
-        const calcMinProfit45 = tab.mul(minProfitPercentage);
+        const calcMinProfit45 = tab27.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
         const minProfit = totalMinProfit45.div(decimals27);
         const costOfLot = priceWithProfit.mul(lot).div(decimals27);
@@ -116,13 +138,13 @@ export default class keeper {
           minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
         }
 
-        //TODO: Determine if we already have a pending bid for this auction
-
         const auctionSummary = `\n
           ${collateral.name} auction ${auction.id}
     
             Auction Tab:           ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
             Auction Lot:           ${ethers.utils.formatUnits(auction.lot.toString())}
+            Configured Lot:        between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
+            Slice to Take:         ${ethers.utils.formatUnits(lot)}
             Auction Price:         ${ethers.utils.formatUnits(auction.price.div(decimals9))}
             Min profit:            ${ethers.utils.formatUnits(minProfit)}
             Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
