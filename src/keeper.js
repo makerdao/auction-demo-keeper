@@ -113,7 +113,7 @@ export default class keeper {
         let minUniProceeds;
         if (uniswap) {
           uniswapProceeds = uniswap.opportunity();
-          minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
+          minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
         //TODO: Determine if we already have a pending bid for this auction
