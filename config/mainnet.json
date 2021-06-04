@@ -340,6 +340,7 @@
   "delay": "40",
   "initialGasOffsetGwei": "30",
   "dynamicGasCoefficient": "1.125",
+  "maxGasLimit": "12450000",
   "maxGasPrice": "1000",
   "minProfitPercentage": "1.025",
   "lotDaiValue": "100000"

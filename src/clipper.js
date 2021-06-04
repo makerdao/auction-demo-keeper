@@ -142,7 +142,7 @@ export default class Clipper {
           _gemJoinAdapter,
           _minProfit,
           Config.vars.collateral[this._collateralName].uniswapRoute,
-          ['0x6B175474E89094C44Da98b954EedeAC495271d0F'] // placeholder array
+          [] // placeholder array
         ]);
       }
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
