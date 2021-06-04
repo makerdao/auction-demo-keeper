@@ -82,7 +82,6 @@ export default class keeper {
         let calc = auction.price.mul(minProfitPercentage);
         let priceWithProfit = calc.div(decimals18);
 
-
         // Determine configured lot sizes in Gem terms
         let minLotDaiValue = ethers.utils.parseEther(Config.vars.minLotDaiValue).mul(decimals18);
         let minLot = minLotDaiValue.div(auction.price.div(decimals9));
@@ -90,25 +89,37 @@ export default class keeper {
         let maxLot = maxLotDaiValue.div(auction.price.div(decimals9));
 
         //adjust lot based upon slice taken at the current auction price
-        let slice18 = auction.lot;  // TODO: limit by maxLot
+        let slice18 = auction.lot.gt(maxLot) ? maxLot : auction.lot;
+        console.log(`slice18 starts at ${ethers.utils.formatUnits(slice18)}`);
         let owe27 = slice18.mul(auction.price).div(decimals18);
         console.log(`owe27 starts at ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
         let tab27 = auction.tab.div(decimals18);
         if (owe27.gt(tab27)) {
           owe27 = tab27;
           console.log(`owe27 adjusted to tab ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+          slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
-          let chost27 = clip._chost;
+          let chost27 = clip._chost.div(decimals18);
           if (tab27.sub(owe27).lt(chost27)) {
-            owe27 = chost27;
-            console.log(`owe27 set to chost ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+            if (tab27.lte(chost27)) {
+              owe27 = tab27 - chost27;
+              console.log(`owe27 adjusted to ${ethers.utils.formatUnits(owe27.div(decimals9))} to avoid partial lot`);
+            } else {
+              owe27 = chost27;
+              console.log(`owe27 adjusted to chost ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
+            }
+          }
+          slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
+          if (slice18.gt(maxLot)) {  // handle corner case where maxLotDaiValue is set too low
+            console.log(`Ignoring auction ${auction.id} whose chost-adjusted slice exceeds our maximum lot\n`);
+            continue;
           }
         }
-        slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
         console.log(`slice18 is ${ethers.utils.formatUnits(slice18)}`);
+        console.assert(slice18.lte(auction.lot), 'slice exceeds lot size');
         let lot = slice18;
         if (lot.lt(minLot)) {
-          console.log(`Ignoring auction ${auction.id} while slice is smaller than our minimum lot`);
+          console.log(`Ignoring auction ${auction.id} while slice is smaller than our minimum lot\n`);
           continue;
         }
 
@@ -146,7 +157,6 @@ export default class keeper {
             Configured Lot:        between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
             Slice to Take:         ${ethers.utils.formatUnits(lot)}
             Auction Price:         ${ethers.utils.formatUnits(auction.price.div(decimals9))}
-            Min profit:            ${ethers.utils.formatUnits(minProfit)}
             Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
     
             Lot sale amt - lot: ${ethers.utils.formatUnits(lot)}
