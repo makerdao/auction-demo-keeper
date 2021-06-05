@@ -77,10 +77,9 @@ export default class keeper {
         const decimals9 = BigNumber.from('1000000000');
         const decimals18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
-        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
 
-        let calc = auction.price.mul(minProfitPercentage);
-        let priceWithProfit = calc.div(decimals18);
+        let minProfitPercentage = ethers.utils.parseEther(Config.vars.minProfitPercentage);
+        let priceWithProfit = auction.price.div(minProfitPercentage).mul(decimals18);
 
         // Determine configured lot sizes in Gem terms
         let minLotDaiValue = ethers.utils.parseEther(Config.vars.minLotDaiValue).mul(decimals18);
@@ -116,7 +115,11 @@ export default class keeper {
           }
         }
         console.log(`slice18 is ${ethers.utils.formatUnits(slice18)}`);
-        console.assert(slice18.lte(auction.lot), 'slice exceeds lot size');
+        if (slice18.gt(auction.lot)) {
+          // HACK: I suspect the issue involves interplay between reading price from the abacus and not having multicall.
+          slice18 = auction.lot;
+          console.log(`slice18 dropped to ${ethers.utils.formatUnits(slice18)} to not exceed auction lot`);
+        }
         let lot = slice18;
         if (lot.lt(minLot)) {
           console.log(`Ignoring auction ${auction.id} while slice is smaller than our minimum lot\n`);
@@ -130,8 +133,8 @@ export default class keeper {
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
 
-        const calcMinProfit45 = tab27.mul(minProfitPercentage);
-        const totalMinProfit45 = calcMinProfit45.sub(auction.tab);
+        const calcMinProfit45 = owe27.mul(minProfitPercentage);
+        const totalMinProfit45 = calcMinProfit45.sub(owe27.mul(decimals18));
         const minProfit = totalMinProfit45.div(decimals27);
         const costOfLot = priceWithProfit.mul(lot).div(decimals27);
 
@@ -152,18 +155,16 @@ export default class keeper {
         const auctionSummary = `\n
           ${collateral.name} auction ${auction.id}
     
-            Auction Tab:           ${ethers.utils.formatUnits(auction.tab.div(decimals27))}
-            Auction Lot:           ${ethers.utils.formatUnits(auction.lot.toString())}
-            Configured Lot:        between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
-            Slice to Take:         ${ethers.utils.formatUnits(lot)}
-            Auction Price:         ${ethers.utils.formatUnits(auction.price.div(decimals9))}
-            Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}
+            Auction Tab:        ${ethers.utils.formatUnits(auction.tab.div(decimals27))} Dai
+            Auction Lot:        ${ethers.utils.formatUnits(auction.lot.toString())}
+            Configured Lot:     between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
+            Debt to Cover:      ${ethers.utils.formatUnits(owe27.div(decimals9))} Dai
+            Slice to Take:      ${ethers.utils.formatUnits(lot)}
+            Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
     
-            Lot sale amt - lot: ${ethers.utils.formatUnits(lot)}
-            costOfLot: ${ethers.utils.formatUnits(costOfLot)}
-            maxPrice   ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
-            minProfit: ${ethers.utils.formatUnits(minProfit)} Dai
-            profitAddr: ${this._wallet.address}\n`;
+            costOfLot:          ${ethers.utils.formatUnits(costOfLot)} Dai
+            minProfit:          ${ethers.utils.formatUnits(minProfit)} Dai
+            profitAddr:         ${this._wallet.address}\n`;
 
         let liquidityAvailability;
         if (uniswap) {
@@ -180,7 +181,8 @@ export default class keeper {
 
         } else if (oasis) {
           liquidityAvailability = `
-            OasisDEXAvailability: amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}\n`;
+            Gem price with profit: ${ethers.utils.formatUnits(priceWithProfit.div(decimals9))}         
+            OasisDEXAvailability:  amt of collateral avl to buy ${ethers.utils.formatUnits(oasisDexAvailability)}\n`;
           console.log(auctionSummary + liquidityAvailability);
           //OasisDEX buys gem only with gem price + minProfit%
           if (oasisDexAvailability.gt(auction.lot)) {
