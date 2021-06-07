@@ -68,12 +68,6 @@ export default class keeper {
         if (redone)
           continue;
 
-        // Handle corner case where auction price is 0 (multicall may resolve this)
-        if (auction.price == BigNumber.from('0')) {
-          console.debug(`Skipping auction ${auction.id} which has 0 price`);
-          continue;
-        }
-
         const decimals9 = BigNumber.from('1000000000');
         const decimals18 = ethers.utils.parseEther('1');
         const decimals27 = ethers.utils.parseEther('1000000000');
@@ -89,23 +83,21 @@ export default class keeper {
 
         //adjust lot based upon slice taken at the current auction price
         let slice18 = auction.lot.gt(maxLot) ? maxLot : auction.lot;
-        console.log(`slice18 starts at ${ethers.utils.formatUnits(slice18)}`);
         let owe27 = slice18.mul(auction.price).div(decimals18);
-        console.log(`owe27 starts at ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
         let tab27 = auction.tab.div(decimals18);
+        // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
         if (owe27.gt(tab27)) {
           owe27 = tab27;
-          console.log(`owe27 adjusted to tab ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
           slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
           let chost27 = clip._chost.div(decimals18);
           if (tab27.sub(owe27).lt(chost27)) {
             if (tab27.lte(chost27)) {
+              // adjust the penultimate take to avoid partial lot on the final take
               owe27 = tab27 - chost27;
-              console.log(`owe27 adjusted to ${ethers.utils.formatUnits(owe27.div(decimals9))} to avoid partial lot`);
             } else {
+              // adjust to chost
               owe27 = chost27;
-              console.log(`owe27 adjusted to chost ${ethers.utils.formatUnits(owe27.div(decimals9))}`);
             }
           }
           slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
@@ -114,15 +106,14 @@ export default class keeper {
             continue;
           }
         }
-        console.log(`slice18 is ${ethers.utils.formatUnits(slice18)}`);
         if (slice18.gt(auction.lot)) {
           // HACK: I suspect the issue involves interplay between reading price from the abacus and not having multicall.
           slice18 = auction.lot;
-          console.log(`slice18 dropped to ${ethers.utils.formatUnits(slice18)} to not exceed auction lot`);
         }
         let lot = slice18;
         if (lot.lt(minLot)) {
           console.log(`Ignoring auction ${auction.id} while slice is smaller than our minimum lot\n`);
+          // slice approaches lot as auction price decreases towards owe == tab
           continue;
         }
 
