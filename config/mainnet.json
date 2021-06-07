@@ -7,6 +7,8 @@
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "multicall": "0x5e227AD1969Ea493B43F840cfF78d08a6fc17796",
+  "ilkRegistry": "0x5a464C28D19848f44199D003BeF5ecc87d090F87",
   "liquidityProvider": "uniswap",
   "collateral": {
     "AAVE-A": {

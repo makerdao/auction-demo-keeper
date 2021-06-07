@@ -13,7 +13,5 @@ Config.vars = config;
 
 test('Multicall output:', async () => {
     const multicall = new Multicall();
-    const output = await multicall.getInfo();
-    console.log(output);
-    console.log('multi.kicks', multicall._kicks);
+    await multicall.updateClipperAddresses();
 }, 50000);
