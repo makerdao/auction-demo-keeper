@@ -51,5 +51,7 @@
   "dynamicGasCoefficient": "1.125",
   "maxGasPrice": "10",
   "minProfitPercentage": "1.025",
-  "lotDaiValue": "110"
+  "minLotDaiValue": "0",
+  "maxLotDaiValue": "1000000"
 }
+
