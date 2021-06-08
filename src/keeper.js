@@ -140,7 +140,7 @@ export default class keeper {
         let minUniProceeds;
         if (uniswap) {
           uniswapProceeds = uniswap.opportunity();
-          minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
+          minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
         const auctionSummary = `\n

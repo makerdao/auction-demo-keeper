@@ -12,7 +12,7 @@ import { ethers, BigNumber } from 'ethers';
 // https://github.com/ethers-io/ethers.js/blob/master/packages/experimental/src.ts/nonce-manager.ts#L68
 // Answer may be in here: https://github.com/ethers-io/ethers.js/issues/972
 import { NonceManager } from '@ethersproject/experimental';
-
+import Config from './singleton/config.js';
 
 const sleep = async function (delay) { await new Promise((r) => setTimeout(r, delay * 1000)); };
 const sendBadTxesToChain = false;  // set true to spend gas sending send bad transactions to chain for debugging
@@ -92,8 +92,11 @@ export class Transact {
       }
       // this._unsigned_tx.gasLimit = values[1];
       this._unsigned_tx.gasLimit = this._estimatedGas.mul(15).div(10);
+      // setting a max gas limit.
+      if (this._unsigned_tx.gasLimit.gt(Config.vars.maxGasLimit)) {
+        this._unsigned_tx.gasLimit = BigNumber.from(Config.vars.maxGasLimit);
+      }
       this._unsigned_tx.chainId = values[1].chainId;
-
     });
 
     const seconds_elapsed = Math.round((new Date() - this._initial_time) / 1000);
@@ -135,7 +138,6 @@ export class Transact {
     while (true) {
       try {
         this._estimatedGas = await this._signer.estimateGas(this._unsigned_tx);
-        this._estimatedGas;
       } catch {
         console.error('\nTX WILL REVERT\n', '\n');
         this._estimatedGas = BigNumber.from(500000);
