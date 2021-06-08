@@ -343,5 +343,6 @@
   "maxGasLimit": "12450000",
   "maxGasPrice": "1000",
   "minProfitPercentage": "1.025",
-  "lotDaiValue": "100000"
+  "minLotDaiValue": "0",
+  "maxLotDaiValue": "1000000"
 }
