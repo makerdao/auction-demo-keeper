@@ -6,6 +6,9 @@ import abacusAbi from '../abi/abacus.json';
 import clipperAbi from '../abi/clipper.json';
 import { Transact, GeometricGasPrice } from './transact.js';
 
+const decimals9 = BigNumber.from('1000000000');
+const decimals18 = ethers.utils.parseEther('1');
+const decimals27 = ethers.utils.parseEther('1000000000');
 
 export default class Clipper {
   _collateral;
@@ -57,9 +60,9 @@ export default class Clipper {
 
     // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      if (tab.eq(0)) {
+      if (lot.eq(0) || tab.eq(0)) {
         // Auction is over
-        console.log(`Deleting Auction ID: ${id.toString()} with tab ${tab.toNumber()}`);
+        console.log(`Deleting Auction ID: ${id.toString()} with remaining tab ${ethers.utils.formatUnits(tab.div(decimals27))} and lot ${ethers.utils.formatUnits(lot)}`);
         delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
