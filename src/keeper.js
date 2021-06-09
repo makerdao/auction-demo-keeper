@@ -102,7 +102,7 @@ export default class keeper {
           }
           slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
           if (slice18.gt(maxLot)) {  // handle corner case where maxLotDaiValue is set too low
-            console.log(`Ignoring auction ${auction.id} whose chost-adjusted slice exceeds our maximum lot\n`);
+            console.log(`Ignoring auction ${auction.id} whose chost-adjusted slice of ${ethers.utils.formatUnits(slice18)} exceeds our maximum lot of ${ethers.utils.formatUnits(maxLot)}\n`);
             continue;
           }
         }
@@ -140,7 +140,7 @@ export default class keeper {
         let minUniProceeds;
         if (uniswap) {
           uniswapProceeds = uniswap.opportunity();
-          minUniProceeds = Number(uniswapProceeds.receiveAmount) - (Number(ethers.utils.formatUnits(minProfit)));
+          minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
         const auctionSummary = `\n

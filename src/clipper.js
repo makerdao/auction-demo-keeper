@@ -6,6 +6,9 @@ import abacusAbi from '../abi/abacus.json';
 import clipperAbi from '../abi/clipper.json';
 import { Transact, GeometricGasPrice } from './transact.js';
 
+const decimals9 = BigNumber.from('1000000000');
+const decimals18 = ethers.utils.parseEther('1');
+const decimals27 = ethers.utils.parseEther('1000000000');
 
 export default class Clipper {
   _collateral;
@@ -57,9 +60,9 @@ export default class Clipper {
 
     // Based on the auction state, get the collateral remaining in auction or delete auction
     this._takeListener = this._clipper.on('Take', (id, max, price, owe, tab, lot, usr, event) => {
-      if (tab.eq(0)) {
+      if (lot.eq(0) || tab.eq(0)) {
         // Auction is over
-        console.log(`Deleting Auction ID: ${id.toString()} with tab ${tab.toNumber()}`);
+        console.log(`Deleting Auction ID: ${id.toString()} with remaining tab ${ethers.utils.formatUnits(tab.div(decimals27))} and lot ${ethers.utils.formatUnits(lot)}`);
         delete (this._activeAuctions[id]);
       } else {
         // Collateral remaining in auction
@@ -125,11 +128,35 @@ export default class Clipper {
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
     if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
-      flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, Config.vars.collateral[this._collateralName].uniswapRoute]);
+      typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
+      if (typeof(Config.vars.collateral[this._collateralName].uniswapRouteToken0) !== 'undefined') {
+        // uniswap v2 LP token swap
+        flashData = abiCoder.encode(typesArray, [
+          _profitAddr,
+          _gemJoinAdapter,
+          _minProfit,
+          Config.vars.collateral[this._collateralName].uniswapRouteToken0,
+          Config.vars.collateral[this._collateralName].uniswapRouteToken1
+        ]);
+      } else {
+        // uniswap v2 swap
+        flashData = abiCoder.encode(typesArray, [
+          _profitAddr,
+          _gemJoinAdapter,
+          _minProfit,
+          Config.vars.collateral[this._collateralName].uniswapRoute,
+          [] // placeholder array
+        ]);
+      }
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
-      flashData = abiCoder.encode(typesArray, [_profitAddr, _gemJoinAdapter, _minProfit, [this._collateral, Config.vars.dai]]);
+      // OasisDEX swap
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        [this._collateral, Config.vars.dai]
+      ]);
     }
-
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
 
