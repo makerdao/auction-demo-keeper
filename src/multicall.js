@@ -36,7 +36,6 @@ export default class Multicall {
     init() {
         this._multi = this.build(Config.vars.multicall, 'Multicall');
         this._ilkRegistry = this.build(Config.vars.ilkRegistry, 'IlkRegistry');
-        this._clipLinkA = this.build(Config.vars.collateral['LINK-A'].clipper, 'clipper');
     }
 
     setupClipperContracts() {
@@ -101,6 +100,6 @@ export default class Multicall {
         // console.log('results:', res);
 
 
-        return this._clipLinkA.interface.decodeFunctionResult('kicks', res[1]).toString();
+        // return this._clipLinkA.interface.decodeFunctionResult('kicks', res[1]).toString();
     }
 }

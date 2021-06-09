@@ -14,4 +14,6 @@ Config.vars = config;
 test('Multicall output:', async () => {
     const multicall = new Multicall();
     await multicall.updateClipperAddresses();
+    multicall.setupClipperContracts();
+    console.log(multicall._clippers);
 }, 50000);
