@@ -16,4 +16,5 @@ test('Multicall output:', async () => {
     await multicall.updateClipperAddresses();
     multicall.setupClipperContracts();
     console.log(multicall._clippers);
-}, 50000);
+    await multicall.getActiveAuctions();
+}, 90000);

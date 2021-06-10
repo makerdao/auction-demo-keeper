@@ -8,12 +8,13 @@ export default class Multicall {
     _multi;
     _ilkRegistry;
     _ilks = [];
-    _clipLinkA;
+    _clipInterface;
     _kicks;
     _clippers = [];
     results = {
 
     }
+    _activeAuctions = [];
     // TODO
     // look at ilkRegistry - check Clippers - list/iterate - > grab xlap element
     // query each clipper active auctions
@@ -62,6 +63,29 @@ export default class Multicall {
         });
 
         return searchPattern;
+    }
+
+    setActiveAuctionSearchPattern() {
+        const searchPattern = this._clippers.map(clipper => {
+            return [clipper.contract.address, clipper.contract.interface.encodeFunctionData('list')];
+        });
+        return searchPattern;
+    }
+
+    getActiveAuctions = async (blockNumber) => {
+        const pattern = this.setActiveAuctionSearchPattern();
+        const results = this._multi.callStatic.aggregate(pattern, { blockTag: blockNumber });
+        const [block, res] = await results;
+        this._activeAuctions = this._clippers.map((clipper, i) => {
+            console.log(clipper.contract.interface.decodeFunctionResult('list', res[i])[0]);
+            return { ilk: clipper.name, auctions: clipper.contract.interface.decodeFunctionResult('list', res[i])[0] };
+        });
+        console.log('active Auctions', this._activeAuctions);
+        //active Auctions output [
+        //    { ilk: 'LINK-A', auctions: [] },
+        //    { ilk: 'YFI-A', auctions: [] },
+        //    { ilk: 'WBTC-A', auctions: [] }
+        //  ]
     }
 
     updateClipperAddresses = async (blockNumber) => {
