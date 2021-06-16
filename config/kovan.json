@@ -11,6 +11,7 @@
   "collateral": {
     "LINK-A": {
       "name": "LINK-A",
+      "decimals": 18,
       "erc20addr": "0xa36085F69e2889c224210F603D836748e7dC0088",
       "joinAdapter": "0xF4Df626aE4fb446e2Dcce461338dEA54d2b9e09b",
       "clipper": "0x1eB71cC879960606F8ab0E02b3668EEf92CE6D98",
@@ -23,6 +24,7 @@
     },
     "YFI-A": {
       "name": "YFI-A",
+      "decimals": 18,
       "erc20addr": "0x251F1c3077FEd1770cB248fB897100aaE1269FFC",
       "joinAdapter": "0x5b683137481F2FE683E2f2385792B1DeB018050F",
       "clipper": "0x9020C96B06d2ac59e98A0F35f131D491EEcAa2C2",
@@ -35,6 +37,7 @@
     },
     "WBTC-A": {
       "name": "WBTC-A",
+      "decimals": 8,
       "erc20addr": "0x7419f744bBF35956020C1687fF68911cD777f865",
       "joinAdapter": "0xB879c7d51439F8e7AC6b2f82583746A0d336e63F",
       "clipper": "0x5518C2f409Bed4bD5FF3542d9D5002251EEDA892",
