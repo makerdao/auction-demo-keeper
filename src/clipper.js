@@ -128,26 +128,23 @@ export default class Clipper {
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
     if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
+      // uniswap v2 swap
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        Config.vars.collateral[this._collateralName].uniswapRoute
+      ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapLPCallee) {
       typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
-      if (typeof(Config.vars.collateral[this._collateralName].uniswapRouteToken0) !== 'undefined') {
-        // uniswap v2 LP token swap
-        flashData = abiCoder.encode(typesArray, [
-          _profitAddr,
-          _gemJoinAdapter,
-          _minProfit,
-          Config.vars.collateral[this._collateralName].uniswapRouteToken0,
-          Config.vars.collateral[this._collateralName].uniswapRouteToken1
-        ]);
-      } else {
-        // uniswap v2 swap
-        flashData = abiCoder.encode(typesArray, [
-          _profitAddr,
-          _gemJoinAdapter,
-          _minProfit,
-          Config.vars.collateral[this._collateralName].uniswapRoute,
-          [] // placeholder array
-        ]);
-      }
+      // uniswap v2 LP token swap
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        Config.vars.collateral[this._collateralName].token0.route,
+        Config.vars.collateral[this._collateralName].token1.route
+      ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
       // OasisDEX swap
       flashData = abiCoder.encode(typesArray, [
