@@ -11,15 +11,25 @@ export default class oasisDexAdaptor {
   _lastBlock = 0;
   _asset;
   _decimals10 = BigNumber.from('10000000000');
+  _decNormalized;
+
   constructor(asset, callee, name) {
     this._provider = network.provider;
     this._asset = asset;
     this._name = name;
-    this._otcSupportMethods = new ethers.Contract(Config.vars.MakerOTCSupportMethods, supportMethodsAbi, this._provider);
-    this._oasisDex = new ethers.Contract(Config.vars.OasisDex, matchingMarketAbi, this._provider);
+    this._decNormalized = BigNumber.from('10').pow(
+      18 - Config.vars.collateral[name].decimals
+    );
+    this._otcSupportMethods = new ethers.Contract(
+      Config.vars.MakerOTCSupportMethods, supportMethodsAbi, this._provider
+    );
+    this._oasisDex = new ethers.Contract(
+      Config.vars.OasisDex, matchingMarketAbi, this._provider
+    );
     this._callee = new ethers.Contract(callee, oasisCalleeAbi, this._provider);
 
-    //TODO: Optimize by subscribing to contract events to update _book without explicit refetch.
+    //TODO: Optimize by subscribing to contract events to update _book without
+    // explicit refetch.
   }
 
   fetch = async () => {
@@ -27,16 +37,16 @@ export default class oasisDexAdaptor {
     if (blockNumber === this._lastBlock) return;
 
     this._lastBlock = blockNumber;
-    const offers = await this._otcSupportMethods['getOffers(address,address,address)'](Config.vars.OasisDex,
-      Config.vars.dai, this._asset);
-    if (this._name === 'WBTC-A') {
-      this._book = offers.ids.map((v, i) => ({ id: v, payAmt: offers.payAmts[i], buyAmt: offers.buyAmts[i].mul(this._decimals10) }))
-        .filter(v => (!(v.id.eq(0))));
-
-    } else {
-      this._book = offers.ids.map((v, i) => ({ id: v, payAmt: offers.payAmts[i], buyAmt: offers.buyAmts[i] }))
-        .filter(v => (!(v.id.eq(0))));
-    }
+    const offers = await this._otcSupportMethods['getOffers(address,address,address)'](
+        Config.vars.OasisDex, Config.vars.dai, this._asset
+    );
+    this._book = offers.ids
+      .map((v, i) => ({
+        id: v,
+        payAmt: offers.payAmts[i],
+        buyAmt: offers.buyAmts[i].mul(this._decNormalized)
+      }))
+      .filter(v => (!(v.id.eq(0))));
   };
 
   baseBook = () => {
@@ -44,7 +54,7 @@ export default class oasisDexAdaptor {
       return {
         id: entry.id.toNumber(),
         payAmt: ethers.utils.formatUnits(entry.payAmt),
-        buyAmt: this._name === 'WBTC-A' ? ethers.utils.formatUnits(entry.buyAmt.mul(this._decimals10)) : ethers.utils.formatUnits(entry.buyAmt)
+        buyAmt: ethers.utils.formatUnits(entry.buyAmt.mul(this._decNormalized))
       };
     });
   };
