@@ -16,7 +16,7 @@ const clipperAllowance = async (clipperAddress, _signer) => {
             const hope_transaction = await vatContract.populateTransaction.hope(clipperAddress);
             const txn = new Transact(hope_transaction, _signer, Config.vars.txnReplaceTimeout, gasStrategy);
             const response = await txn.transact_async();
-            console.log(`Hoped Cliipper Contract in VAT ${response.hash}`);
+            console.log(`Hoped Clipper Contract in VAT ${response.hash}`);
         }
     } catch (error) {
         console.error(error);

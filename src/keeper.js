@@ -16,11 +16,15 @@ import fs from 'fs';
  */
 
 const setupWallet = async (network, passwordPath, JSONKeystorePath) => {
-  const wallet = new Wallet(passwordPath, JSONKeystorePath);
-  const jsonWallet = await wallet.getWallet();
-  console.log('Initializing ', jsonWallet);
-  const signer = new ethers.Wallet(jsonWallet, network.provider);
-  return signer;
+  if (passwordPath && JSONKeystorePath) {
+    const wallet = new Wallet(passwordPath, JSONKeystorePath);
+    const jsonWallet = await wallet.getWallet();
+    console.log('Initializing ', jsonWallet);
+    const signer = new ethers.Wallet(jsonWallet, network.provider);
+    return signer;
+  } else {
+    return null;
+  }
 };
 
 let _this;
@@ -62,6 +66,7 @@ export default class keeper {
       // Look through the list of active auctions
       for (let i = 0; i < this._activeAuctions.length; i++) {
         let auction = this._activeAuctions[i];
+        console.debug(JSON.stringify(auction));
 
         // Redo auction if it ended without covering tab or lot
         const redone = await clip.auctionStatus(auction.id, this._wallet.address, this._wallet);
@@ -88,6 +93,7 @@ export default class keeper {
         // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
         if (owe27.gt(tab27)) {
           owe27 = tab27;
+          // FIXME: this doesn't seem to work when auction.price < 1
           slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
           let chost27 = clip._chost.div(decimals18);
@@ -237,8 +243,10 @@ export default class keeper {
         const collateral = Config.vars.collateral[name];
 
         //Check for clipper allowance
-        await clipperAllowance(collateral.clipper, this._wallet);
-        await daiJoinAllowance(Config.vars.daiJoin, this._wallet);
+        if (this._wallet) {
+          await clipperAllowance(collateral.clipper, this._wallet);
+          await daiJoinAllowance(Config.vars.daiJoin, this._wallet);
+        }
 
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
