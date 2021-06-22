@@ -5,6 +5,7 @@ import uniswapRouter from '../../abi/UniswapV2Router02.json';
 import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
 
 export default class UniswapAdaptor {
+  // FIXME: Should not record this in state; it'll be different for each auction.
   _book = {
     sellAmount: '',
     receiveAmount: ''

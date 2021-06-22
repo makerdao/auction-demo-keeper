@@ -69,9 +69,11 @@ export default class keeper {
         console.debug(JSON.stringify(auction));
 
         // Redo auction if it ended without covering tab or lot
-        const redone = await clip.auctionStatus(auction.id, this._wallet.address, this._wallet);
-        if (redone)
-          continue;
+        if (this._wallet) {
+          const redone = await clip.auctionStatus(auction.id, this._wallet.address, this._wallet);
+          if (redone)
+            continue;
+        }
 
         const decimals9 = BigNumber.from('1000000000');
         const decimals18 = ethers.utils.parseEther('1');
@@ -93,7 +95,6 @@ export default class keeper {
         // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
         if (owe27.gt(tab27)) {
           owe27 = tab27;
-          // FIXME: this doesn't seem to work when auction.price < 1
           slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
           let chost27 = clip._chost.div(decimals18);
@@ -160,8 +161,7 @@ export default class keeper {
             Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
     
             costOfLot:          ${ethers.utils.formatUnits(costOfLot)} Dai
-            minProfit:          ${ethers.utils.formatUnits(minProfit)} Dai
-            profitAddr:         ${this._wallet.address}\n`;
+            minProfit:          ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
         let liquidityAvailability;
         if (uniswap) {
