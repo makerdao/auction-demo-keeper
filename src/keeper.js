@@ -66,7 +66,6 @@ export default class keeper {
       // Look through the list of active auctions
       for (let i = 0; i < this._activeAuctions.length; i++) {
         let auction = this._activeAuctions[i];
-        console.debug(JSON.stringify(auction));
 
         // Redo auction if it ended without covering tab or lot
         if (this._wallet) {
@@ -95,7 +94,7 @@ export default class keeper {
         // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
         if (owe27.gt(tab27)) {
           owe27 = tab27;
-          slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
+          slice18 = owe27.div(auction.price.div(decimals18));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
           let chost27 = clip._chost.div(decimals18);
           if (tab27.sub(owe27).lt(chost27)) {
@@ -107,7 +106,7 @@ export default class keeper {
               owe27 = chost27;
             }
           }
-          slice18 = owe27.div(decimals9).div(auction.price.div(decimals27));
+          slice18 = owe27.div(auction.price.div(decimals18));
           if (slice18.gt(maxLot)) {  // handle corner case where maxLotDaiValue is set too low
             console.log(`Ignoring auction ${auction.id} whose chost-adjusted slice of ${ethers.utils.formatUnits(slice18)} exceeds our maximum lot of ${ethers.utils.formatUnits(maxLot)}\n`);
             continue;
@@ -124,29 +123,23 @@ export default class keeper {
           continue;
         }
 
-
-        // Pass in the entire auction size into Uniswap and store the Dai proceeds form the trade
-        if (uniswap)
-          await uniswap.fetch(lot);
         // Find the minimum effective exchange rate between collateral/Dai
         // e.x. ETH price 1000 DAI -> minimum profit of 1% -> new ETH price is 1000*1.01 = 1010
-
         const calcMinProfit45 = owe27.mul(minProfitPercentage);
         const totalMinProfit45 = calcMinProfit45.sub(owe27.mul(decimals18));
         const minProfit = totalMinProfit45.div(decimals27);
         const costOfLot = priceWithProfit.mul(lot).div(decimals27);
-
 
         // Find the amount of collateral that maximizes the amount of profit captured
         let oasisDexAvailability;
         if (oasis)
           oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
 
-        // Return the proceeds from the Uniswap market trade; proceeds were queried in uniswap.fetch()
+        // Determine proceeds from swapping gem for Dai on Uniswap
         let uniswapProceeds;
         let minUniProceeds;
         if (uniswap) {
-          uniswapProceeds = uniswap.opportunity();
+          uniswapProceeds = await uniswap.fetch(lot);
           minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
@@ -160,14 +153,14 @@ export default class keeper {
             Slice to Take:      ${ethers.utils.formatUnits(lot)}
             Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
     
-            costOfLot:          ${ethers.utils.formatUnits(costOfLot)} Dai
-            minProfit:          ${ethers.utils.formatUnits(minProfit)} Dai\n`;
+            Cost of lot:        ${ethers.utils.formatUnits(costOfLot)} Dai
+            Minimum profit:     ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
         let liquidityAvailability;
         if (uniswap) {
           liquidityAvailability = `
-            Dai Proceeds from Uniswap sale: ${uniswapProceeds.receiveAmount} Dai
-            Proceeds - minProfit:           ${minUniProceeds}\n`;
+            Uniswap proceeds:   ${uniswapProceeds.receiveAmount} Dai
+            Less min profit:    ${minUniProceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
           if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
             //Uniswap tx executes only if the return amount also covers the minProfit %
@@ -225,9 +218,6 @@ export default class keeper {
 
     // inititalize Clip
     await clip.init();
-
-    // await this._opportunityCheck(collateral, oasis, uniswap, clip);
-    // return { oasis, uniswap, clip };
 
     // Initialize the loop where an opportunity is checked at a perscribed cadence (Config.delay)
     const timer = setInterval(() => {

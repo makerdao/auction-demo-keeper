@@ -5,11 +5,6 @@ import uniswapRouter from '../../abi/UniswapV2Router02.json';
 import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
 
 export default class UniswapAdaptor {
-  // FIXME: Should not record this in state; it'll be different for each auction.
-  _book = {
-    sellAmount: '',
-    receiveAmount: ''
-  };
   _lastBlock = 0;
   _collateralName = '';
   _decNormalized;
@@ -32,6 +27,10 @@ export default class UniswapAdaptor {
   // ilkAmount in WEI
   fetch = async (_ilkAmount) => {
     let ilkAmount = BigNumber.from(_ilkAmount).div(this._decNormalized);
+    let book = {
+      sellAmount: '',
+      receiveAmount: ''
+    };
     try {
       const blockNumber = await this._provider.getBlockNumber();
       if (blockNumber === this._lastBlock) return;
@@ -40,20 +39,17 @@ export default class UniswapAdaptor {
       const offer = await this._uniswap.getAmountsOut(
         ilkAmount, Config.vars.collateral[this._collateralName].uniswapRoute
       );
-      this._book.sellAmount = ethers.utils.formatUnits(
+      book.sellAmount = ethers.utils.formatUnits(
         offer[0].mul(this._decNormalized)
       );
-      this._book.receiveAmount = ethers.utils.formatUnits(
+      book.receiveAmount = ethers.utils.formatUnits(
         offer[offer.length - 1]
       );
+      return book;
     } catch (e) {
       console.log(
         `Error fetching Uniswap amounts for ${this._collateralName}:`, e
       );
     }
-  }
-
-  opportunity = () => {
-    return this._book;
   }
 }
