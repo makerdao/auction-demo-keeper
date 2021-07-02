@@ -106,8 +106,13 @@ export default class Clipper {
     //TODO: subscribe to file events to update dog, calc and other parameters
   }
 
-  activeAuctions() {
-    const currentTime = Math.floor(new Date() / 1000);
+  async activeAuctions() {
+    // We get the timestamp from the last block for testing, but we can also
+    // set currentTime from Date() by using the following line:
+    // const currentTime = Math.floor(new Date() / 1000);
+    const blockNum = await network.provider.getBlockNumber();
+    const block = await network.provider.getBlock(blockNum);
+    const currentTime = block.timestamp;
     const readPromises = [];
 
     for (const auctionId in this._activeAuctions) {

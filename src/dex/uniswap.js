@@ -8,7 +8,6 @@ import UniswapV2Pair from '../../abi/UniswapV2Pair.json';
 const decimals18 = ethers.utils.parseEther('1');
 
 export default class UniswapAdaptor {
-  _lastBlock = 0;
   _collateralName = '';
   _decNormalized;
   _decNormalized0 = BigNumber.from('10').pow(18);
@@ -46,8 +45,6 @@ export default class UniswapAdaptor {
     };
     try {
       const blockNumber = await this._provider.getBlockNumber();
-      if (blockNumber === this._lastBlock) return;
-      this._lastBlock = blockNumber;
 
       if (typeof(Config.vars.collateral[this._collateralName].token0) !== 'undefined') {
         const token = new ethers.Contract(

@@ -93,7 +93,7 @@ export default class keeper {
         let owe27 = slice18.mul(auction.price).div(decimals18);
         let tab27 = auction.tab.div(decimals18);
         // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
-        if (owe27.gt(tab27)) {
+        if (owe27.gt(tab27) && slice18.gt(auction.lot)) {
           owe27 = tab27;
           slice18 = owe27.div(auction.price.div(decimals18));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
@@ -101,13 +101,14 @@ export default class keeper {
           if (tab27.sub(owe27).lt(chost27)) {
             if (tab27.lte(chost27)) {
               // adjust the penultimate take to avoid partial lot on the final take
-              owe27 = tab27 - chost27;
+              owe27 = tab27.sub(chost27);
             } else {
               // adjust to chost
               owe27 = chost27;
             }
+
+            slice18 = owe27.div(auction.price.div(decimals18));
           }
-          slice18 = owe27.div(auction.price.div(decimals18));
           if (slice18.gt(maxLot)) {  // handle corner case where maxLotDaiValue is set too low
             console.log(`Ignoring auction ${auction.id} whose chost-adjusted slice of ${ethers.utils.formatUnits(slice18)} exceeds our maximum lot of ${ethers.utils.formatUnits(maxLot)}\n`);
             continue;
