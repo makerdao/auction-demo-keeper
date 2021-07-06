@@ -86,7 +86,7 @@ export default class UniswapAdaptor {
             Config.vars.collateral[this._collateralName].token0.route
           );
         }
-        if (Config.vars.collateral[this._collateralName].token0.name !== 'DAI') {
+        if (Config.vars.collateral[this._collateralName].token1.name !== 'DAI') {
           offer1 = await this._uniswap.getAmountsOut(
             ilkAmount1,
             Config.vars.collateral[this._collateralName].token1.route
