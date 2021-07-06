@@ -14,8 +14,7 @@ Config.vars = config;
 
 test('Uniswap Adaptor Opportunity', async () => {
     const uniswap = new UniswapAdaptor(Config.vars.collateral['WBTC-A'].erc20addr, Config.vars.collateral['WBTC-A'].uniswapCallee, 'WBTC-A');
-    await uniswap.fetch('5000000000000000');
-    const book = uniswap.opportunity();
+    const book = await uniswap.fetch('5000000000000000');
     console.log('BOOK: ', book);
     expect(book.receiveAmount > 0);
 }, 20000);

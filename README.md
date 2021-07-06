@@ -49,11 +49,11 @@ yarn install
 
 ### Setting up wallet
 
-This keeper includes a test wallet already set up for testing purposes.  You'll want to replace this with your own wallet.   
+This keeper includes a test wallet already set up for testing purposes.  You'll want to replace this with your own wallet.
 You may use tools such as [MyCrypto.com](https://mycrypto.com/) to generate a new JSON wallet key and passphrase.
 
 ### Configuring in-place
-Update `rpcUrl` in `config/mainnet.json` with the URL for your own Ethereum node. 
+Update `rpcUrl` in `config/mainnet.json` with the URL for your own Ethereum node.
 Edit `wallet/jsonpassword.txt` with your wallet password, and copy your JSON keystore file to `wallet/testwallet.json`.
 
 ### Configuring from environment
@@ -72,7 +72,7 @@ Export `AUCTION_DEMO_KEEPER_PASSWORD_PATH` and `AUCTION_DEMO_KEEPER_KEYSTORE_PAT
 
 - `collateral` - This takes in an object for the collateral path "LINK-A" and "ETH-A"
 
-- `txnReplaceTimeout` - Timeout in seconds for the transaction replacement 
+- `txnReplaceTimeout` - Timeout in seconds for the transaction replacement
 
 - `delay` - Delay period in seconds
 
@@ -81,6 +81,20 @@ Export `AUCTION_DEMO_KEEPER_PASSWORD_PATH` and `AUCTION_DEMO_KEEPER_KEYSTORE_PAT
 - `maxGasPrice` - Max gas price that the geometric gas price calculator uses in wei
 
 - `minProfitPercentage` - Minimum percentage arbitrage profits the Keeper should execute
+
+### Addresses
+
+`kovan` addresses:
+```
+UniswapV2CalleeDai: 0x5A40F810754f725DA93e2362775a0600468f7a83
+UniswapV2LpTokenCalleeDai: 0xDeC8b9c2829583A89f7F182DEeD7C12112dfAeD0
+```
+
+`mainnet` addresses:
+```
+UniswapV2CalleeDai: 0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3
+UniswapV2LpTokenCalleeDai: 0x74893C37beACf205507ea794470b13DE06294220
+```
 
 ## Generate Auctions
 
@@ -107,7 +121,7 @@ yarn run env
 
 ## Local Testing
 
-1 - Run testchain script: `yarn testchain`  
+1 - Run testchain script: `yarn testchain`
 2 - In a separate shell, run JS unit tests: `yarn test`
 
 ## Disclaimer
