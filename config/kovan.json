@@ -9,6 +9,19 @@
   "eth": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   "liquidityProvider": "oasisdex",
   "collateral": {
+    "ETH-A": {
+      "name": "ETH-A",
+      "decimals": 18,
+      "erc20addr": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+      "joinAdapter": "0x775787933e92b709f2a3C70aa87999696e74A9F8",
+      "clipper": "0x7dD1Fb6b9aFdBA9F28DB89c81723b8c6B27A2Fbe",
+      "oasisCallee": "0x49fE9B3d7C7c996b3019dc36ea867daa807cD8d7",
+      "uniswapCallee": "0xF7B65111bFE0bA6f5f61F01492dAA1C1b011E346",
+      "uniswapRoute": [
+        "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+        "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"
+      ]
+    },
     "LINK-A": {
       "name": "LINK-A",
       "decimals": 18,
@@ -51,10 +64,11 @@
   },
   "txnReplaceTimeout": "20",
   "delay": "40",
+  "initialGasOffsetGwei": "0",
   "dynamicGasCoefficient": "1.125",
+  "maxGasLimit": "2000000",
   "maxGasPrice": "10",
   "minProfitPercentage": "1.025",
   "minLotDaiValue": "0",
   "maxLotDaiValue": "1000000"
 }
-
