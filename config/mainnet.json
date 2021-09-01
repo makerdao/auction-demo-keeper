@@ -161,6 +161,19 @@
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
+    "MATIC-A": {
+      "name": "MATIC-A",
+      "decimals": 18,
+      "erc20addr": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+      "joinAdapter": "0x885f16e177d45fC9e7C87e1DA9fd47A9cfcE8E13",
+      "clipper": "0x29342F530ed6120BDB219D602DaFD584676293d1",
+      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
     "RENBTC-A": {
       "name": "RENBTC-A",
       "decimals": 8,
