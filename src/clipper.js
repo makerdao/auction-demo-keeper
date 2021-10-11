@@ -131,13 +131,17 @@ export default class Clipper {
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
+    let charterManager = Config.vars.collateral[this._collateralName].charterManager;
+    charterManager = charterManager ? charterManager : ethers.constants.AddressZero;
+
     if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
       // uniswap v2 swap
       flashData = abiCoder.encode(typesArray, [
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
-        Config.vars.collateral[this._collateralName].uniswapRoute
+        Config.vars.collateral[this._collateralName].uniswapRoute,
+        charterManager
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapLPCallee) {
       typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
@@ -155,7 +159,8 @@ export default class Clipper {
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
-        [this._collateral, Config.vars.dai]
+        [this._collateral, Config.vars.dai],
+        charterManager
       ]);
     }
 
