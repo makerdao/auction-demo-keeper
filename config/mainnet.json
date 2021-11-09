@@ -421,6 +421,19 @@
       "clipper": "0x4fC53a57262B87ABDa61d6d0DB2bE7E9BE68F6b8",
       "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
     },
+    "USDT-A": {
+      "name": "USDT-A",
+      "decimals": 6,
+      "erc20addr": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "joinAdapter": "0x0Ac6A1D74E84C2dF9063bDDc31699FF2a2BB22A2",
+      "clipper": "0xFC9D6Dd08BEE324A5A8B557d2854B9c36c2AeC5d",
+      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
     "YFI-A": {
       "name": "YFI-A",
       "decimals": 18,
