@@ -157,10 +157,19 @@ export default class Clipper {
         _minProfit,
         [this._collateral, Config.vars.dai]
       ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].wstETHCurveUniv3Callee) {
+      // WstETH Curve Univ3 swap
+      typesArray = ['address', 'address', 'uint256', 'uint24', 'address'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        Config.vars.collateral[this._collateralName].poolFee,
+        ethers.constants.AddressZero
+      ]);
     }
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
-
 
     const initial_price = await _signer.getGasPrice();
     const gasStrategy = new GeometricGasPrice(initial_price.add(BigNumber.from(Config.vars.initialGasOffsetGwei ?? 0).mul(1e9)).toNumber(), Config.vars.txnReplaceTimeout, Config.vars.dynamicGasCoefficient);
