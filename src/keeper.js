@@ -146,6 +146,15 @@ export default class keeper {
           minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
+        // Determine proceeds from swapping WSTETH => STETH => ETH => Dai
+        let wstETHCurveUniv3Proceeds;
+        let minWstETHCurveUniv3Proceeds;
+        if (wstETHCurveUniv3) {
+          wstETHCurveUniv3Proceeds = await wstETHCurveUniv3.fetch(lot);
+          minWstETHCurveUniv3Proceeds = Number(wstETHCurveUniv3Proceeds.receiveAmount) -
+                                        Number(ethers.utils.formatUnits(minProfit));
+        }
+
         const auctionSummary = `\n
           ${collateral.name} auction ${auction.id}
 
@@ -203,18 +212,25 @@ export default class keeper {
           }
 
         } else if (wstETHCurveUniv3) {
-          console.log(auctionSummary)
-          // TODO: handle conditions for taking, currently assuming we should always take
-          await clip.execute(
-              auction.id,
-              lot,
-              auction.price,
-              minProfit,
-              this._wallet.address,
-              this._gemJoinAdapters[collateral.name],
-              this._wallet,
-              wstETHCurveUniv3._callee.address
-          );
+          liquidityAvailability = `
+            Uniswap proceeds:   ${wstETHCurveUniv3Proceeds.receiveAmount} Dai
+            Less min profit:    ${minWstETHCurveUniv3Proceeds}\n`;
+          console.log(auctionSummary + liquidityAvailability);
+          if (Number(ethers.utils.formatUnits(costOfLot)) <= minWstETHCurveUniv3Proceeds) {
+            // tx executes only if the return amount also covers the minProfit %
+            await clip.execute(
+                auction.id,
+                lot,
+                auction.price,
+                minProfit,
+                this._wallet.address,
+                this._gemJoinAdapters[collateral.name],
+                this._wallet,
+                wstETHCurveUniv3._callee.address
+            );
+          } else {
+            console.log('wstETH Curve Univ3 proceeds - profit amount is less than cost.\n');
+          }
         }
 
         this._activeAuctions = await clip.activeAuctions();
