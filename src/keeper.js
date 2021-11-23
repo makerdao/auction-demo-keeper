@@ -1,11 +1,11 @@
 /* eslint-disable complexity */
 /* eslint-disable no-unused-vars */
-import oasisDexAdaptor from './dex/oasisdex.js';
 import Config from './singleton/config.js';
 import network from './singleton/network.js';
 import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
-import UniswapAdaptor from './dex/uniswap.js';
+import oasisDexAdaptor from './dex/oasisdex.js';
+import UniswapAdaptor from './dex/uniswapv2.js';
 import WstETHCurveUniv3Adaptor from './dex/wstETHCurveUniv3.js';
 import Wallet from './wallet.js';
 import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
