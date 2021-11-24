@@ -4,6 +4,7 @@ import { ethers, BigNumber } from 'ethers';
 import wstETHCurveUniv3CalleeAbi from '../../abi/WstETHCurveUniv3Callee.json';
 import wstETHeAbi from '../../abi/WstETH.json';
 import curvePoolAbi from '../../abi/CurvePool.json';
+import quoterAbi from '../../abi/Quoter.json';
 
 export default class WstETHCurveUniv3Adaptor {
 
@@ -20,6 +21,12 @@ export default class WstETHCurveUniv3Adaptor {
     this._curvePool = new ethers.Contract(
         Config.vars.collateral[name].curvePool, curvePoolAbi, this._provider
     );
+    this._quoter = new ethers.Contract(
+        Config.vars.QuoterAddress, quoterAbi, this._provider
+    );
+    this._uniswapV3Fee = Config.vars.collateral[name].poolFee
+    this._weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" // TODO: get from config?
+    this._dai  = "0x6B175474E89094C44Da98b954EedeAC495271d0F" // TODO: get from config?
   }
 
   fetch = async (lot) => {
@@ -29,7 +36,13 @@ export default class WstETHCurveUniv3Adaptor {
         0, // receive token id 0 (ETH)
         stethAmt
     );
-    const daiAmt = ethAmt.mul(BigNumber.from('4000')); // TODO: set real number fron univ3
+    const daiAmt = await this._quoter.callStatic.quoteExactInputSingle(
+        this._weth,
+        this._dai,
+        this._uniswapV3Fee,
+        lot,
+        0
+    );
 
     const book = {
       sellAmount: ethers.utils.formatUnits(lot),
