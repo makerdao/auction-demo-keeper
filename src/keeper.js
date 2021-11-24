@@ -32,9 +32,10 @@ let _this;
 export default class keeper {
   _clippers = [];
   _wallet = null;
-  _uniswapCalleeAdr = null;
-  _uniswapLPCalleeAdr = null;
-  _oasisCalleeAdr = null;
+  _uniswapCalleeAddr = null;
+  _uniswapLPCalleeAddr = null;
+  _oasisCalleeAddr = null;
+  _wstETHCurveUniv3CalleeAddr = null;
   _gemJoinAdapters = {};
   _activeAuctions = null;
   _processingFlags = {};
@@ -247,9 +248,9 @@ export default class keeper {
 
   // Initialize the Clipper, OasisDex, and Uniswap JS wrappers
   async _clipperInit(collateral) {
-    this._uniswapCalleeAdr = collateral.uniswapCallee;
-    this._uniswapLPCalleeAdr = collateral.uniswapLPCallee;
-    this._oasisCalleeAdr = collateral.oasisCallee;
+    this._uniswapCalleeAddr = collateral.uniswapCallee;
+    this._uniswapLPCalleeAddr = collateral.uniswapLPCallee;
+    this._oasisCalleeAddr = collateral.oasisCallee;
     this._wstETHCurveUniv3CalleeAddr = collateral.wstETHCurveUniv3Callee;
     this._gemJoinAdapters[collateral.name] = collateral.joinAdapter;
 
