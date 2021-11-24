@@ -164,7 +164,7 @@ export default class Clipper {
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
-        Config.vars.collateral[this._collateralName].poolFee,
+        Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
         ethers.constants.AddressZero
       ]);
     }

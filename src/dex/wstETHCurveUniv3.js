@@ -24,24 +24,24 @@ export default class WstETHCurveUniv3Adaptor {
     this._quoter = new ethers.Contract(
         Config.vars.QuoterAddress, quoterAbi, this._provider
     );
-    this._uniswapV3Fee = Config.vars.collateral[name].poolFee
-    this._weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" // TODO: get from config?
-    this._dai  = "0x6B175474E89094C44Da98b954EedeAC495271d0F" // TODO: get from config?
+    this._weth         = Config.vars.collateral[name].uniV3Path[0].tokenA;
+    this._dai          = Config.vars.collateral[name].uniV3Path[0].tokenB;
+    this._uniV3poolFee = Config.vars.collateral[name].uniV3Path[0].fee;
   }
 
   fetch = async (lot) => {
     const stethAmt = await this._wstETH.getStETHByWstETH(lot);
     const ethAmt = await this._curvePool.get_dy(
-        1, // send token id 1 (stETH)
-        0, // receive token id 0 (ETH)
-        stethAmt
+      1, // send token id 1 (stETH)
+      0, // receive token id 0 (ETH)
+      stethAmt
     );
     const daiAmt = await this._quoter.callStatic.quoteExactInputSingle(
-        this._weth,
-        this._dai,
-        this._uniswapV3Fee,
-        lot,
-        0
+      this._weth,
+      this._dai,
+      this._uniV3poolFee,
+      lot,
+      0
     );
 
     const book = {
