@@ -6,6 +6,7 @@ import network from './singleton/network.js';
 import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import UniswapAdaptor from './dex/uniswap.js';
+import WstETHCurveUniv3Adaptor from './dex/wstETHCurveUniv3.js';
 import Wallet from './wallet.js';
 import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
 import fs from 'fs';
@@ -31,9 +32,10 @@ let _this;
 export default class keeper {
   _clippers = [];
   _wallet = null;
-  _uniswapCalleeAdr = null;
-  _uniswapLPCalleeAdr = null;
-  _oasisCalleeAdr = null;
+  _uniswapCalleeAddr = null;
+  _uniswapLPCalleeAddr = null;
+  _oasisCalleeAddr = null;
+  _wstETHCurveUniv3CalleeAddr = null;
   _gemJoinAdapters = {};
   _activeAuctions = null;
   _processingFlags = {};
@@ -48,7 +50,7 @@ export default class keeper {
   }
 
   // Check if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
-  async _opportunityCheck(collateral, oasis, uniswap, clip) {
+  async _opportunityCheck(collateral, oasis, uniswap, wstETHCurveUniv3, clip) {
     if (this._processingFlags[collateral]) {
       console.debug('Already processing opportunities for ' + collateral.name);
     } else {
@@ -145,6 +147,15 @@ export default class keeper {
           minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
+        // Determine proceeds from swapping WSTETH => STETH => ETH => Dai
+        let wstETHCurveUniv3Proceeds;
+        let minWstETHCurveUniv3Proceeds;
+        if (wstETHCurveUniv3) {
+          wstETHCurveUniv3Proceeds = await wstETHCurveUniv3.fetch(lot);
+          minWstETHCurveUniv3Proceeds = Number(wstETHCurveUniv3Proceeds.receiveAmount) -
+                                        Number(ethers.utils.formatUnits(minProfit));
+        }
+
         const auctionSummary = `\n
           ${collateral.name} auction ${auction.id}
 
@@ -200,6 +211,27 @@ export default class keeper {
           } else {
             console.log('Not enough liquidity on OasisDEX\n');
           }
+
+        } else if (wstETHCurveUniv3) {
+          liquidityAvailability = `
+            Uniswap proceeds:   ${wstETHCurveUniv3Proceeds.receiveAmount} Dai
+            Less min profit:    ${minWstETHCurveUniv3Proceeds}\n`;
+          console.log(auctionSummary + liquidityAvailability);
+          if (Number(ethers.utils.formatUnits(costOfLot)) <= minWstETHCurveUniv3Proceeds) {
+            // tx executes only if the return amount also covers the minProfit %
+            await clip.execute(
+                auction.id,
+                lot,
+                auction.price,
+                minProfit,
+                this._wallet.address,
+                this._gemJoinAdapters[collateral.name],
+                this._wallet,
+                wstETHCurveUniv3._callee.address
+            );
+          } else {
+            console.log('wstETH Curve Univ3 proceeds - profit amount is less than cost.\n');
+          }
         }
 
         this._activeAuctions = await clip.activeAuctions();
@@ -216,9 +248,10 @@ export default class keeper {
 
   // Initialize the Clipper, OasisDex, and Uniswap JS wrappers
   async _clipperInit(collateral) {
-    this._uniswapCalleeAdr = collateral.uniswapCallee;
-    this._uniswapLPCalleeAdr = collateral.uniswapLPCallee;
-    this._oasisCalleeAdr = collateral.oasisCallee;
+    this._uniswapCalleeAddr = collateral.uniswapCallee;
+    this._uniswapLPCalleeAddr = collateral.uniswapLPCallee;
+    this._oasisCalleeAddr = collateral.oasisCallee;
+    this._wstETHCurveUniv3CalleeAddr = collateral.wstETHCurveUniv3Callee;
     this._gemJoinAdapters[collateral.name] = collateral.joinAdapter;
 
     // construct the oasis contract method
@@ -237,6 +270,14 @@ export default class keeper {
         collateral.name
       ) : null;
 
+    // construct the wstETH Curve Univ3 contract method
+    const wstETHCurveUniv3 = collateral.wstETHCurveUniv3Callee ?
+      new WstETHCurveUniv3Adaptor(
+          collateral.erc20addr,
+          collateral.wstETHCurveUniv3Callee,
+          collateral.name
+      ) : null;
+
     // construct the clipper contract method
     const clip = new Clipper(collateral.name);
 
@@ -245,9 +286,9 @@ export default class keeper {
 
     // Initialize the loop where an opportunity is checked at a perscribed cadence (Config.delay)
     const timer = setInterval(() => {
-      this._opportunityCheck(collateral, oasis, uniswap, clip);
+      this._opportunityCheck(collateral, oasis, uniswap, wstETHCurveUniv3, clip);
     }, Config.vars.delay * 1000);
-    return { oasis, uniswap, clip, timer };
+    return { oasis, uniswap, wstETHCurveUniv3, clip, timer };
   }
 
   async run() {
@@ -266,6 +307,7 @@ export default class keeper {
          ** Pair Variables definition
          * oasis : oasisDexAdaptor
          * uniswap : UniswapAdaptor
+         * wstETH Curve Univ3 : WstETHCurveUniv3Adaptor
          * clip : Clipper
          * time : NodeJS.Timeout
          */
