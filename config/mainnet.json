@@ -23,19 +23,6 @@
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
-    "COMP-A": {
-      "name": "COMP-A",
-      "decimals": 18,
-      "erc20addr": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
-      "joinAdapter": "0xBEa7cDfB4b49EC154Ae1c0D731E4DC773A3265aA",
-      "clipper": "0x2Bb690931407DCA7ecE84753EA931ffd304f0F38",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xc00e94Cb662C3520282E6f5717214004A7f26888",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
     "ETH-A": {
       "name": "ETH-A",
       "decimals": 18,
