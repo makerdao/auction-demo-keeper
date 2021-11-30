@@ -23,6 +23,19 @@
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
+    "BAT-A": {
+      "name": "BAT-A",
+      "decimals": 18,
+      "erc20addr": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+      "joinAdapter": "0x3D0B1912B66114d4096F48A8CEe3A56C231772cA",
+      "clipper": "0x3D22e6f643e2F4c563fD9db22b229Cbb0Cd570fb",
+      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
     "ETH-A": {
       "name": "ETH-A",
       "decimals": 18,
