@@ -10,32 +10,6 @@
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "collateral": {
-    "AAVE-A": {
-      "name": "AAVE-A",
-      "decimals": 18,
-      "erc20addr": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-      "joinAdapter": "0x24e459F61cEAa7b1cE70Dbaea938940A7c5aD46e",
-      "clipper": "0x8723b74F598DE2ea49747de5896f9034CC09349e",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
-    "BAL-A": {
-      "name": "BAL-A",
-      "decimals": 18,
-      "erc20addr": "0xba100000625a3754423978a60c9317c58a424e3D",
-      "joinAdapter": "0x4a03Aa7fb3973d8f0221B466EefB53D0aC195f55",
-      "clipper": "0x6AAc067bb903E633A422dE7BE9355E62B3CE0378",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xba100000625a3754423978a60c9317c58a424e3D",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
     "BAT-A": {
       "name": "BAT-A",
       "decimals": 18,
@@ -45,19 +19,6 @@
       "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
       "uniswapRoute": [
         "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
-    "COMP-A": {
-      "name": "COMP-A",
-      "decimals": 18,
-      "erc20addr": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
-      "joinAdapter": "0xBEa7cDfB4b49EC154Ae1c0D731E4DC773A3265aA",
-      "clipper": "0x2Bb690931407DCA7ecE84753EA931ffd304f0F38",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xc00e94Cb662C3520282E6f5717214004A7f26888",
         "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
@@ -98,25 +59,38 @@
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
-    "KNC-A": {
-      "name": "KNC-A",
-      "decimals": 18,
-      "erc20addr": "0xdd974D5C2e2928deA5F71b9825b8b646686BD200",
-      "joinAdapter": "0x475F1a89C1ED844A08E8f6C50A00228b5E59E4A9",
-      "clipper": "0x006Aa3eB5E666D8E006aa647D4afAB212555Ddea",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xdd974D5C2e2928deA5F71b9825b8b646686BD200",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
     "WBTC-A": {
       "name": "WBTC-A",
       "decimals": 8,
       "erc20addr": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
       "joinAdapter": "0xBF72Da2Bd84c5170618Fbe5914B0ECA9638d5eb5",
       "clipper": "0x0227b54AdbFAEec5f1eD1dFa11f54dcff9076e2C",
+      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
+    "WBTC-B": {
+      "name": "WBTC-B",
+      "decimals": 8,
+      "erc20addr": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "joinAdapter": "0xfA8c996e158B80D77FbD0082BB437556A65B96E0",
+      "clipper": "0xe30663C6f83A06eDeE6273d72274AE24f1084a22",
+      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      ]
+    },
+    "WBTC-C": {
+      "name": "WBTC-C",
+      "decimals": 8,
+      "erc20addr": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "joinAdapter": "0x7f62f9592b823331E012D3c5DdF2A7714CfB9de2",
+      "clipper": "0x39F29773Dcb94A32529d0612C6706C49622161D1",
       "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
       "uniswapRoute": [
         "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
@@ -133,19 +107,6 @@
       "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
       "uniswapRoute": [
         "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
-    "LRC-A": {
-      "name": "LRC-A",
-      "decimals": 18,
-      "erc20addr": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD",
-      "joinAdapter": "0x6C186404A7A238D3d6027C0299D1822c1cf5d8f1",
-      "clipper": "0x81C5CDf4817DBf75C7F08B8A1cdaB05c9B3f70F7",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD",
         "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
@@ -202,31 +163,6 @@
         "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
-    "UNIV2AAVEETH-A": {
-      "name": "UNIV2AAVEETH-A",
-      "decimals": 18,
-      "token0": {
-        "name": "AAVE",
-        "decimals": 18,
-        "route": [
-          "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "token1": {
-        "name": "ETH",
-        "decimals": 18,
-        "route": [
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "erc20addr": "0xDFC14d2Af169B0D36C4EFF567Ada9b2E0CAE044f",
-      "joinAdapter": "0x42AFd448Df7d96291551f1eFE1A590101afB1DfF",
-      "clipper": "0x854b252BA15eaFA4d1609D3B98e00cc10084Ec55",
-      "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
-    },
     "UNIV2DAIETH-A": {
       "name": "UNIV2DAIETH-A",
       "decimals": 18,
@@ -248,80 +184,6 @@
       "erc20addr": "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11",
       "joinAdapter": "0x2502F65D77cA13f183850b5f9272270454094A08",
       "clipper": "0x9F6981bA5c77211A34B76c6385c0f6FA10414035",
-      "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
-    },
-    "UNIV2DAIUSDT-A": {
-      "name": "UNIV2DAIUSDT-A",
-      "decimals": 18,
-      "token0": {
-        "name": "DAI",
-        "decimals": 18,
-        "route": [
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "token1": {
-        "name": "USDT",
-        "decimals": 6,
-        "route": [
-          "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "erc20addr": "0xB20bd5D04BE54f870D5C0d3cA85d82b34B836405",
-      "joinAdapter": "0xAf034D882169328CAf43b823a4083dABC7EEE0F4",
-      "clipper": "0xe4B82Be84391b9e7c56a1fC821f47569B364dd4a",
-      "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
-    },
-    "UNIV2ETHUSDT-A": {
-      "name": "UNIV2ETHUSDT-A",
-      "decimals": 18,
-      "token0": {
-        "name": "ETH",
-        "decimals": 18,
-        "route": [
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "token1": {
-        "name": "USDT",
-        "decimals": 6,
-        "route": [
-          "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "erc20addr": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
-      "joinAdapter": "0x4aAD139a88D2dd5e7410b408593208523a3a891d",
-      "clipper": "0x2aC4C9b49051275AcB4C43Ec973082388D015D48",
-      "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
-    },
-    "UNIV2LINKETH-A": {
-      "name": "UNIV2LINKETH-A",
-      "decimals": 18,
-      "token0": {
-        "name": "LINK",
-        "decimals": 18,
-        "route": [
-          "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "token1": {
-        "name": "ETH",
-        "decimals": 18,
-        "route": [
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        ]
-      },
-      "erc20addr": "0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974",
-      "joinAdapter": "0xDae88bDe1FB38cF39B6A02b595930A3449e593A6",
-      "clipper": "0x6aa0520354d1b84e1C6ABFE64a708939529b619e",
       "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
     },
     "UNIV2UNIETH-A": {
@@ -422,19 +284,6 @@
       "joinAdapter": "0xD40798267795Cbf3aeEA8E9F8DCbdBA9b5281fcC",
       "clipper": "0x4fC53a57262B87ABDa61d6d0DB2bE7E9BE68F6b8",
       "uniswapLPCallee": "0x74893C37beACf205507ea794470b13DE06294220"
-    },
-    "USDT-A": {
-      "name": "USDT-A",
-      "decimals": 6,
-      "erc20addr": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      "joinAdapter": "0x0Ac6A1D74E84C2dF9063bDDc31699FF2a2BB22A2",
-      "clipper": "0xFC9D6Dd08BEE324A5A8B557d2854B9c36c2AeC5d",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
     },
     "YFI-A": {
       "name": "YFI-A",
