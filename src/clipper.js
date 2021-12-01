@@ -103,7 +103,7 @@ export default class Clipper {
       this._activeAuctions[details.id] = details.sale;
     });
 
-    //TODO: subscribe to file events to update dog, calc and other parameters
+    // TODO: subscribe to file events to update dog, calc and other parameters
   }
 
   async activeAuctions() {
@@ -140,14 +140,30 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].uniswapRoute
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapLPCallee) {
-      typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
       // uniswap v2 LP token swap
+      typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
       flashData = abiCoder.encode(typesArray, [
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
         Config.vars.collateral[this._collateralName].token0.route,
         Config.vars.collateral[this._collateralName].token1.route
+      ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV3Callee) {
+      // TODO: make this more dynamic
+      const route = ethers.utils.solidityPack(['address','uint24','address'], [
+        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA,
+        Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
+        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenB,
+      ]);
+      // uniswap v3 swap
+      typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        route,
+        ethers.constants.AddressZero
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
       // OasisDEX swap
@@ -189,6 +205,7 @@ export default class Clipper {
       }
 
     } catch (error) {
+      // most errors are documented in Transact()
       console.error(error);
     }
   }

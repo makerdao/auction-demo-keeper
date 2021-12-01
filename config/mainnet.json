@@ -1,12 +1,13 @@
 {
-  "rpcURL": "https://mainnet.infura.io/v3/11465e3f27b247eb8b785c23047b29fd",
+  "rpcURL": "http://127.0.0.1:8545/",
   "dai": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   "daiJoin": "0x9759A6Ac90977b93B58547b4A71c78317f391A28",
   "MakerOTCSupportMethods": "0x9b3f075b12513afe56ca2ed838613b7395f57839",
   "OasisDex": "0x5e3e0548935a83aD29fb2A9153d331dc6d49020f",
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "UniswapV3Router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-  "QuoterAddress": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+  "UniswapV3FactoryAddress": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+  "UniswapV3QuoterAddress": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "collateral": {
@@ -306,13 +307,11 @@
       "clipper": "0x49A33A28C4C7D9576ab28898F4C9ac7e52EA457A",
       "wstETHCurveUniv3Callee": "0xC2D837173592194131827775a6Cd88322a98C825",
       "curvePool": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
-      "uniV3Path": [
-        {
-          "fee": 3000,
-          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        }
-      ]
+      "uniV3Path": [{
+        "fee": 3000,
+        "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      }]
     }
   },
   "txnReplaceTimeout": "40",

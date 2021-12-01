@@ -4,7 +4,7 @@ import { ethers, BigNumber } from 'ethers';
 import wstETHCurveUniv3CalleeAbi from '../../abi/WstETHCurveUniv3Callee.json';
 import wstETHeAbi from '../../abi/WstETH.json';
 import curvePoolAbi from '../../abi/CurvePool.json';
-import quoterAbi from '../../abi/Quoter.json';
+import quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json";
 
 export default class WstETHCurveUniv3Adaptor {
 
@@ -22,7 +22,7 @@ export default class WstETHCurveUniv3Adaptor {
         Config.vars.collateral[name].curvePool, curvePoolAbi, this._provider
     );
     this._quoter = new ethers.Contract(
-        Config.vars.QuoterAddress, quoterAbi, this._provider
+        Config.vars.UniswapV3QuoterAddress, quoter.abi, this._provider
     );
     this._weth         = Config.vars.collateral[name].uniV3Path[0].tokenA;
     this._dai          = Config.vars.collateral[name].uniV3Path[0].tokenB;

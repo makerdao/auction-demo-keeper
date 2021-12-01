@@ -6,7 +6,8 @@
   "OasisDex": "0x5e3e0548935a83aD29fb2A9153d331dc6d49020f",
   "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   "UniswapV3Router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-  "QuoterAddress": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+  "UniswapV3FactoryAddress": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+  "UniswapV3QuoterAddress": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "collateral": {
@@ -16,14 +17,12 @@
       "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "joinAdapter": "0x2F0b23f53734252Bda2277357e97e1517d6B042A",
       "clipper": "0xc67963a226eddd77B91aD8c421630A1b0AdFF270",
-      "uniswapv3Callee": "0x73A1fc3E3a22e44dB7e90A22BAF5d5a9CbE412Ac",
-      "path": [
-        {
-          "fee": 1,
-          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        }
-      ]
+      "uniswapV3Callee": "0xdB9C76109d102d2A1E645dCa3a7E671EBfd8e11A",
+      "uniV3Path": [{
+        "fee": 3000,
+        "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      }]
     },
     "ETH-B": {
       "name": "ETH-B",
@@ -31,11 +30,12 @@
       "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "joinAdapter": "0x08638eF1A205bE6762A8b935F5da9b700Cf7322c",
       "clipper": "0x71eb894330e8a4b96b8d6056962e7F116F50e06F",
-      "uniswapCallee": "0x73A1fc3E3a22e44dB7e90A22BAF5d5a9CbE412Ac",
-      "uniswapRoute": [
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
+      "uniswapV3Callee": "0xdB9C76109d102d2A1E645dCa3a7E671EBfd8e11A",
+      "uniV3Path": [{
+        "fee": 3000,
+        "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      }]
     },
     "ETH-C": {
       "name": "ETH-C",
@@ -43,11 +43,12 @@
       "erc20addr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "joinAdapter": "0xF04a5cC80B1E94C69B48f5ee68a08CD2F09A7c3E",
       "clipper": "0xc2b12567523e3f3CBd9931492b91fe65b240bc47",
-      "uniswapCallee": "0x73A1fc3E3a22e44dB7e90A22BAF5d5a9CbE412Ac",
-      "uniswapRoute": [
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
+      "uniswapV3Callee": "0xdB9C76109d102d2A1E645dCa3a7E671EBfd8e11A",
+      "uniV3Path": [{
+        "fee": 3000,
+        "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      }]
     }
   },
   "txnReplaceTimeout": "40",
