@@ -10,19 +10,6 @@
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "collateral": {
-    "BAL-A": {
-      "name": "BAL-A",
-      "decimals": 18,
-      "erc20addr": "0xba100000625a3754423978a60c9317c58a424e3D",
-      "joinAdapter": "0x4a03Aa7fb3973d8f0221B466EefB53D0aC195f55",
-      "clipper": "0x6AAc067bb903E633A422dE7BE9355E62B3CE0378",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0xba100000625a3754423978a60c9317c58a424e3D",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
     "BAT-A": {
       "name": "BAT-A",
       "decimals": 18,
