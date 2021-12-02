@@ -40,7 +40,7 @@ export default class WstETHCurveUniv3Adaptor {
       this._weth,
       this._dai,
       this._uniV3poolFee,
-      lot,
+      ethAmt,
       0
     );
 
