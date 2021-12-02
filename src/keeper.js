@@ -95,7 +95,7 @@ export default class keeper {
         let owe27 = slice18.mul(auction.price).div(decimals18);
         let tab27 = auction.tab.div(decimals18);
         // adjust covered debt to tab, such that slice better reflects amount of collateral we'd receive
-        if (owe27.gt(tab27) && slice18.gt(auction.lot)) {
+        if (owe27.gt(tab27)) {
           owe27 = tab27;
           slice18 = owe27.div(auction.price.div(decimals18));
         } else if (owe27.lt(tab27) && slice18.lt(auction.lot)) {
@@ -169,6 +169,12 @@ export default class keeper {
             Cost of lot:        ${ethers.utils.formatUnits(costOfLot)} Dai
             Minimum profit:     ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
+
+        // Set the amt we take as above the anticipated slice since if it was derived from (tab / price)
+        // then the price on-chain will be slightly lower and we might end up with (slice * price) < tab.
+        // In theory, the amt can be max(uint) as well as it is cropped by auction.lot during the take.
+        const amt = lot.mul(2000).div(1000)
+
         let liquidityAvailability;
         if (uniswap) {
           liquidityAvailability = `
@@ -179,7 +185,7 @@ export default class keeper {
             //Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
-              lot,
+              amt,
               auction.price,
               minProfit,
               this._wallet.address,
@@ -200,7 +206,7 @@ export default class keeper {
           if (oasisDexAvailability.gt(auction.lot)) {
             await clip.execute(
               auction.id,
-              lot,
+              amt,
               auction.price,
               minProfit,
               this._wallet.address,
@@ -221,7 +227,7 @@ export default class keeper {
             // tx executes only if the return amount also covers the minProfit %
             await clip.execute(
                 auction.id,
-                lot,
+                amt,
                 auction.price,
                 minProfit,
                 this._wallet.address,
