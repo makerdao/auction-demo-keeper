@@ -383,11 +383,13 @@
       "clipper": "0x49A33A28C4C7D9576ab28898F4C9ac7e52EA457A",
       "wstETHCurveUniv3Callee": "0xC2D837173592194131827775a6Cd88322a98C825",
       "curvePool": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
-      "uniV3Path": [{
-        "fee": 3000,
-        "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      }]
+      "uniV3Path": [
+        {
+          "fee": 3000,
+          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        }
+      ]
     }
   },
   "txnReplaceTimeout": "40",
