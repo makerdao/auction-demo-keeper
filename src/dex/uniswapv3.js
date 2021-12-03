@@ -45,9 +45,6 @@ export default class UniswapV3Adaptor {
     this._uniswap = new ethers.Contract(
       Config.vars.UniswapV3Router, uniswapRouter, this._provider
     );
-    this._factory = new ethers.Contract(
-      Config.vars.UniswapV3FactoryAddress, factory.abi, this._provider
-    );
     this._quoter = new ethers.Contract(
       Config.vars.UniswapV3QuoterAddress, quoter.abi, this._provider
     );
