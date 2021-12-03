@@ -108,10 +108,10 @@ export default class Clipper {
 
   async activeAuctions() {
     // We get the timestamp from the last block for testing.
-    const blockNum = await network.provider.getBlockNumber();
-    const block = await network.provider.getBlock(blockNum);
-    const currentTime = block.timestamp;
-    // const currentTime = Math.floor(new Date() / 1000);
+    // const blockNum = await network.provider.getBlockNumber();
+    // const block = await network.provider.getBlock(blockNum);
+    // const currentTime = block.timestamp;
+    const currentTime = Math.floor(new Date() / 1000);
     const readPromises = [];
 
     for (const auctionId in this._activeAuctions) {
@@ -127,7 +127,7 @@ export default class Clipper {
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
-    //encoding calldata
+    // encoding calldata
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
@@ -150,12 +150,25 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].token1.route
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV3Callee) {
-      // TODO: make this more dynamic
-      const route = ethers.utils.solidityPack(['address','uint24','address'], [
-        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA,
-        Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
-        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenB,
-      ]);
+      let types = ['address'];
+      let values = [
+        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA
+      ];
+
+      for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
+        types.push('uint24');
+        values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].fee
+        );
+
+        types.push('address');
+        values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB
+        );
+      }
+
+      const route = ethers.utils.solidityPack(types, values);
+
       // uniswap v3 swap
       typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
       flashData = abiCoder.encode(typesArray, [
