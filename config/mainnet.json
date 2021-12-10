@@ -10,19 +10,6 @@
   "vat": "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B",
   "eth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   "collateral": {
-    "BAT-A": {
-      "name": "BAT-A",
-      "decimals": 18,
-      "erc20addr": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
-      "joinAdapter": "0x3D0B1912B66114d4096F48A8CEe3A56C231772cA",
-      "clipper": "0x3D22e6f643e2F4c563fD9db22b229Cbb0Cd570fb",
-      "uniswapCallee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
-      "uniswapRoute": [
-        "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-      ]
-    },
     "ETH-A": {
       "name": "ETH-A",
       "decimals": 18,
@@ -199,18 +186,11 @@
       "erc20addr": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
       "joinAdapter": "0x3ff33d9162aD47660083D7DC4bC02Fb231c81677",
       "clipper": "0x9daCc11dcD0aa13386D295eAeeBBd38130897E6f",
-      "uniswapV3Callee": "0xdB9C76109d102d2A1E645dCa3a7E671EBfd8e11A",
-      "uniV3Path": [
-        {
-          "fee": 3000,
-          "tokenA": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
-          "tokenB": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-        },
-        {
-          "fee": 500,
-          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        }
+      "uniswapV2Callee": "0x49399BB0Fcb52b32aB5A0909206BFf7B54FF80b3",
+      "uniswapRoute": [
+        "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       ]
     },
     "UNI-A": {

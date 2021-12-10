@@ -5,7 +5,7 @@ import network from './singleton/network.js';
 import Clipper from './clipper.js';
 import { ethers, BigNumber } from 'ethers';
 import oasisDexAdaptor from './dex/oasisdex.js';
-import UniswapAdaptor from './dex/uniswapv2.js';
+import UniswapV2Adapter from './dex/uniswapv2.js';
 import UniswapV3Adaptor from './dex/uniswapv3.js';
 import WstETHCurveUniv3Adaptor from './dex/wstETHCurveUniv3.js';
 import Wallet from './wallet.js';
@@ -33,7 +33,7 @@ let _this;
 export default class keeper {
   _clippers = [];
   _wallet = null;
-  _uniswapCalleeAddr = null;
+  _uniswapV2CalleeAddr = null;
   _uniswapLPCalleeAddr = null;
   _uniswapV3CalleeAddr = null;
   _oasisCalleeAddr = null;
@@ -142,11 +142,11 @@ export default class keeper {
           oasisDexAvailability = oasis.opportunity(priceWithProfit.div(decimals9));
 
         // Determine proceeds from swapping gem for Dai on Uniswap
-        let uniswapProceeds;
-        let minUniProceeds;
+        let uniswapV2Proceeds;
+        let minUniV2Proceeds;
         if (uniswap) {
-          uniswapProceeds = await uniswap.fetch(lot);
-          minUniProceeds = Number(uniswapProceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
+          uniswapV2Proceeds = await uniswap.fetch(lot);
+          minUniV2Proceeds = Number(uniswapV2Proceeds.receiveAmount) - Number(ethers.utils.formatUnits(minProfit));
         }
 
         // Determine proceeds from swapping gem for Dai on Uniswap v3
@@ -188,10 +188,10 @@ export default class keeper {
         let liquidityAvailability;
         if (uniswap) {
           liquidityAvailability = `
-            Uniswap proceeds:   ${uniswapProceeds.receiveAmount} Dai
-            Less min profit:    ${minUniProceeds}\n`;
+            Uniswap proceeds:   ${uniswapV2Proceeds.receiveAmount} Dai
+            Less min profit:    ${minUniV2Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniProceeds) {
+          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniV2Proceeds) {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
@@ -215,7 +215,7 @@ export default class keeper {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
-              lot,
+              amt,
               auction.price,
               minProfit,
               this._wallet.address,
@@ -282,7 +282,7 @@ export default class keeper {
 
   // Initialize the Clipper, OasisDex, and Uniswap JS wrappers
   async _clipperInit(collateral) {
-    this._uniswapCalleeAddr = collateral.uniswapCallee;
+    this._uniswapV2CalleeAddr = collateral.uniswapV2Callee;
     this._uniswapV3CalleeAddr = collateral.uniswapV3Callee;
     this._uniswapLPCalleeAddr = collateral.uniswapLPCallee;
     this._oasisCalleeAddr = collateral.oasisCallee;
@@ -298,7 +298,7 @@ export default class keeper {
 
     // construct the uniswap contract method
     const uniswap = (collateral.uniswapCallee || collateral.uniswapLPCallee) ?
-      new UniswapAdaptor(
+      new UniswapV2Adapter(
         collateral.erc20addr,
         collateral.uniswapCallee ?
           collateral.uniswapCallee : collateral.uniswapLPCallee,
@@ -308,7 +308,6 @@ export default class keeper {
     // construct the uniswap v3 contract method
     const uniswapV3 = collateral.uniswapV3Callee ?
       new UniswapV3Adaptor(
-        collateral.erc20addr,
         collateral.uniswapV3Callee,
         collateral.name
       ) : null;
@@ -351,7 +350,7 @@ export default class keeper {
         /* The pair is the clipper, oasisdex and uniswap JS Wrappers
          ** Pair Variables definition
          * oasis : oasisDexAdaptor
-         * uniswap : UniswapAdaptor
+         * uniswap : UniswapV2Adapter
          * uniswapV3 : UniswapV3Adaptor
          * wstETH Curve Univ3 : WstETHCurveUniv3Adaptor
          * clip : Clipper

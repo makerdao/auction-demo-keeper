@@ -6,14 +6,14 @@ import network from '../src/singleton/network';
 import {ethers, BigNumber } from 'ethers';
 import { expect } from '@jest/globals';
 import config from '../config/kovan.json';
-import UniswapAdaptor from '../src/dex/uniswap';
-import oasisDexAdaptor from '../src/dex/oasisdex';
+import UniswapV2Adaptor from '../src/dex/uniswapv2.js';
+import oasisDexAdaptor from '../src/dex/oasisdex.js';
 
 network.rpcURL = 'https://kovan.infura.io/v3/11465e3f27b247eb8b785c23047b29fd';
 Config.vars = config;
 
 test('Uniswap Adaptor Opportunity', async () => {
-    const uniswap = new UniswapAdaptor(Config.vars.collateral['WBTC-A'].erc20addr, Config.vars.collateral['WBTC-A'].uniswapCallee, 'WBTC-A');
+    const uniswap = new UniswapV2Adaptor(Config.vars.collateral['WBTC-A'].erc20addr, Config.vars.collateral['WBTC-A'].uniswapCallee, 'WBTC-A');
     const book = await uniswap.fetch('5000000000000000');
     console.log('BOOK: ', book);
     expect(book.receiveAmount > 0);

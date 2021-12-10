@@ -80,7 +80,7 @@ test("Initializes the clipper and listen for active auctions", async () => {
 //
 //  const _minProfit = priceWithProfit * auction.lot;
 //
-//  const exhangeCallee = Config.vars.collateral["LINK-A"].uniswapCallee;
+//  const exhangeCallee = Config.vars.collateral["LINK-A"].uniswapV3Callee;
 //
 //  let account = jsonWallet.address;
 //
