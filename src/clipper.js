@@ -103,7 +103,7 @@ export default class Clipper {
       this._activeAuctions[details.id] = details.sale;
     });
 
-    //TODO: subscribe to file events to update dog, calc and other parameters
+    // TODO: subscribe to file events to update dog, calc and other parameters
   }
 
   async activeAuctions() {
@@ -127,7 +127,7 @@ export default class Clipper {
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
-    //encoding calldata
+    // encoding calldata
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
@@ -140,14 +140,43 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].uniswapRoute
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapLPCallee) {
-      typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
       // uniswap v2 LP token swap
+      typesArray = ['address', 'address', 'uint256', 'address[]', 'address[]'];
       flashData = abiCoder.encode(typesArray, [
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
         Config.vars.collateral[this._collateralName].token0.route,
         Config.vars.collateral[this._collateralName].token1.route
+      ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV3Callee) {
+      let types = ['address'];
+      let values = [
+        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA
+      ];
+
+      for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
+        types.push('uint24');
+        values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].fee
+        );
+
+        types.push('address');
+        values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB
+        );
+      }
+
+      const route = ethers.utils.solidityPack(types, values);
+
+      // uniswap v3 swap
+      typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        route,
+        ethers.constants.AddressZero
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].oasisCallee) {
       // OasisDEX swap
@@ -189,6 +218,7 @@ export default class Clipper {
       }
 
     } catch (error) {
+      // most errors are documented in Transact()
       console.error(error);
     }
   }

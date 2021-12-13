@@ -7,7 +7,7 @@ import UniswapV2Pair from '../../abi/UniswapV2Pair.json';
 
 const decimals18 = ethers.utils.parseEther('1');
 
-export default class UniswapAdaptor {
+export default class UniswapV2Adaptor {
   _collateralName = '';
   _decNormalized;
   _decNormalized0 = BigNumber.from('10').pow(18);
