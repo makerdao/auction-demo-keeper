@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "goerli": "node --experimental-json-modules src/startGoerli.js",
     "kovan": "node --experimental-json-modules src/startKovan.js",
     "mainnet": "node --experimental-json-modules src/startMainnet.js",
     "env": "node --experimental-json-modules src/startEnv.js",

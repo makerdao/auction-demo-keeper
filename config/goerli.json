@@ -1,0 +1,68 @@
+{
+  "rpcURL": "https://kovan.infura.io/v3/11465e3f27b247eb8b785c23047b29fd",
+  "dai": "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
+  "daiJoin": "0x6a60b7070befb2bfc964F646efDF70388320f4E0",
+  "UniswapV2Router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "vat": "0xB966002DDAa2Baf48369f5015329750019736031",
+  "eth": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  "liquidityProvider": "oasisdex",
+  "collateral": {
+    "ETH-A": {
+      "name": "ETH-A",
+      "decimals": 18,
+      "erc20addr": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+      "joinAdapter": "0x2372031bB0fC735722AA4009AeBf66E8BEAF4BA1",
+      "clipper": "0x2603c6EC5878dC70f53aD3a90e4330ba536d2385",
+      "uniswapCallee": "0x6D9139AC89Ad2263F138633dE20e47BCAe253938",
+      "uniswapRoute": [
+        "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+        "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844"
+      ]
+    },
+    "LINK-A": {
+      "name": "LINK-A",
+      "decimals": 18,
+      "erc20addr": "0x4724A967A4F7E42474Be58AbdF64bF38603422FF",
+      "joinAdapter": "0x4420FD4E5C414189708376F3fBAA4dCA6277369a",
+      "clipper": "0x42cbA983D2403003af554fec0e68dAC4920906CC",
+      "uniswapCallee": "0x6D9139AC89Ad2263F138633dE20e47BCAe253938",
+      "uniswapRoute": [
+        "0x4724A967A4F7E42474Be58AbdF64bF38603422FF",
+        "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844"
+      ]
+    },
+    "YFI-A": {
+      "name": "YFI-A",
+      "decimals": 18,
+      "erc20addr": "0xd9510EF268F8273C9b7514F0bfFe18Fe1EFC0d43",
+      "joinAdapter": "0xa318E65982E80F54486f71965A0C320858759299",
+      "clipper": "0x9B97923CDf21CdB898702EE6878960Db446Daa86",
+      "uniswapCallee": "0x6D9139AC89Ad2263F138633dE20e47BCAe253938",
+      "uniswapRoute": [
+        "0xd9510EF268F8273C9b7514F0bfFe18Fe1EFC0d43",
+        "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844"
+      ]
+    },
+    "WBTC-A": {
+      "name": "WBTC-A",
+      "decimals": 8,
+      "erc20addr": "0x7ccF0411c7932B99FC3704d68575250F032e3bB7",
+      "joinAdapter": "0x3cbE712a12e651eEAF430472c0C1BF1a2a18939D",
+      "clipper": "0x752c35fa3d21863257bbBCB7e2B344fd0948B61b",
+      "uniswapCallee": "0x6D9139AC89Ad2263F138633dE20e47BCAe253938",
+      "uniswapRoute": [
+        "0x7419f744bBF35956020C1687fF68911cD777f865",
+        "0x7ccF0411c7932B99FC3704d68575250F032e3bB7"
+      ]
+    }
+  },
+  "txnReplaceTimeout": "20",
+  "delay": "40",
+  "initialGasOffsetGwei": "0",
+  "dynamicGasCoefficient": "1.125",
+  "maxGasLimit": "2000000",
+  "maxGasPrice": "10",
+  "minProfitPercentage": "1.025",
+  "minLotDaiValue": "0",
+  "maxLotDaiValue": "1000000"
+}
