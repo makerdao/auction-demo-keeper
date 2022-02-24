@@ -297,11 +297,11 @@ export default class keeper {
     ) : null;
 
     // construct the uniswap contract method
-    const uniswap = (collateral.uniswapCallee || collateral.uniswapLPCallee) ?
+    const uniswap = (collateral.uniswapV2Callee || collateral.uniswapLPCallee) ?
       new UniswapV2Adapter(
         collateral.erc20addr,
-        collateral.uniswapCallee ?
-          collateral.uniswapCallee : collateral.uniswapLPCallee,
+        collateral.uniswapV2Callee ?
+          collateral.uniswapV2Callee : collateral.uniswapLPCallee,
         collateral.name
       ) : null;
 
