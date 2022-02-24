@@ -131,7 +131,7 @@ export default class Clipper {
     let typesArray = ['address', 'address', 'uint256', 'address[]'];
     let abiCoder = ethers.utils.defaultAbiCoder;
     let flashData = null;
-    if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapCallee) {
+    if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV2Callee) {
       // uniswap v2 swap
       flashData = abiCoder.encode(typesArray, [
         _profitAddr,
