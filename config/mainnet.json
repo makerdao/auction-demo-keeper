@@ -370,6 +370,26 @@
           "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         }
       ]
+    },
+    "CRVV1ETHSTETH-A": {
+      "name": "CRVV1STETHETH-A",
+      "decimals": 18,
+      "erc20addr": "0x06325440D014e39736583c165C2963BA99fAf14E",
+      "joinAdapter": "0xTBD", // TODO
+      "clipper": "0xTBD", // TODO
+      "manager" : "0xTBD", // TODO
+      "lpCurveUniv3Callee": "0xTBD", // TODO
+      "uniV3Path": [
+        {
+          "fee": 3000,
+          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        }
+      ],
+      "curveData" : {
+        "pool" : "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+        "coinIndex" : 0
+      }
     }
   },
   "txnReplaceTimeout": "40",

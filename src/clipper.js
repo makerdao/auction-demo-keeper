@@ -196,6 +196,43 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
         ethers.constants.AddressZero
       ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].lpCurveUniv3Callee) {
+
+      // TODO: take out route encoding to separate function? same logic is shared with univ3
+      let types = ['address'];
+      let values = [
+        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA
+      ];
+
+      for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
+        types.push('uint24');
+        values.push(
+            Config.vars.collateral[this._collateralName].uniV3Path[i].fee
+        );
+
+        types.push('address');
+        values.push(
+            Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB
+        );
+      }
+      const route = ethers.utils.solidityPack(types, values);
+
+      // TODO: encode this?
+      const curveData = [
+        Config.vars.collateral[this._collateralName].curveData.pool,
+        Config.vars.collateral[this._collateralName].curveData.coinIndex,
+      ];
+
+      // LP Curve Univ3 swap
+      typesArray = ['address', 'address', 'uint256', 'bytes', 'address', 'bytes32[]'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        route,
+        Config.vars.collateral[this._collateralName].manager,
+        curveData
+      ]);
     }
 
     let id = abiCoder.encode(['uint256'], [auctionId]);
