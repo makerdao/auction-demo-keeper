@@ -292,7 +292,8 @@ export default class keeper {
                   lpCurveUniv3._callee.address
               );
             } else {
-            console.log('lp Curve Univ3 proceeds - profit amount is less than cost.\n');
+              console.log('lp Curve Univ3 proceeds - profit amount is less than cost.\n');
+            }
           }
         }
 

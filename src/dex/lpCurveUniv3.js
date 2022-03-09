@@ -15,12 +15,13 @@ export default class LpCurveUniv3Adaptor {
         callee, lpCurveUniv3CalleeAbi, this._provider
     );
     this._curvePool = new ethers.Contract(
-        Config.vars.collateral[name].curvePool, curvePoolAbi, this._provider
+        Config.vars.collateral[name].curveData.pool, curvePoolAbi, this._provider
     );
+    this._curveCoinIndex = Config.vars.collateral[name].curveData.coinIndex
     this._quoter = new ethers.Contract(
         Config.vars.UniswapV3QuoterAddress, quoter.abi, this._provider
     );
-    this._weth         = Config.vars.collateral[name].uniV3Path[0].tokenA;
+    this._uniV3TokenA       = Config.vars.collateral[name].uniV3Path[0].tokenA;
     this._dai          = Config.vars.collateral[name].uniV3Path[0].tokenB;
     this._uniV3poolFee = Config.vars.collateral[name].uniV3Path[0].fee;
   }
@@ -28,10 +29,10 @@ export default class LpCurveUniv3Adaptor {
   fetch = async (lot) => {
     const ethAmt = await this._curvePool.calc_withdraw_one_coin(
       lot,
-      0 // receive token id 0 (ETH)
+      this._curveCoinIndex
     );
     const daiAmt = await this._quoter.callStatic.quoteExactInputSingle(
-      this._weth,
+      this._uniV3TokenA,
       this._dai,
       this._uniV3poolFee,
       ethAmt,

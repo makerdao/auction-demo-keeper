@@ -372,13 +372,13 @@
       ]
     },
     "CRVV1ETHSTETH-A": {
-      "name": "CRVV1STETHETH-A",
+      "name": "CRVV1ETHSTETH-A",
       "decimals": 18,
       "erc20addr": "0x06325440D014e39736583c165C2963BA99fAf14E",
-      "joinAdapter": "0xTBD", // TODO
-      "clipper": "0xTBD", // TODO
-      "manager" : "0xTBD", // TODO
-      "lpCurveUniv3Callee": "0xTBD", // TODO
+      "joinAdapter": "0x036A451114E3835AbEF163A67163B6B376cF2480",
+      "clipper": "0x2Ae099CE87c1A1291953373F660bdEbbdc1928E9",
+      "manager" : "0x8377CD01a5834a6EaD3b7efb482f678f2092b77e",
+      "lpCurveUniv3Callee": "0x71f2198849F3B1372EA90c079BD634928583f2d2",
       "uniV3Path": [
         {
           "fee": 3000,
