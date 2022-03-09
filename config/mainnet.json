@@ -375,8 +375,8 @@
       "name": "CRVV1ETHSTETH-A",
       "decimals": 18,
       "erc20addr": "0x06325440D014e39736583c165C2963BA99fAf14E",
-      "joinAdapter": "0x036A451114E3835AbEF163A67163B6B376cF2480",
-      "clipper": "0x2Ae099CE87c1A1291953373F660bdEbbdc1928E9",
+      "joinAdapter": "0x82D8bfDB61404C796385f251654F6d7e92092b5D",
+      "clipper": "0x1926862F899410BfC19FeFb8A3C69C7Aed22463a",
       "manager" : "0x8377CD01a5834a6EaD3b7efb482f678f2092b77e",
       "lpCurveUniv3Callee": "0x71f2198849F3B1372EA90c079BD634928583f2d2",
       "uniV3Path": [
