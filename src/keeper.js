@@ -274,26 +274,26 @@ export default class keeper {
                 this._wallet,
                 wstETHCurveUniv3._callee.address
             );
-          } else if (lpCurveUniv3) {
-            liquidityAvailability = `
-            Curve+Univ3 proceeds:   ${lpCurveUniv3Proceeds.receiveAmount} Dai
-            Less min profit:    ${minLpCurveUniv3Proceeds}\n`;
-            console.log(auctionSummary + liquidityAvailability);
-            if (Number(ethers.utils.formatUnits(costOfLot)) <= minLpCurveUniv3Proceeds) {
-              // tx executes only if the return amount also covers the minProfit %
-              await clip.execute(
-                  auction.id,
-                  amt,
-                  auction.price,
-                  minProfit,
-                  this._wallet.address,
-                  this._gemJoinAdapters[collateral.name],
-                  this._wallet,
-                  lpCurveUniv3._callee.address
-              );
-            } else {
-              console.log('lp Curve Univ3 proceeds - profit amount is less than cost.\n');
-            }
+          }
+        } else if (lpCurveUniv3) {
+          liquidityAvailability = `
+          Curve+Univ3 proceeds:   ${lpCurveUniv3Proceeds.receiveAmount} Dai
+          Less min profit:    ${minLpCurveUniv3Proceeds}\n`;
+          console.log(auctionSummary + liquidityAvailability);
+          if (Number(ethers.utils.formatUnits(costOfLot)) <= minLpCurveUniv3Proceeds) {
+            // tx executes only if the return amount also covers the minProfit %
+            await clip.execute(
+                auction.id,
+                amt,
+                auction.price,
+                minProfit,
+                this._wallet.address,
+                this._gemJoinAdapters[collateral.name],
+                this._wallet,
+                lpCurveUniv3._callee.address
+            );
+          } else {
+            console.log('lp Curve Univ3 proceeds - profit amount is less than cost.\n');
           }
         }
 

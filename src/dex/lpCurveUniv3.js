@@ -29,7 +29,8 @@ export default class LpCurveUniv3Adaptor {
   fetch = async (lot) => {
     const ethAmt = await this._curvePool.calc_withdraw_one_coin(
       lot,
-      this._curveCoinIndex
+      this._curveCoinIndex,
+      { gasLimit: 1000000 }
     );
     const daiAmt = await this._quoter.callStatic.quoteExactInputSingle(
       this._uniV3TokenA,

@@ -171,7 +171,7 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].token1.route
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV3Callee) {
-      const route = encodeUniv3Route()
+      const route = this.encodeUniv3Route()
 
       // uniswap v3 swap
       typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
@@ -201,7 +201,7 @@ export default class Clipper {
         ethers.constants.AddressZero
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].lpCurveUniv3Callee) {
-      const route = encodeUniv3Route()
+      const route = this.encodeUniv3Route()
 
       const curveData = [
         Config.vars.collateral[this._collateralName].curveData.pool,
