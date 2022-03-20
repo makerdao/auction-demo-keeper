@@ -124,6 +124,27 @@ export default class Clipper {
     return Promise.all(readPromises);
   }
 
+  encodeUniv3Route() {
+    let types = ['address'];
+    let values = [
+      Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA
+    ];
+
+    for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
+      types.push('uint24');
+      values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].fee
+      );
+
+      types.push('address');
+      values.push(
+          Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB
+      );
+    }
+    const route = ethers.utils.solidityPack(types, values);
+    return route
+  }
+
   // execute an auction
   execute = async (auctionId, _amt, _maxPrice, _minProfit, _profitAddr, _gemJoinAdapter, _signer, exchangeCalleeAddress) => {
 
@@ -150,24 +171,7 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].token1.route
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].uniswapV3Callee) {
-      let types = ['address'];
-      let values = [
-        Config.vars.collateral[this._collateralName].uniV3Path[0].tokenA
-      ];
-
-      for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
-        types.push('uint24');
-        values.push(
-          Config.vars.collateral[this._collateralName].uniV3Path[i].fee
-        );
-
-        types.push('address');
-        values.push(
-          Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB
-        );
-      }
-
-      const route = ethers.utils.solidityPack(types, values);
+      const route = this.encodeUniv3Route()
 
       // uniswap v3 swap
       typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
@@ -195,6 +199,24 @@ export default class Clipper {
         _minProfit,
         Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
         ethers.constants.AddressZero
+      ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].lpCurveUniv3Callee) {
+      const route = this.encodeUniv3Route()
+
+      const curveData = [
+        Config.vars.collateral[this._collateralName].curveData.pool,
+        Config.vars.collateral[this._collateralName].curveData.coinIndex,
+      ];
+
+      // LP Curve Univ3 swap
+      typesArray = ['address', 'address', 'uint256', 'bytes', 'address', 'tuple(address,uint256)'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit,
+        route,
+        Config.vars.collateral[this._collateralName].manager,
+        curveData
       ]);
     }
 

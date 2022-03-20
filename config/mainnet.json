@@ -370,6 +370,26 @@
           "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         }
       ]
+    },
+    "CRVV1ETHSTETH-A": {
+      "name": "CRVV1ETHSTETH-A",
+      "decimals": 18,
+      "erc20addr": "0x06325440D014e39736583c165C2963BA99fAf14E",
+      "joinAdapter": "0x82D8bfDB61404C796385f251654F6d7e92092b5D",
+      "clipper": "0x1926862F899410BfC19FeFb8A3C69C7Aed22463a",
+      "manager" : "0x8377CD01a5834a6EaD3b7efb482f678f2092b77e",
+      "lpCurveUniv3Callee": "0x71f2198849F3B1372EA90c079BD634928583f2d2",
+      "uniV3Path": [
+        {
+          "fee": 3000,
+          "tokenA": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "tokenB": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        }
+      ],
+      "curveData" : {
+        "pool" : "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+        "coinIndex" : 0
+      }
     }
   },
   "txnReplaceTimeout": "40",

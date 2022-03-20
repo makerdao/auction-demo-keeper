@@ -1,0 +1,5 @@
+dss-simulation-scripts$ bash bin/start.sh
+auction-demo-keeper$ node scripts/cropper/castSpell.js && node scripts/cropper/giveTokensVyper.js
+auction-demo-keeper$  bash scripts/cropper/create-unsafe-cropper-vault.sh
+auction-demo-keeper$ yarn run mainnet
+auction-demo-keeper$ node scripts/cropper/warp.js
