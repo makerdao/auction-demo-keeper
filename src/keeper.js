@@ -9,6 +9,7 @@ import UniswapV2Adapter from './dex/uniswapv2.js';
 import UniswapV3Adaptor from './dex/uniswapv3.js';
 import WstETHCurveUniv3Adaptor from './dex/wstETHCurveUniv3.js';
 import LpCurveUniv3Adaptor from './dex/lpCurveUniv3.js';
+import TusdCurveAdaptor from './dex/tusdCurve.js';
 import Wallet from './wallet.js';
 import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
 import fs from 'fs';
@@ -40,6 +41,7 @@ export default class keeper {
   _oasisCalleeAddr = null;
   _wstETHCurveUniv3CalleeAddr = null;
   _lpCurveUniv3CalleeAddr = null;
+  _tusdCurveCalleeAddr = null;
   _gemJoinAdapters = {};
   _activeAuctions = null;
   _processingFlags = {};
@@ -54,7 +56,7 @@ export default class keeper {
   }
 
   // Check if there's an opportunity in Uniswap & OasisDex to profit with a LIQ2.0 flash loan
-  async _opportunityCheck(collateral, oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, clip) {
+  async _opportunityCheck(collateral, oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, tusdCurve, clip) {
     if (this._processingFlags[collateral]) {
       console.debug('Already processing opportunities for ' + collateral.name);
     } else {
@@ -177,13 +179,24 @@ export default class keeper {
                                     Number(ethers.utils.formatUnits(minProfit));
         }
 
+        // Determine proceeds from swapping TUSD on Curve
+        let tusdCurveProceeds;
+        let minTusdCurveProceeds;
+        if (tusdCurve) {
+          tusdCurveProceeds = await tusdCurve.fetch(lot);
+          minTusdCurveProceeds = Number(tusdCurveProceeds.receiveAmount) -
+              Number(ethers.utils.formatUnits(minProfit));
+        }
+
+        const debtToCover = owe27.div(decimals9);
+
         const auctionSummary = `\n
           ${collateral.name} auction ${auction.id}
 
             Auction Tab:        ${ethers.utils.formatUnits(auction.tab.div(decimals27))} Dai
             Auction Lot:        ${ethers.utils.formatUnits(auction.lot.toString())}
             Configured Lot:     between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
-            Debt to Cover:      ${ethers.utils.formatUnits(owe27.div(decimals9))} Dai
+            Debt to Cover:      ${ethers.utils.formatUnits(debtToCover)} Dai
             Slice to Take:      ${ethers.utils.formatUnits(lot)}
             Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
 
@@ -295,6 +308,26 @@ export default class keeper {
           } else {
             console.log('lp Curve Univ3 proceeds - profit amount is less than cost.\n');
           }
+        } else if (tusdCurve) {
+          liquidityAvailability = `
+          Curve Tusd Dai proceeds:   ${tusdCurveProceeds.receiveAmount} Dai
+          Less min profit:    ${minTusdCurveProceeds}\n`;
+          console.log(auctionSummary + liquidityAvailability);
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minTusdCurveProceeds) {
+            // tx executes only if the return amount also covers the minProfit %
+            await clip.execute(
+                auction.id,
+                amt,
+                auction.price,
+                minProfit,
+                this._wallet.address,
+                this._gemJoinAdapters[collateral.name],
+                this._wallet,
+                tusdCurve._callee.address
+            );
+          } else {
+            console.log('Curve Tusd proceeds - profit amount is less than cost.\n');
+          }
         }
 
         this._activeAuctions = await clip.activeAuctions();
@@ -317,6 +350,7 @@ export default class keeper {
     this._oasisCalleeAddr = collateral.oasisCallee;
     this._wstETHCurveUniv3CalleeAddr = collateral.wstETHCurveUniv3Callee;
     this._lpCurveUniv3CalleeAddr = collateral.lpCurveUniv3Callee;
+    this._tusdCurveCalleeAddr = collateral.tusdCurveCallee;
     this._gemJoinAdapters[collateral.name] = collateral.joinAdapter;
 
     // construct the oasis contract method
@@ -358,6 +392,14 @@ export default class keeper {
         collateral.name
     ) : null;
 
+    // construct the tusd Curve contract method
+    const tusdCurve = collateral.tusdCurveCallee ?
+      new TusdCurveAdaptor(
+        collateral.erc20addr,
+        collateral.tusdCurveCallee,
+        collateral.name
+    ) : null;
+
     // construct the clipper contract method
     const clip = new Clipper(collateral.name);
 
@@ -367,10 +409,10 @@ export default class keeper {
     // Initialize the loop where an opportunity is checked at a perscribed cadence (Config.delay)
     const timer = setInterval(() => {
       this._opportunityCheck(
-        collateral, oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, clip
+        collateral, oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, tusdCurve, clip
       );
     }, Config.vars.delay * 1000);
-    return { oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, clip, timer };
+    return { oasis, uniswap, wstETHCurveUniv3, uniswapV3, lpCurveUniv3, tusdCurve, clip, timer };
   }
 
   async run() {
@@ -392,6 +434,7 @@ export default class keeper {
          * uniswapV3 : UniswapV3Adaptor
          * wstETH Curve Univ3 : WstETHCurveUniv3Adaptor
          * lp Curve Univ3 : LpCurveUniv3Adaptor
+         * tusd Curve : TusdCurveAdaptor
          * clip : Clipper
          * time : NodeJS.Timeout
          */

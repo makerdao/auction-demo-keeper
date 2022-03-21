@@ -218,6 +218,14 @@ export default class Clipper {
         Config.vars.collateral[this._collateralName].manager,
         curveData
       ]);
+    } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].tusdCurveCallee) {
+      // TUSD Curve swap
+      typesArray = ['address', 'address', 'uint256'];
+      flashData = abiCoder.encode(typesArray, [
+        _profitAddr,
+        _gemJoinAdapter,
+        _minProfit
+      ]);
     }
 
     let id = abiCoder.encode(['uint256'], [auctionId]);

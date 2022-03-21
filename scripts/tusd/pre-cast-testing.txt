@@ -1,0 +1,5 @@
+dss-simulation-scripts$ bash bin/start.sh
+auction-demo-keeper$ node scripts/tusd/simulateSpell.js
+auction-demo-keeper$ yarn run mainnet
+bash bin/bark.sh "TUSD-A" 14973 # taken from https://docs.google.com/spreadsheets/d/1E_o1Ami9Ufv9AiKKbnFJ7SMIa6JlUuOu0BdNyJwbXhY/edit#gid=0
+auction-demo-keeper$ node scripts/tusd/warp.js

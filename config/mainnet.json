@@ -390,6 +390,15 @@
         "pool" : "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
         "coinIndex" : 0
       }
+    },
+    "TUSD-A": {
+      "name": "TUSD-A",
+      "decimals": 18,
+      "erc20addr": "0x0000000000085d4780B73119b644AE5ecd22b376",
+      "joinAdapter": "0x4454aF7C8bb9463203b66C816220D41ED7837f44",
+      "clipper": "0x0F6f88f8A4b918584E3539182793a0C276097f44",
+      "tusdCurveCallee": "0x8fFefE3AFd3227d1026Af42034712be05BE8a4DE",
+      "curvePool" : "0xEcd5e75AFb02eFa118AF914515D6521aaBd189F1"
     }
   },
   "txnReplaceTimeout": "40",
