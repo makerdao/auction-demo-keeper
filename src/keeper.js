@@ -192,11 +192,9 @@ export default class keeper {
             Debt to Cover:      ${ethers.utils.formatUnits(debtToCover)} Dai
             Minimum profit:     ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
-
-        // Set the amt we take as above the anticipated slice since if it was derived from (tab / price)
-        // then the price on-chain will be slightly lower and we might end up with (slice * price) < tab.
-        // In theory, the amt can be max(uint) as well as it is cropped by auction.lot during the take.
-        const amt = lot.mul(2000).div(1000)
+        // Increase actual take amount to account for rounding errors and edge cases.
+        // Do not increase too much to not significantly go over configured maxAmt.
+        const amt = lot.mul(1000001).div(1000000);
 
         let liquidityAvailability;
         if (uniswap) {
