@@ -139,6 +139,8 @@ export default class keeper {
         const minProfit = totalMinProfit45.div(decimals27);
         const costOfLot = priceWithProfit.mul(lot).div(decimals27);
 
+        const debtToCover = owe27.div(decimals9);
+
         // Find the amount of collateral that maximizes the amount of profit captured
         let oasisDexAvailability;
         if (oasis)
@@ -184,11 +186,10 @@ export default class keeper {
             Auction Tab:        ${ethers.utils.formatUnits(auction.tab.div(decimals27))} Dai
             Auction Lot:        ${ethers.utils.formatUnits(auction.lot.toString())}
             Configured Lot:     between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
-            Debt to Cover:      ${ethers.utils.formatUnits(owe27.div(decimals9))} Dai
             Slice to Take:      ${ethers.utils.formatUnits(lot)}
             Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
 
-            Cost of lot:        ${ethers.utils.formatUnits(costOfLot)} Dai
+            Debt to Cover:      ${ethers.utils.formatUnits(debtToCover)} Dai
             Minimum profit:     ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
 
@@ -203,7 +204,7 @@ export default class keeper {
             Uniswap proceeds:   ${uniswapV2Proceeds.receiveAmount} Dai
             Less min profit:    ${minUniV2Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniV2Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minUniV2Proceeds) {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
@@ -223,7 +224,7 @@ export default class keeper {
             Uniswap V3 proceeds:   ${uniswapV3Proceeds.receiveAmount} Dai
             Less min profit:    ${minUniV3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniV3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minUniV3Proceeds) {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
@@ -263,7 +264,7 @@ export default class keeper {
             Uniswap proceeds:   ${wstETHCurveUniv3Proceeds.receiveAmount} Dai
             Less min profit:    ${minWstETHCurveUniv3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minWstETHCurveUniv3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minWstETHCurveUniv3Proceeds) {
             // tx executes only if the return amount also covers the minProfit %
             await clip.execute(
                 auction.id,
@@ -281,7 +282,7 @@ export default class keeper {
           Curve+Univ3 proceeds:   ${lpCurveUniv3Proceeds.receiveAmount} Dai
           Less min profit:    ${minLpCurveUniv3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minLpCurveUniv3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minLpCurveUniv3Proceeds) {
             // tx executes only if the return amount also covers the minProfit %
             await clip.execute(
                 auction.id,
