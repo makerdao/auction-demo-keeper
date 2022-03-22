@@ -123,6 +123,7 @@ export default class keeper {
         if (slice18.gt(auction.lot)) {
           // HACK: I suspect the issue involves interplay between reading price from the abacus and not having multicall.
           slice18 = auction.lot;
+          owe27 = slice18.mul(auction.price).div(decimals18);
         }
         let lot = slice18;
         if (lot.lt(minLot)) {
