@@ -123,6 +123,7 @@ export default class keeper {
         if (slice18.gt(auction.lot)) {
           // HACK: I suspect the issue involves interplay between reading price from the abacus and not having multicall.
           slice18 = auction.lot;
+          owe27 = slice18.mul(auction.price).div(decimals18);
         }
         let lot = slice18;
         if (lot.lt(minLot)) {
@@ -137,6 +138,8 @@ export default class keeper {
         const totalMinProfit45 = calcMinProfit45.sub(owe27.mul(decimals18));
         const minProfit = totalMinProfit45.div(decimals27);
         const costOfLot = priceWithProfit.mul(lot).div(decimals27);
+
+        const debtToCover = owe27.div(decimals9);
 
         // Find the amount of collateral that maximizes the amount of profit captured
         let oasisDexAvailability;
@@ -183,18 +186,15 @@ export default class keeper {
             Auction Tab:        ${ethers.utils.formatUnits(auction.tab.div(decimals27))} Dai
             Auction Lot:        ${ethers.utils.formatUnits(auction.lot.toString())}
             Configured Lot:     between ${ethers.utils.formatUnits(minLot)} and ${ethers.utils.formatUnits(maxLot)}
-            Debt to Cover:      ${ethers.utils.formatUnits(owe27.div(decimals9))} Dai
             Slice to Take:      ${ethers.utils.formatUnits(lot)}
             Auction Price:      ${ethers.utils.formatUnits(auction.price.div(decimals9))} Dai
 
-            Cost of lot:        ${ethers.utils.formatUnits(costOfLot)} Dai
+            Debt to Cover:      ${ethers.utils.formatUnits(debtToCover)} Dai
             Minimum profit:     ${ethers.utils.formatUnits(minProfit)} Dai\n`;
 
-
-        // Set the amt we take as above the anticipated slice since if it was derived from (tab / price)
-        // then the price on-chain will be slightly lower and we might end up with (slice * price) < tab.
-        // In theory, the amt can be max(uint) as well as it is cropped by auction.lot during the take.
-        const amt = lot.mul(2000).div(1000)
+        // Increase actual take amount to account for rounding errors and edge cases.
+        // Do not increase too much to not significantly go over configured maxAmt.
+        const amt = lot.mul(1000001).div(1000000);
 
         let liquidityAvailability;
         if (uniswap) {
@@ -202,7 +202,7 @@ export default class keeper {
             Uniswap proceeds:   ${uniswapV2Proceeds.receiveAmount} Dai
             Less min profit:    ${minUniV2Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniV2Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minUniV2Proceeds) {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
@@ -222,7 +222,7 @@ export default class keeper {
             Uniswap V3 proceeds:   ${uniswapV3Proceeds.receiveAmount} Dai
             Less min profit:    ${minUniV3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minUniV3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minUniV3Proceeds) {
             // Uniswap tx executes only if the return amount also covers the minProfit %
             await clip.execute(
               auction.id,
@@ -262,7 +262,7 @@ export default class keeper {
             Uniswap proceeds:   ${wstETHCurveUniv3Proceeds.receiveAmount} Dai
             Less min profit:    ${minWstETHCurveUniv3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minWstETHCurveUniv3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minWstETHCurveUniv3Proceeds) {
             // tx executes only if the return amount also covers the minProfit %
             await clip.execute(
                 auction.id,
@@ -280,7 +280,7 @@ export default class keeper {
           Curve+Univ3 proceeds:   ${lpCurveUniv3Proceeds.receiveAmount} Dai
           Less min profit:    ${minLpCurveUniv3Proceeds}\n`;
           console.log(auctionSummary + liquidityAvailability);
-          if (Number(ethers.utils.formatUnits(costOfLot)) <= minLpCurveUniv3Proceeds) {
+          if (Number(ethers.utils.formatUnits(debtToCover)) <= minLpCurveUniv3Proceeds) {
             // tx executes only if the return amount also covers the minProfit %
             await clip.execute(
                 auction.id,
