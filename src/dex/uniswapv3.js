@@ -1,9 +1,8 @@
 import { ethers, BigNumber } from 'ethers';
 import Config from '../singleton/config.js';
 import network from '../singleton/network.js';
-import uniswapRouter from '../../abi/UniswapV3Router.json';
-import uniswapV3CalleeAbi from '../../abi/UniswapV3CalleeDai.json';
-import quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json";
+import uniswapV3CalleeAbi from '../../abi/UniswapV3CalleeDai.json' assert {type: 'json'};
+import quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json" assert {type: 'json'};
 
 export default class UniswapV3Adaptor {
   _collateralName = '';

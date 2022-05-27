@@ -10,7 +10,7 @@ import UniswapV3Adaptor from './dex/uniswapv3.js';
 import WstETHCurveUniv3Adaptor from './dex/wstETHCurveUniv3.js';
 import LpCurveUniv3Adaptor from './dex/lpCurveUniv3.js';
 import Wallet from './wallet.js';
-import { clipperAllowance, checkVatBalance, daiJoinAllowance } from './vat.js';
+import { clipperAllowance, daiJoinAllowance } from './vat.js';
 import fs from 'fs';
 
 /* The Keeper module is the entry point for the

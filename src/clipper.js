@@ -2,8 +2,8 @@
 import network from './singleton/network.js';
 import { ethers, BigNumber } from 'ethers';
 import Config from './singleton/config.js';
-import abacusAbi from '../abi/abacus.json';
-import clipperAbi from '../abi/clipper.json';
+import abacusAbi from '../abi/abacus.json' assert {type: 'json'};
+import clipperAbi from '../abi/clipper.json' assert {type: 'json'};
 import { Transact, GeometricGasPrice } from './transact.js';
 
 const decimals9 = BigNumber.from('1000000000');
@@ -108,10 +108,10 @@ export default class Clipper {
 
   async activeAuctions() {
     // We get the timestamp from the last block for testing.
-    // const blockNum = await network.provider.getBlockNumber();
-    // const block = await network.provider.getBlock(blockNum);
-    // const currentTime = block.timestamp;
-    const currentTime = Math.floor(new Date() / 1000);
+    const blockNum = await network.provider.getBlockNumber();
+    const block = await network.provider.getBlock(blockNum);
+    const currentTime = block.timestamp;
+    // const currentTime = Math.floor(new Date() / 1000);
     const readPromises = [];
 
     for (const auctionId in this._activeAuctions) {

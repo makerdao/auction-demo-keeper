@@ -1,9 +1,9 @@
 import Config from '../singleton/config.js';
 import network from '../singleton/network.js';
 import { ethers, BigNumber } from 'ethers';
-import uniswapRouter from '../../abi/UniswapV2Router02.json';
-import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json';
-import UniswapV2Pair from '../../abi/UniswapV2Pair.json';
+import uniswapRouter from '../../abi/UniswapV2Router02.json' assert {type: 'json'};
+import uniswapCalleeAbi from '../../abi/UniswapV2CalleeDai.json' assert {type: 'json'};
+import UniswapV2Pair from '../../abi/UniswapV2Pair.json' assert {type: 'json'};
 
 const decimals18 = ethers.utils.parseEther('1');
 

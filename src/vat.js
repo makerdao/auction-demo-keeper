@@ -1,7 +1,7 @@
 import network from './singleton/network.js';
 import { ethers, BigNumber } from 'ethers';
 import Config from './singleton/config.js';
-import vatAbi from '../abi/vat.json';
+import vatAbi from '../abi/vat.json' assert {type: 'json'};
 import { Transact, GeometricGasPrice } from './transact.js';
 
 const clipperAllowance = async (clipperAddress, _signer) => {

@@ -1,9 +1,9 @@
 import Config from '../singleton/config.js';
 import network from '../singleton/network.js';
 import { ethers, BigNumber } from 'ethers';
-import supportMethodsAbi from '../../abi/MakerOtcSupportMethods.json';
-import matchingMarketAbi from '../../abi/MatchingMarket.json';
-import oasisCalleeAbi from '../../abi/CalleeMakerOtcDai.json';
+import supportMethodsAbi from '../../abi/MakerOtcSupportMethods.json' assert {type: 'json'};
+import matchingMarketAbi from '../../abi/MatchingMarket.json' assert {type: 'json'};
+import oasisCalleeAbi from '../../abi/CalleeMakerOtcDai.json' assert {type: 'json'};
 
 
 export default class oasisDexAdaptor {

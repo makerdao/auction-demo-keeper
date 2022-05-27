@@ -1,9 +1,9 @@
 import Config from '../singleton/config.js';
 import network from '../singleton/network.js';
-import { ethers, BigNumber } from 'ethers';
-import lpCurveUniv3CalleeAbi from '../../abi/LpCurveUniv3Callee.json';
-import curvePoolAbi from '../../abi/CurvePool.json';
-import quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json";
+import { ethers } from 'ethers';
+import lpCurveUniv3CalleeAbi from '../../abi/LpCurveUniv3Callee.json' assert {type: 'json'};
+import curvePoolAbi from '../../abi/CurvePool.json' assert {type: 'json'};
+import quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json" assert {type: 'json'};
 
 export default class LpCurveUniv3Adaptor {
 
