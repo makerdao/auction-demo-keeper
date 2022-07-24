@@ -191,13 +191,15 @@ export default class Clipper {
         [this._collateral, Config.vars.dai]
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].wstETHCurveUniv3Callee) {
+      const route = this.encodeUniv3Route()
+
       // WstETH Curve Univ3 swap
-      typesArray = ['address', 'address', 'uint256', 'uint24', 'address'];
+      typesArray = ['address', 'address', 'uint256', 'bytes', 'address'];
       flashData = abiCoder.encode(typesArray, [
         _profitAddr,
         _gemJoinAdapter,
         _minProfit,
-        Config.vars.collateral[this._collateralName].uniV3Path[0].fee,
+        route,
         ethers.constants.AddressZero
       ]);
     } else if (exchangeCalleeAddress === Config.vars.collateral[this._collateralName].lpCurveUniv3Callee) {
