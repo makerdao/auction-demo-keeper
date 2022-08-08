@@ -10,8 +10,7 @@ export default class WstETHCurveUniv3Adaptor {
 
   constructor(asset, callee, name) {
     this._provider = network.provider;
-    this._asset = asset;
-    this._name = name;
+    this._collateralName = name;
     this._callee = new ethers.Contract(
         callee, wstETHCurveUniv3CalleeAbi, this._provider
     );
@@ -24,30 +23,43 @@ export default class WstETHCurveUniv3Adaptor {
     this._quoter = new ethers.Contract(
         Config.vars.UniswapV3QuoterAddress, quoter.abi, this._provider
     );
-    this._weth         = Config.vars.collateral[name].uniV3Path[0].tokenA;
-    this._dai          = Config.vars.collateral[name].uniV3Path[0].tokenB;
-    this._uniV3poolFee = Config.vars.collateral[name].uniV3Path[0].fee;
   }
 
   fetch = async (lot) => {
+    let book = {
+      sellAmount: '',
+      receiveAmount: ''
+    };
+
     const stethAmt = await this._wstETH.getStETHByWstETH(lot);
     const ethAmt = await this._curvePool.get_dy(
       1, // send token id 1 (stETH)
       0, // receive token id 0 (ETH)
       stethAmt
     );
-    const daiAmt = await this._quoter.callStatic.quoteExactInputSingle(
-      this._weth,
-      this._dai,
-      this._uniV3poolFee,
-      ethAmt,
-      0
-    );
 
-    const book = {
-      sellAmount: ethers.utils.formatUnits(lot),
-      receiveAmount: ethers.utils.formatUnits(daiAmt)
-    };
+    try {
+      let quotedAmountOut = BigNumber.from(ethAmt);
+
+      for (let i = 0; i < Config.vars.collateral[this._collateralName].uniV3Path.length; i++) {
+        // call the quoter contract to determine the amount out of a swap
+        quotedAmountOut = await this._quoter.callStatic.quoteExactInputSingle(
+            Config.vars.collateral[this._collateralName].uniV3Path[i].tokenA,
+            Config.vars.collateral[this._collateralName].uniV3Path[i].tokenB,
+            Config.vars.collateral[this._collateralName].uniV3Path[i].fee,
+            quotedAmountOut,
+            0
+        );
+      }
+
+      book.sellAmount = ethers.utils.formatUnits(lot);
+      book.receiveAmount = ethers.utils.formatUnits(quotedAmountOut);
+    } catch (e) {
+      console.log(
+          `Error fetching Uniswap amounts for ${this._collateralName}:`, e
+      );
+    }
+
     return book;
   }
 }
