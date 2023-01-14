@@ -106,11 +106,11 @@ export default class keeper {
           let chost27 = clip._chost.div(decimals18);
           if (tab27.sub(owe27).lt(chost27)) {
             if (tab27.lte(chost27)) {
-              // adjust the penultimate take to avoid partial lot on the final take
-              owe27 = tab27.sub(chost27);
-            } else {
-              // adjust to chost
+              // if tab <= chost, buyers have to take the entire lot.
               owe27 = chost27;
+            } else {
+              // adjust amount to pay
+              owe27 = tab27.sub(chost27);
             }
 
             slice18 = owe27.div(auction.price.div(decimals18));
